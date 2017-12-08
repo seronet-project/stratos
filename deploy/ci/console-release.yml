@@ -203,10 +203,9 @@ jobs:
 - name: sync-sle-release
   plan:
   - get: stratos-ui
-    passed: [create-sle-chart]
+    passed: [update-github-release]
     trigger: true
   - get: helm-charts-repository
-    passed: [update-github-release]
   - get: helm-chart-Chart-sle
     passed: [build-sle-helm-images]
   - get: helm-chart-values-sle
