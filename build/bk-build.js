@@ -10,6 +10,7 @@
   var runSequence = require('run-sequence');
   var Q = require('q');
 
+
   var conf = require('./bk-conf');
   var buildUtils = require('./bk-build-utils');
   var prepareBuild = require('./bk-prepare-build');
@@ -58,6 +59,8 @@
     var promise = Q.resolve();
     _.each(enabledPlugins, function (pluginInfo) {
       var fullPluginPath = path.join(prepareBuild.getSourcePath(), pluginInfo.pluginPath, 'backend');
+      console.log('Will execute glide install in ' + fullPluginPath);
+      console.log(fs.readdirSync(fullPluginPath))
       if (fs.existsSync(fullPluginPath)) {
         promise = promise
           .then(function () {
@@ -67,6 +70,7 @@
     });
 
     // DB Migrator dependencies
+    console.log(fs.readdirSync(prepareBuild.getDbMigratorSourcePath()))
     if (fs.existsSync(prepareBuild.getDbMigratorSourcePath())) {
       promise = promise
         .then(function () {

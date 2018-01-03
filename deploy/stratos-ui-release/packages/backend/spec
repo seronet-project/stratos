@@ -8,4 +8,6 @@ files:
 - stratos-ui/{package.json,plugins.json,bower.json,gulpfile.js}
 - stratos-ui/{build,components}/**/*
 - stratos-ui/deploy/db/migrations/**/*.go
+- stratos-ui/deploy/db/migrations/**/glide.yaml
+- stratos-ui/deploy/db/migrations/**/glide.lock
 - stratos-ui/deploy/db/sqlite_schema.sql
