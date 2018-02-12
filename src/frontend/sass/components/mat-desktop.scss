@@ -1,0 +1,26 @@
+//
+// Angular material sizes many components for mobile
+// The Material Design spec often has different sizes for mobile and desktop
+// This file adjusts some elements when displayed in a desktop environment
+// to match the Material Design guidelines
+
+ .md-desktop {
+   button.mat-menu-item {
+     font-size: 14px;
+     height: 32px;
+     line-height: 32px;
+
+     .mat-icon {
+       font-size: 20px;
+       height: 20px;
+       margin-right: 8px;
+       width: 20px;
+     }
+
+     > span {
+       height: 20px;
+       line-height: 20px;
+       vertical-align: middle;
+     }
+   }
+}
