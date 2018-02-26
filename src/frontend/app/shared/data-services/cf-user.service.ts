@@ -18,7 +18,7 @@ import { GetAllUsers } from '../../store/actions/users.actions';
 import { AppState } from '../../store/app-state';
 import { getPaginationObservables } from '../../store/reducers/pagination-reducer/pagination-reducer.helper';
 import { APIResource } from '../../store/types/api.types';
-import { CfUser, UserRoleInOrg, UserSchema, UserRoleInSpace, IUserPermissionInOrg } from '../../store/types/user.types';
+import { CfUser, UserRoleInOrg, UserSchema, UserRoleInSpace, IUserPermissionInOrg, IUserPermissionInSpace } from '../../store/types/user.types';
 import { PaginationMonitorFactory } from '../monitors/pagination-monitor.factory';
 @Injectable()
 export class CfUserService {
@@ -49,8 +49,8 @@ export class CfUserService {
       shareReplay(1),
     )
 
-  getRolesFromUser(user: CfUser, type: 'organizations' | 'spaces' = 'organizations'): IUserPermissionInOrg[] {
-    return user[type].map(org => {
+  getRolesFromUser(user: CfUser): IUserPermissionInOrg[] {
+    return user.organizations.map(org => {
       const orgGuid = org.metadata.guid;
       return {
         orgName: org.entity.name as string,
@@ -64,6 +64,22 @@ export class CfUserService {
       };
     });
   }
+
+  getSpaceRolesFromUser(user: CfUser): IUserPermissionInSpace[] {
+    return user.spaces.map(space => {
+      const spaceGuid = space.metadata.guid;
+      return {
+        spaceName: space.entity.name as string,
+        spaceGuid: space.metadata.guid,
+        permissions: {
+          spaceManager: isSpaceManager(user, spaceGuid),
+          spaceAuditor: isSpaceAuditor(user, spaceGuid),
+          dev: isSpaceDeveloper(user, spaceGuid),
+        }
+      };
+    });
+  }
+
 
   getUserRoleInOrg = (
     userGuid: string,

@@ -7,6 +7,13 @@ export enum OrgUserRoles {
   USER = 'users'
 }
 
+export enum SpaceUserRoles {
+  MANAGER = 'managers',
+  BILLING_MANAGERS = 'billing_managers',
+  AUDITOR = 'auditors',
+  USER = 'users'
+}
+
 export interface IOrgUserRole {
   string: string;
   key: OrgUserRoles;
@@ -46,7 +53,36 @@ export function getSpaceRolesString(userRolesInSpace: UserRoleInSpace): string {
   return roles ? roles : 'None';
 }
 
-export function getOrgRoles(userRolesInOrg: UserRoleInOrg): IOrgUserRole[] {
+export function getOrgRoles(userRolesInOrg: UserRoleInSpace): IOrgUserRole[] {
+  const roles = [];
+  if (userRolesInOrg.orgManager) {
+    roles.push({
+      string: 'Manager',
+      key: OrgUserRoles.MANAGER
+    });
+  }
+  if (userRolesInOrg.billingManager) {
+    roles.push({
+      string: 'Billing Manager',
+      key: OrgUserRoles.BILLING_MANAGERS
+    });
+  }
+  if (userRolesInOrg.auditor) {
+    roles.push({
+      string: 'Auditor',
+      key: OrgUserRoles.AUDITOR
+    });
+  }
+  if (userRolesInOrg.user) {
+    roles.push({
+      string: 'User',
+      key: OrgUserRoles.USER
+    });
+  }
+  return roles;
+}
+
+export function getSpaceRoles(userRolesInOrg: UserRoleInOrg): IOrgUserRole[] {
   const roles = [];
   if (userRolesInOrg.orgManager) {
     roles.push({

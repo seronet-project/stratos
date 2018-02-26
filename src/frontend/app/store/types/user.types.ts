@@ -37,6 +37,12 @@ export interface IUserPermissionInOrg {
   };
 }
 
+export interface IUserPermissionInSpace {
+  spaceName: string;
+  spaceGuid: string;
+  permissions: UserRoleInSpace;
+}
+
 export interface UserRoleInSpace {
   manager: boolean;
   developer: boolean;
