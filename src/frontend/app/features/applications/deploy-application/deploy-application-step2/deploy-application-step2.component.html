@@ -1,4 +1,5 @@
-<b>Please specify the source</b>
+<b *ngIf="!isReDeploy">Please specify the source</b>
+<b *ngIf="isReDeploy">Please check and verify source for re-deployment</b>
 <form novalidate #sourceSelectionForm="ngForm" class="stepper-form">
   <div class="deploy-step2-form">
     <mat-form-field>

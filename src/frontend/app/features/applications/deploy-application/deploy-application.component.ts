@@ -25,6 +25,9 @@ export class DeployApplicationComponent implements OnInit, OnDestroy {
 
   initCfOrgSpaceService: Subscription[] = [];
 
+  // Are we deploying to an existing application?
+  isRedeploy = false;
+
   constructor(
     private store: Store<AppState>,
     private cfOrgSpaceService: CfOrgSpaceDataService,
@@ -32,6 +35,7 @@ export class DeployApplicationComponent implements OnInit, OnDestroy {
   ) { }
 
   onNext = () => {
+    console.log('DeployApplicationComponent onNext');
     this.store.dispatch(new StoreCFSettings({
       cloudFoundry: this.cfOrgSpaceService.cf.select.getValue(),
       org: this.cfOrgSpaceService.org.select.getValue(),
@@ -46,9 +50,9 @@ export class DeployApplicationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    const isRedeploy = this.activatedRoute.snapshot.queryParams['redeploy'];
+    this.isRedeploy = this.activatedRoute.snapshot.queryParams['redeploy'];
 
-    if (isRedeploy) {
+    if (this.isRedeploy) {
       this.initCfOrgSpaceService.push(this.store.select(selectCfDetails).pipe(
         filter(p => !!p),
         tap(p => {

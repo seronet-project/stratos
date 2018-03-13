@@ -8,19 +8,19 @@
         <mat-card-content>
           <div class="github-tab__deployment">
             <app-metadata-item label="Repository">
-              <a href="{{(gitHubRepo$ | async)?.html_url}}" target="_blank">
+              <a href="{{(gitHubRepo$ | async)?.html_url}}" rel="noopener noreferrer" target="_blank">
                 {{stratosProject.deploySource.project }}
               </a>
             </app-metadata-item>
             <app-metadata-item label="Branch">
-              <a href="{{(gitHubRepo$ | async)?.html_url}}/tree/{{ stratosProject.deploySource.branch}}" target="_blank">
+              <a href="{{(gitHubRepo$ | async)?.html_url}}/tree/{{ stratosProject.deploySource.branch}}" rel="noopener noreferrer" target="_blank">
                 {{ stratosProject.deploySource.branch}}
               </a>
             </app-metadata-item>
             <div class="github-tab__deployment__commit">
               <div>
                 <app-metadata-item label="Commit">
-                  <a href="{{(commit$ | async)?.html_url}}" target="_blank">
+                  <a href="{{(commit$ | async)?.html_url}}" rel="noopener noreferrer" target="_blank">
                           {{ stratosProject.deploySource.commit}}
                       </a>
                 </app-metadata-item>
@@ -56,13 +56,15 @@
               <img src={{githubRepo.owner.avatar_url}}>
             </div>
             <div>
-              <app-metadata-item label="Full Name">
-                <a href="{{ githubRepo.html_url }}" target="_blank">{{ githubRepo.full_name }}</a>
+              <app-metadata-item label="Repository">
+                <a href="{{ githubRepo.html_url }}" rel="noopener noreferrer" target="_blank">{{ githubRepo.full_name }}</a>
               </app-metadata-item>
-              <app-metadata-item label="Owner">{{ githubRepo.owner.login }}</app-metadata-item>
+              <app-metadata-item label="Owner">
+                <a href="{{ githubRepo.owner.html_url }}" rel="noopener noreferrer" target="_blank">{{ githubRepo.owner.login }}</a>                
+              </app-metadata-item>
               <app-metadata-item label="Description">{{ githubRepo.description }}</app-metadata-item>
-              <app-metadata-item label="Created at:">{{ githubRepo.created_at | date:'medium' }}</app-metadata-item>
-              <app-metadata-item label="Last Pushed at:">{{ githubRepo.pushed_at | date:'medium' }}</app-metadata-item>
+              <app-metadata-item label="Created">{{ githubRepo.created_at | date:'medium' }}</app-metadata-item>
+              <app-metadata-item label="Last Push">{{ githubRepo.pushed_at | date:'medium' }}</app-metadata-item>
             </div>
           </div>
         </mat-card-content>
@@ -81,13 +83,13 @@
             <div>
               <app-metadata-item label="Message">{{ commitInfo.commit.message }}</app-metadata-item>
               <app-metadata-item label="SHA">
-                <a href={{commitInfo.html_url}} target="_blank">{{ commitInfo.sha | limitTo: 8}}</a>
+                <a href={{commitInfo.html_url}} rel="noopener noreferrer" target="_blank">{{ commitInfo.sha | limitTo: 8}}</a>
               </app-metadata-item>
               <app-metadata-item label="Message">{{ commitInfo.commit.message }}</app-metadata-item>
               <app-metadata-item label="Author">{{ commitInfo.commit.author.name }}
                 <{{ commitInfo.commit.author.email }}>
               </app-metadata-item>
-              <app-metadata-item label="Date:">{{ commitInfo.commit.author.date | date:'medium' }}</app-metadata-item>
+              <app-metadata-item label="Date">{{ commitInfo.commit.author.date | date:'medium' }}</app-metadata-item>
             </div>
           </div>
         </mat-card-content>
