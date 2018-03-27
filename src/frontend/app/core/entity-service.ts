@@ -94,6 +94,14 @@ export class EntityService<T = any> {
       }),
       shareReplay(1)
     );
+
+    this.isEntityBusy$ = this.entityObs$.pipe(
+      map((ent) => {
+        const { entityRequestInfo, entity } = ent;
+        return !this.isEntityAvailable(entity, entityRequestInfo);
+      }),
+      shareReplay(1)
+    );
   }
 
   refreshKey = 'updating';
@@ -109,6 +117,8 @@ export class EntityService<T = any> {
   isDeletingEntity$: Observable<boolean>;
 
   waitForEntity$: Observable<EntityInfo<T>>;
+
+  isEntityBusy$: Observable<boolean>;
 
   updatingSection$: Observable<UpdatingSection>;
 

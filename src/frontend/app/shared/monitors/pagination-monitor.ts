@@ -115,7 +115,26 @@ export class PaginationMonitor<T = any> {
       withLatestFrom(this.store.select(getAPIRequestDataState)),
       map(([[pagination, entities], allEntities]) => {
         const page = pagination.ids[pagination.currentPage] || [];
-        return page.length ? denormalize(page, [schema], allEntities).filter(ent => !!ent) : [];
+        let newPage = [];
+        if (schema.key === 'application') {
+          console.log(schema);
+
+          page.forEach(key => {
+            const app = allEntities.application[key];
+            if (!(app.entity.space && app.entity.space['entity'])) {
+              console.log(key, app.entity);
+              newPage.push(key);
+            }
+          });
+          // allEntities = {
+          //   ...allEntities,
+          //   application: newApps
+          // };
+          console.log(denormalize(newPage, [schema], allEntities));
+        } else {
+          newPage = page;
+        }
+        return page.length ? denormalize(newPage, [schema], allEntities).filter(ent => !!ent) : [];
       }),
       shareReplay(1)
     );

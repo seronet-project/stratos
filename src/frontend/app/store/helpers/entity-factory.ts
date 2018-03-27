@@ -139,9 +139,7 @@ const RouteSchema = new EntitySchema(routeSchemaKey, {
     apps: [ApplicationWithoutRelationsSchema],
     domain: DomainSchema
   }
-}, {
-    idAttribute: getAPIResourceGuid
-  });
+}, { idAttribute: getAPIResourceGuid });
 entityCache[routeSchemaKey] = RouteSchema;
 
 const QuotaDefinitionSchema = new EntitySchema(quotaDefinitionSchemaKey, {}, { idAttribute: getAPIResourceGuid });
@@ -155,12 +153,8 @@ const ApplicationWithoutSpaceEntitySchema = new EntitySchema(
       routes: [RouteSchema],
       service_bindings: [ServiceBindingsSchema]
     }
-  },
-  {
-    idAttribute: getAPIResourceGuid
-  },
+  }, { idAttribute: getAPIResourceGuid },
 );
-entityCache[applicationSchemaKey] = ApplicationWithoutSpaceEntitySchema;
 
 const SpaceQuotaSchema = new EntitySchema(spaceQuotaSchemaKey, {}, { idAttribute: getAPIResourceGuid });
 entityCache[spaceQuotaSchemaKey] = SpaceQuotaSchema;
@@ -185,16 +179,22 @@ entityCache[spaceSchemaKey] = SpaceSchema;
 const PrivateDomainsSchema = new EntitySchema(privateDomainsSchemaKey, {}, { idAttribute: getAPIResourceGuid });
 entityCache[privateDomainsSchemaKey] = PrivateDomainsSchema;
 
+const coreOrgSchemaParams = {
+  domains: [DomainSchema],
+  quota_definition: QuotaDefinitionSchema,
+  private_domains: [PrivateDomainsSchema]
+};
+const OrganizationsWithoutSpaces = new EntitySchema(organizationSchemaKey, {
+  entity: {
+    ...coreOrgSchemaParams,
+  }
+}, { idAttribute: getAPIResourceGuid });
 const OrganizationSchema = new EntitySchema(organizationSchemaKey, {
   entity: {
-    domains: [DomainSchema],
+    ...coreOrgSchemaParams,
     spaces: [SpaceSchema],
-    quota_definition: QuotaDefinitionSchema,
-    private_domains: [PrivateDomainsSchema]
   }
-}, {
-    idAttribute: getAPIResourceGuid
-  });
+}, { idAttribute: getAPIResourceGuid });
 entityCache[organizationSchemaKey] = OrganizationSchema;
 
 const SpaceWithOrgsEntitySchema = new EntitySchema(spaceSchemaKey, {
@@ -202,14 +202,12 @@ const SpaceWithOrgsEntitySchema = new EntitySchema(spaceSchemaKey, {
     ...coreSpaceSchemaParams,
     apps: [ApplicationWithoutSpaceEntitySchema],
     routes: [RouteSchema],
-    organization: OrganizationSchema,
+    organization: OrganizationsWithoutSpaces,
     domains: [DomainSchema],
     space_quota_definition: SpaceQuotaSchema,
     service_instances: [ServiceInstancesSchema]
   }
-}, {
-    idAttribute: getAPIResourceGuid
-  },
+}, { idAttribute: getAPIResourceGuid },
   spaceWithOrgKey);
 entityCache[spaceWithOrgKey] = SpaceWithOrgsEntitySchema;
 

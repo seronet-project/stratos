@@ -8,6 +8,7 @@ import { CloudFoundryEndpointService } from '../../../services/cloud-foundry-end
 import { CloudFoundryOrganizationService } from '../../../services/cloud-foundry-organization.service';
 import { getActiveRouteCfOrgSpaceProvider } from '../../../cf.helpers';
 import { environment } from '../../../../../../environments/environment';
+import { rootUpdatingKey } from '../../../../../store/reducers/api-request-reducer/types';
 
 @Component({
   selector: 'app-cloud-foundry-organization-base',
@@ -47,8 +48,16 @@ export class CloudFoundryOrganizationBaseComponent implements OnInit {
 
   constructor(public cfEndpointService: CloudFoundryEndpointService, public cfOrgService: CloudFoundryOrganizationService) {
     this.isFetching$ = cfOrgService.org$.pipe(
-      map(org => org.entityRequestInfo.fetching)
+      map(org => {
+        console.log(org.entityRequestInfo.fetching, org.entityRequestInfo.updating[rootUpdatingKey].busy);
+        return org.entityRequestInfo.fetching || org.entityRequestInfo.updating[rootUpdatingKey].busy;
+      })
     );
+
+    // this.isFetching$ = cfOrgService.orgEntityService.waitForEntity$.map(() => false);
+    // this.isFetching$ = cfOrgService.orgEntityService.isEntityBusy$;
+    // cfOrgService.orgEntityService.isEntityBusy$.subscribe((busy => console.log(busy)));
+
     this.name$ = cfOrgService.org$.pipe(
       map(org => org.entity.entity.name),
       first()
