@@ -49,13 +49,7 @@ export class CfAppsDataSource extends ListDataSource<APIResource> {
           const spaceGuid = paginationState.clientPagination.filter.items['space'];
           return entities.filter(e => {
             const validCF = !(cfGuid && cfGuid !== e.entity.cfGuid);
-            // let validOrg = true;
-            // if (!e.entity.space.entity) {
-            // console.log('asdsad');
-            // validOrg = !(orgGuid && orgGuid !== e.entity.space.entity.organization_guid);
-            // }
             const validOrg = !(orgGuid && orgGuid !== e.entity.space.entity.organization_guid);
-
             const validSpace = !(spaceGuid && spaceGuid !== e.entity.space_guid);
             return validCF && validOrg && validSpace;
           });

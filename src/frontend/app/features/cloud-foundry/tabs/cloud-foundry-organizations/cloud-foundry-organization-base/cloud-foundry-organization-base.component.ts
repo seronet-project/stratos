@@ -48,15 +48,8 @@ export class CloudFoundryOrganizationBaseComponent implements OnInit {
 
   constructor(public cfEndpointService: CloudFoundryEndpointService, public cfOrgService: CloudFoundryOrganizationService) {
     this.isFetching$ = cfOrgService.org$.pipe(
-      map(org => {
-        console.log(org.entityRequestInfo.fetching, org.entityRequestInfo.updating[rootUpdatingKey].busy);
-        return org.entityRequestInfo.fetching || org.entityRequestInfo.updating[rootUpdatingKey].busy;
-      })
+      map(org => org.entityRequestInfo.fetching)
     );
-
-    // this.isFetching$ = cfOrgService.orgEntityService.waitForEntity$.map(() => false);
-    // this.isFetching$ = cfOrgService.orgEntityService.isEntityBusy$;
-    // cfOrgService.orgEntityService.isEntityBusy$.subscribe((busy => console.log(busy)));
 
     this.name$ = cfOrgService.org$.pipe(
       map(org => org.entity.entity.name),
