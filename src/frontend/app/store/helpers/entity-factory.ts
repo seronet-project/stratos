@@ -201,6 +201,7 @@ entityCache[organizationSchemaKey] = OrganizationSchema;
 const SpaceWithOrgsEntitySchema = new EntitySchema(spaceSchemaKey, {
   entity: {
     ...coreSpaceSchemaParams,
+    apps: [ApplicationWithoutSpaceEntitySchema],
     organization: OrganizationsWithoutSpaces,
   }
 }, { idAttribute: getAPIResourceGuid }, spaceWithOrgKey);
