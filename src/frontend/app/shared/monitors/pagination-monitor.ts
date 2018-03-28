@@ -115,29 +115,34 @@ export class PaginationMonitor<T = any> {
       withLatestFrom(this.store.select(getAPIRequestDataState)),
       map(([[pagination, entities], allEntities]) => {
         const page = pagination.ids[pagination.currentPage] || [];
-        let newPage = [];
+        // let newPage = [];
         if (schema.key === 'application') {
+          console.group(new Date().getTime().toString());
           console.log(schema);
+          console.log(allEntities.application);
 
-          page.forEach(key => {
-            const app = allEntities.application[key];
-            if (!(app.entity.space && app.entity.space['entity'])) {
-              console.log(key, app.entity);
-              newPage.push(key);
-            }
-          });
+          // page.forEach(key => {
+          //   const app = allEntities.application[key];
+          //   if (!(app.entity.space && app.entity.space['entity'])) {
+          //     console.log(key, app.entity);
+          //     newPage.push(key);
+          //   }
+          // });
           // allEntities = {
           //   ...allEntities,
           //   application: newApps
           // };
-          console.log(denormalize(newPage, [schema], allEntities));
-        } else {
-          newPage = page;
+          console.log(denormalize(page, [schema], allEntities));
+          console.groupEnd();
         }
+        // else {
+        //   newPage = page;
+        // }
+        const newPage = page;
         return page.length ? denormalize(newPage, [schema], allEntities).filter(ent => !!ent) : [];
       }),
       shareReplay(1)
-    );
+      );
   }
 
   private createErrorObservable(pagination$: Observable<PaginationEntityState>) {
