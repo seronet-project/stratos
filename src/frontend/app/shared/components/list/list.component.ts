@@ -15,7 +15,7 @@ import { MatPaginator, MatSelect, SortDirection } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 
 import { ListFilter, ListPagination, ListSort, ListView, SetListViewAction } from '../../../store/actions/list.actions';
@@ -82,6 +82,7 @@ export class ListComponent<T> implements OnInit, OnDestroy, AfterViewInit {
   columns: ITableColumn<T>[];
   dataSource: IListDataSource<T>;
   multiFilterConfigs: IListMultiFilterConfig[];
+  multiFilterConfigsLoading$: Observable<boolean>;
 
   paginationController: IListPaginationController<T>;
   multiFilterWidgetObservables = new Array<Subscription>();
@@ -205,12 +206,17 @@ export class ListComponent<T> implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.multiFilterWidgetObservables = new Array<Subscription>();
+    const multiFiltersLoading = [];
     Object.values(this.multiFilterConfigs).forEach((filterConfig: IListMultiFilterConfig) => {
       const sub = filterConfig.select.asObservable().do((filterItem: string) => {
         this.paginationController.multiFilter(filterConfig, filterItem);
       });
       this.multiFilterWidgetObservables.push(sub.subscribe());
+      multiFiltersLoading.push(filterConfig.loading$);
     });
+    this.multiFilterConfigsLoading$ = combineLatest(multiFiltersLoading).pipe(
+      map((isLoading: boolean[]) => !!isLoading.find(bool => bool))
+    );
 
     this.sortColumns = this.columns.filter((column: ITableColumn<T>) => {
       return column.sort;
