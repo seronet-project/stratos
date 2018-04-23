@@ -10,6 +10,7 @@ import { CfUser } from '../../../../../store/types/user.types';
 import { getOrgRolesString } from '../../../../../features/cloud-foundry/cf.helpers';
 import { CfOrgPermissionCellComponent } from './cf-org-permission-cell/cf-org-permission-cell.component';
 import { CfSpacePermissionCellComponent } from './cf-space-permission-cell/cf-space-permission-cell.component';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
@@ -53,7 +54,21 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
     noEntries: 'There are no users'
   };
 
-  constructor(private store: Store<AppState>, cfUserService: CfUserService) {
+  manageUserAction = {
+    action: (user: APIResource<CfUser>) => {
+      // console.log(user);
+      const managerUser = (
+        `/cloud-foundry/${this.cfUserService.activeRouteCfOrgSpace.cfGuid}/users/${user.metadata.guid}/manage`
+      );
+      this.router.navigate([managerUser]);
+    },
+    label: 'Manage',
+    description: ``,
+    visible: row => true,
+    enabled: row => true
+  };
+
+  constructor(private store: Store<AppState>, private cfUserService: CfUserService, private router: Router) {
     super();
     this.dataSource = new CfUserDataSourceService(store, cfUserService.allUsersAction, this);
   }
@@ -61,7 +76,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
   getColumns = () => this.columns;
   getGlobalActions = () => [];
   getMultiActions = () => [];
-  getSingleActions = () => [];
+  getSingleActions = () => [this.manageUserAction];
   getMultiFiltersConfigs = () => [];
   getDataSource = () => this.dataSource;
 

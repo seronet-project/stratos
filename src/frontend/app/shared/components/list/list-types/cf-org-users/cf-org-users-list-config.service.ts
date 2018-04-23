@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import {
@@ -12,8 +13,8 @@ import { CfUserListConfigService } from '../cf-users/cf-user-list-config.service
 @Injectable()
 export class CfOrgUsersListConfigService extends CfUserListConfigService {
 
-  constructor(store: Store<AppState>, cfOrgService: CloudFoundryOrganizationService, cfUserService: CfUserService) {
-    super(store, cfUserService);
+  constructor(store: Store<AppState>, cfOrgService: CloudFoundryOrganizationService, cfUserService: CfUserService, router: Router) {
+    super(store, cfUserService, router);
     this.dataSource = new CfUserDataSourceService(store, cfOrgService.allOrgUsersAction, this);
   }
 

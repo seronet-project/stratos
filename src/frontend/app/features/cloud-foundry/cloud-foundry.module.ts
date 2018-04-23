@@ -25,7 +25,7 @@ import { EditOrganizationStepComponent } from './edit-organization/edit-organiza
 import { EditOrganizationComponent } from './edit-organization/edit-organization.component';
 import { EditSpaceStepComponent } from './edit-space/edit-space-step/edit-space-step.component';
 import { EditSpaceComponent } from './edit-space/edit-space.component';
-import { ManageUsersComponent } from './manage-users/manage-users.component';
+import { ManageUsersComponent } from './users/manage-users/manage-users.component';
 import { CloudFoundryEndpointService } from './services/cloud-foundry-endpoint.service';
 import { CloudFoundryOrganizationService } from './services/cloud-foundry-organization.service';
 import { CloudFoundryBuildPacksComponent } from './tabs/cloud-foundry-build-packs/cloud-foundry-build-packs.component';
