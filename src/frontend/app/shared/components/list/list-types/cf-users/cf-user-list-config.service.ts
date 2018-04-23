@@ -8,7 +8,7 @@ import { ListViewTypes, ListConfig } from './../../list.component.types';
 import { Injectable } from '@angular/core';
 import { CfUser } from '../../../../../store/types/user.types';
 import { getOrgRolesString } from '../../../../../features/cloud-foundry/cf.helpers';
-import { TableCellCfUserPermissionComponent } from './cf-user-permission-cell/cf-user-permission-cell.component';
+import { CfOrgPermissionCellComponent } from './cf-org-permission-cell/cf-org-permission-cell.component';
 import { CfSpacePermissionCellComponent } from './cf-space-permission-cell/cf-space-permission-cell.component';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
       headerCell: () => 'Organization Roles',
       cellFlex: '3',
       cellAlignSelf: 'baseline',
-      cellComponent: TableCellCfUserPermissionComponent
+      cellComponent: CfOrgPermissionCellComponent
     },
     {
       columnId: 'space-roles',

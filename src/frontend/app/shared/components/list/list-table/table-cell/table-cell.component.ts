@@ -51,8 +51,8 @@ import {
 } from '../../list-types/cf-space-routes/table-cell-route-apps-attached/table-cell-route-apps-attached.component';
 
 import {
-  TableCellCfUserPermissionComponent,
-} from '../../list-types/cf-users/cf-user-permission-cell/cf-user-permission-cell.component';
+  CfOrgPermissionCellComponent,
+} from '../../list-types/cf-users/cf-org-permission-cell/cf-org-permission-cell.component';
 
 import {
   TableCellServiceInstanceTagsComponent,
@@ -103,7 +103,7 @@ export const listTableCells = [
   TableCellServicePlanComponent,
   TableCellServiceNameComponent,
   TableCellRouteAppsAttachedComponent,
-  TableCellCfUserPermissionComponent,
+  CfOrgPermissionCellComponent,
   CfSpacePermissionCellComponent,
   TableCellFeatureFlagStateComponent
 ];
