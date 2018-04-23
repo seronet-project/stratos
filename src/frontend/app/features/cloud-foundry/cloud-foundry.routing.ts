@@ -55,6 +55,39 @@ import { CloudFoundryUsersComponent } from './tabs/cloud-foundry-users/cloud-fou
 import { EditOrganizationComponent } from './edit-organization/edit-organization.component';
 import { CliInfoCloudFoundryComponent } from './cli-info-cloud-foundry/cli-info-cloud-foundry.component';
 
+const manageUser = [
+  {
+    path: 'users',
+    children: [{
+      path: ':userId/manage',
+      component: ManageUsersComponent
+    }, {
+      path: 'manage',
+      component: ManageUsersComponent
+    }]
+  },
+  {
+    path: 'organizations/:orgId/spaces/:spaceId/users/:userId/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'organizations/:orgId/spaces/:spaceId/users/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'organizations/:orgId/users/:userId/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'organizations/:orgId/users/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
+  },
+];
+
 const cloudFoundry: Routes = [{
   path: '',
   component: CloudFoundryComponent
@@ -198,16 +231,8 @@ const cloudFoundry: Routes = [{
           ]
         }]
     },
-    {
-      path: 'users',
-      children: [{
-        path: ':userId/manage',
-        component: ManageUsersComponent
-      }, {
-        path: 'manage',
-        component: ManageUsersComponent
-      }]
-    }]
+    ...manageUser
+  ]
 }];
 
 @NgModule({

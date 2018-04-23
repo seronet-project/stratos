@@ -11,6 +11,8 @@ import { getOrgRolesString } from '../../../../../features/cloud-foundry/cf.help
 import { CfOrgPermissionCellComponent } from './cf-org-permission-cell/cf-org-permission-cell.component';
 import { CfSpacePermissionCellComponent } from './cf-space-permission-cell/cf-space-permission-cell.component';
 import { Router } from '@angular/router';
+import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
+import { SetManageUsers } from '../../../../../store/actions/users.actions';
 
 @Injectable()
 export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
@@ -56,11 +58,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageUserAction = {
     action: (user: APIResource<CfUser>) => {
-      // console.log(user);
-      const managerUser = (
-        `/cloud-foundry/${this.cfUserService.activeRouteCfOrgSpace.cfGuid}/users/${user.metadata.guid}/manage`
-      );
-      this.router.navigate([managerUser]);
+      this.router.navigate([this.createManagerUsersUrl(user)]);
     },
     label: 'Manage',
     description: ``,
@@ -68,14 +66,48 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
     enabled: row => true
   };
 
-  constructor(private store: Store<AppState>, private cfUserService: CfUserService, private router: Router) {
+  manageMultiUserAction = {
+    action: (users: APIResource<CfUser>[]) => {
+      this.store.dispatch(new SetManageUsers(users.map(user => user.entity)));
+      this.router.navigate([this.createManagerUsersUrl()]);
+      return false;
+    },
+    icon: 'people',
+    label: 'Manage',
+    description: ``,
+    visible: row => true,
+    enabled: row => true
+  };
+
+  createManagerUsersUrl(user: APIResource<CfUser> = null): string {
+    let route = `/cloud-foundry/${this.cfUserService.activeRouteCfOrgSpace.cfGuid}`;
+    if (this.activeRouteCfOrgSpace.orgGuid) {
+      route += `/organizations/${this.activeRouteCfOrgSpace.orgGuid}`;
+      if (this.activeRouteCfOrgSpace.spaceGuid) {
+        route += `/spaces/${this.activeRouteCfOrgSpace.spaceGuid}`;
+      }
+    }
+    if (user) {
+      route += `/users/${user.metadata.guid}/manage`;
+    } else {
+      route += `/users/manage`;
+    }
+    return route;
+  }
+
+  constructor(
+    private store: Store<AppState>,
+    private cfUserService: CfUserService,
+    private router: Router,
+    private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace
+  ) {
     super();
     this.dataSource = new CfUserDataSourceService(store, cfUserService.allUsersAction, this);
   }
 
   getColumns = () => this.columns;
   getGlobalActions = () => [];
-  getMultiActions = () => [];
+  getMultiActions = () => [this.manageMultiUserAction];
   getSingleActions = () => [this.manageUserAction];
   getMultiFiltersConfigs = () => [];
   getDataSource = () => this.dataSource;

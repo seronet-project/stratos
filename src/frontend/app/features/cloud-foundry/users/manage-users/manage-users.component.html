@@ -1,3 +1,16 @@
-<p>
-  manage-users not implemented
-</p>
+<app-page-header>
+  <span *ngIf="singleUser$ | async as singleUser; else multiUser">Manager Roles: {{singleUser.entity.entity.username }}</span>
+  <ng-template #multiUser>Manager Users Roles</ng-template>
+</app-page-header>
+<app-steppers cancel="/applications">
+  <!-- <app-step title="Select">
+  </app-step> -->
+  <app-step title="Modify">
+  </app-step>
+  <app-step title="Confirm">
+  </app-step>
+  <app-step title="Progress">
+  </app-step>
+</app-steppers>
+
+<!-- cancelButtonText="Cancel" finishButtonText="Create" -->

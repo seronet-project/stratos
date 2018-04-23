@@ -9,6 +9,9 @@ import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../helpers
 import { cfUserSchemaKey } from '../helpers/entity-factory';
 import { OrgUserRoles, SpaceUserRoles } from '../../features/cloud-foundry/cf.helpers';
 import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/entity-relations.types';
+import { getActions } from './action.helper';
+import { Action } from '@ngrx/store';
+import { CfUser } from '../types/user.types';
 
 export const GET_ALL = '[Users] Get all';
 export const GET_ALL_SUCCESS = '[Users] Get all success';
@@ -18,19 +21,21 @@ export const REMOVE_PERMISSION = '[Users] Remove Permission';
 export const REMOVE_PERMISSION_SUCCESS = '[Users]  Remove Permission success';
 export const REMOVE_PERMISSION_FAILED = '[Users]  Remove Permission failed';
 
+const defaultUserRelations = [
+  createEntityRelationKey(cfUserSchemaKey, organizationSchemaKey),
+  createEntityRelationKey(cfUserSchemaKey, 'audited_organizations'),
+  createEntityRelationKey(cfUserSchemaKey, 'managed_organizations'),
+  createEntityRelationKey(cfUserSchemaKey, 'billing_managed_organizations'),
+  createEntityRelationKey(cfUserSchemaKey, spaceSchemaKey),
+  createEntityRelationKey(cfUserSchemaKey, 'managed_spaces'),
+  createEntityRelationKey(cfUserSchemaKey, 'audited_spaces')
+];
+
 export class GetAllUsers extends CFStartAction implements PaginatedAction, EntityInlineParentAction {
   constructor(
     public paginationKey: string,
     public endpointGuid: string,
-    public includeRelations: string[] = [
-      createEntityRelationKey(cfUserSchemaKey, organizationSchemaKey),
-      createEntityRelationKey(cfUserSchemaKey, 'audited_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, 'managed_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, 'billing_managed_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, spaceSchemaKey),
-      createEntityRelationKey(cfUserSchemaKey, 'managed_spaces'),
-      createEntityRelationKey(cfUserSchemaKey, 'audited_spaces')
-    ],
+    public includeRelations: string[] = defaultUserRelations,
     public populateMissing = true) {
     super();
     this.options = new RequestOptions();
@@ -71,5 +76,34 @@ export class RemoveUserPermission<T> extends CFStartAction implements IRequestAc
   static generateUpdatingKey<T>(guid: string, permissionType: T, userGuid: string) {
     return `${guid}/${permissionType}/${userGuid}`;
   }
+}
 
+export class GetUser extends CFStartAction {
+  constructor(
+    public endpointGuid: string,
+    public userGuid: string,
+    public includeRelations: string[] = defaultUserRelations,
+    public populateMissing = true) {
+    super();
+    this.options = new RequestOptions();
+    this.options.url = 'users/' + userGuid;
+    this.options.method = 'get';
+  }
+  actions = getActions('Users', 'Fetch User');
+  entity = [entityFactory(cfUserSchemaKey)];
+  entityKey = cfUserSchemaKey;
+  options: RequestOptions;
+}
+
+export class MangerUsersActions {
+  static SetUsers = '[Manage Users] Set users';
+  static ClearUsers = '[Manage Users] Clear users';
+}
+export class SetManageUsers implements Action {
+  type = MangerUsersActions.SetUsers;
+  constructor(public users: CfUser[]) { }
+}
+
+export class ClearManageUsers implements Action {
+  type = MangerUsersActions.ClearUsers;
 }
