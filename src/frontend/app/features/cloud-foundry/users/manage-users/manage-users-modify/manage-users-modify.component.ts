@@ -40,8 +40,18 @@ export class ManageUsersModifyComponent implements OnInit {
 
   @Input('users') users: CfUser[];
   // TODO: RC storify these
-  @Input('roles') roles: CfUserRolesSelected;
-  orgRoles: CfOrgRolesSelected;
+  @Input('roles') roles: Observable<CfUserRolesSelected>;
+  orgRoles: CfOrgRolesSelected = {
+    name: '',
+    orgGuid: '',
+    permissions: {
+      auditor: false,
+      billingManager: false,
+      orgManager: false,
+      user: false
+    },
+    spaces: {}
+  };
 
   constructor(
     private store: Store<AppState>,
@@ -54,6 +64,7 @@ export class ManageUsersModifyComponent implements OnInit {
   }
 
   ngOnInit() {
+
     if (this.activeRouteCfOrgSpace.orgGuid) {
       this.singleOrg$ = this.entityServiceFactory.create<APIResource<IOrganization>>(
         organizationSchemaKey,
@@ -64,7 +75,6 @@ export class ManageUsersModifyComponent implements OnInit {
         ], true),
         true
       ).entityMonitor.entity$;
-      this.orgRoles = this.roles[this.users[0].guid];
     } else {
       this.singleOrg$ = Observable.of(null);
       const paginationKey = 'todo';
@@ -93,8 +103,9 @@ export class ManageUsersModifyComponent implements OnInit {
   }
 
   updateOrgUser() {
-    if (this.roles.permissions.orgManager || this.roles.permissions.billingManager || this.roles.permissions.auditor) {
-      this.roles.permissions.user = true;
+    ///TODO: RC orgRoles in multi user mode
+    if (this.orgRoles.permissions.orgManager || this.orgRoles.permissions.billingManager || this.orgRoles.permissions.auditor) {
+      this.orgRoles.permissions.user = true;
     }
   }
 
@@ -102,9 +113,14 @@ export class ManageUsersModifyComponent implements OnInit {
     if (!orgGuid) {
       return;
     }
+    ///TODO: RC orgRoles in multi user mode
+    if (this.users && this.users.length > 0) {
+      this.roles.pipe(
+        filter(roles => !!roles),
+      ).subscribe(roles => this.orgRoles = roles[this.users[0].guid][orgGuid]);
+    }
     this.store.dispatch(new ManageUsersSetOrg(orgGuid));
     this.store.select(selectManageUsers).pipe(
-      tap(selectManageUsers => console.log(selectManageUsers.selectedOrgGuid, orgGuid)),
       filter(selectManageUsers => selectManageUsers.selectedOrgGuid === orgGuid),
       first()
     ).subscribe(null, null, () => {

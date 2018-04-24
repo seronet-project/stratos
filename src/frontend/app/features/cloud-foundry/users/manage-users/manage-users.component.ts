@@ -45,7 +45,7 @@ export class ManageUsersComponent implements OnDestroy {
   defaultCancelUrl: string;
 
   // TODO: RC storify these
-  roles: CfUserRolesSelected;
+  roles: Observable<CfUserRolesSelected>;
 
   constructor(
     private store: Store<AppState>,
@@ -68,16 +68,16 @@ export class ManageUsersComponent implements OnDestroy {
         filter(entity => !!entity),
         map(entity => [entity.entity.entity])
       );
-      cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]).pipe(
+      this.roles = cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]).pipe(
         first(),
-      ).subscribe(roles => this.roles = roles);
+      );
     } else {
       this.users$ = this.store.select(selectManageUsers).pipe(
         map((manageUsers: ManageUsersState) => {
           const userGuids = manageUsers.users.map(user => user.guid);
-          cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids).pipe(
+          this.roles = cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids).pipe(
             first(),
-          ).subscribe(roles => this.roles = roles);
+          );
 
           return manageUsers.users;
         })

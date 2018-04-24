@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { first, map } from 'rxjs/operators';
+import { first, map, publishReplay, refCount } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
 import { IUserPermissionInOrg, IUserPermissionInSpace } from '../../../../store/types/user.types';
 
 export interface CfSpaceRolesSelected extends IUserPermissionInSpace { }
 export interface CfOrgRolesSelected extends IUserPermissionInOrg {
-  spaces: CfSpaceRolesSelected[];
+  spaces: { [spaceGuid: string]: CfSpaceRolesSelected };
 }
 export interface CfUserRolesSelected {
-  [userGuid: string]: CfOrgRolesSelected;
+  [userGuid: string]: {
+    [orgGuid: string]: CfOrgRolesSelected
+  };
 }
 
 
@@ -28,22 +30,26 @@ export class CfRolesService {
           if (userGuids.indexOf(user.metadata.guid) < 0) {
             return;
           }
+          const mappedUser = {};
           const orgRoles = this.cfUserService.getOrgRolesFromUser(user.entity);
           const spaceRoles = this.cfUserService.getSpaceRolesFromUser(user.entity);
-          roles[user.metadata.guid] = {
-            ...orgRoles,
-            spaces: spaceRoles
-          };
+          orgRoles.forEach(org => {
+            mappedUser[org.orgGuid] = {
+              ...org,
+              spaces: {}
+            };
+          });
+          spaceRoles.forEach(space => {
+            mappedUser[space.orgGuid].spaces[space.spaceGuid] = {
+              ...space
+            };
+          });
+          roles[user.metadata.guid] = mappedUser;
         });
-        // const roles = {
-        //   manager: false,
-        //   auditor: false,
-        //   billing_manager: false,
-        //   user: false,
-        //   spaces: []
-        // };
         return roles;
-      })
+      }),
+      publishReplay(1),
+      refCount()
     );
   }
 

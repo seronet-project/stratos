@@ -74,6 +74,8 @@ import {
   SpaceRolesListWrapperComponent,
 } from './users/manage-users/manage-users-modify/space-roles-list-wrapper/space-roles-list-wrapper.component';
 import { ManageUsersComponent } from './users/manage-users/manage-users.component';
+import { CfRolesService } from './users/manage-users/cf-roles.service';
+import { CfRoleCheckboxComponent } from './users/manage-users/cf-role-checkbox/cf-role-checkbox.component';
 
 
 @NgModule({
@@ -111,7 +113,8 @@ import { ManageUsersComponent } from './users/manage-users/manage-users.componen
     EditOrganizationStepComponent,
     CliInfoCloudFoundryComponent,
     ManageUsersModifyComponent,
-    SpaceRolesListWrapperComponent
+    SpaceRolesListWrapperComponent,
+    CfRoleCheckboxComponent
   ],
   providers: [
     CFEndpointsListConfigService,
@@ -121,7 +124,8 @@ import { ManageUsersComponent } from './users/manage-users/manage-users.componen
       useValue: {}
     },
     CloudFoundryOrganizationService,
-    CloudFoundryEndpointService
+    CloudFoundryEndpointService,
+    CfRolesService
   ],
 })
 export class CloudFoundryModule { }
