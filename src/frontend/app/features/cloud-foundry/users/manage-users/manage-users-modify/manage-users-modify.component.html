@@ -1,0 +1,30 @@
+<div class="modify-users__selected-users">
+  Selected Users:
+  <span *ngFor="let user of users; let index = index">
+    {{user.username}}<span *ngIf="index !== users.length - 1; else lastUser">, </span>
+  </span>
+</div>
+<div class="modify-users__orgs stepper-form">
+  <div *ngIf="singleOrg$ | async as singleOrg; then singleOrg else manyOrgs"></div>
+  <ng-template #singleOrg>{{singleOrg.entity.name }}</ng-template>
+  <ng-template #manyOrgs>
+    <mat-form-field>
+      <mat-select #cfSelect="ngModel" [ngModel]="selectedOrgGuid" (change)="updateOrg($event.value)" required placeholder="Organization">
+        <mat-option *ngFor="let org of organizations$ | async;trackBy:org?.metadata?.guid" [value]="org.metadata.guid">
+          {{org.entity.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ng-template>
+</div>
+<div class="modify-users__org-roles">
+  <mat-checkbox [(ngModel)]="orgRoles.permissions.orgManager" (change)="updateOrgUser()">Org Manager</mat-checkbox>
+  <mat-checkbox [(ngModel)]="orgRoles.permissions.auditor" (change)="updateOrgUser()">Org Auditor</mat-checkbox>
+  <mat-checkbox [(ngModel)]="orgRoles.permissions.billingManager" (change)="updateOrgUser()">Org Billing Manager</mat-checkbox>
+  <mat-checkbox [(ngModel)]="orgRoles.permissions.user" [disabled]="orgRoles.permissions.orgManager || orgRoles.permissions.billingManager || orgRoles.permissions.auditor">Org User</mat-checkbox>
+</div>
+<div class="modify-users__spaces-roles">
+  <!-- <app-space-roles-list-wrapper [orgGuid]="selectedOrgGuid" [roles]="roles"></app-space-roles-list-wrapper> -->
+  <div #spaceRolesTable></div>
+</div>
+<!-- ;trackBy:org.metadata.guid -->

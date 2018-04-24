@@ -32,25 +32,30 @@ export interface UserRoleInOrg {
   auditor: boolean;
   user: boolean;
 }
+
+// export interface CFSpaceRoles {
+//   manager: boolean;
+//   auditor: boolean;
+//   developer: boolean;
+// }
+
+// export interface CFOrgRoles {
+//   orgManager: boolean;
+//   auditor: boolean;
+//   billingManager: boolean;
+//   user: boolean;
+// }
+
 export interface IUserPermissionInOrg {
   name: string;
   orgGuid: string;
-  permissions: {
-    orgManager: boolean,
-    billingManager: boolean,
-    auditor: boolean,
-    user: boolean
-  };
+  permissions: UserRoleInOrg;
 }
 export interface IUserPermissionInSpace {
   name: string;
   orgGuid: string;
   spaceGuid: string;
-  permissions: {
-    manager: boolean,
-    auditor: boolean,
-    developer: boolean
-  };
+  permissions: UserRoleInSpace;
 }
 
 export interface UserRoleInSpace {

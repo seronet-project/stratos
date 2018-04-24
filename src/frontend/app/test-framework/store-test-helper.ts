@@ -21611,6 +21611,10 @@ const testInitialStoreState: AppState = {
         queryParams: {}
       }
     }
+  },
+  manageUsers: {
+    users: [],
+    selectedOrgGuid: ''
   }
 };
 /* tslint:enable */

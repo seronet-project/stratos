@@ -12,6 +12,8 @@ import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/en
 import { getActions } from './action.helper';
 import { Action } from '@ngrx/store';
 import { CfUser } from '../types/user.types';
+import { AppState } from '../app-state';
+import { ManageUsersState } from '../reducers/manage-users.reducer';
 
 export const GET_ALL = '[Users] Get all';
 export const GET_ALL_SUCCESS = '[Users] Get all success';
@@ -95,15 +97,24 @@ export class GetUser extends CFStartAction {
   options: RequestOptions;
 }
 
+// TODO: RC tidy
 export class MangerUsersActions {
   static SetUsers = '[Manage Users] Set users';
   static ClearUsers = '[Manage Users] Clear users';
+  static SetOrg = '[Manage Users] Set Org';
 }
-export class SetManageUsers implements Action {
+export class ManageUsersSetUsers implements Action {
   type = MangerUsersActions.SetUsers;
   constructor(public users: CfUser[]) { }
 }
 
-export class ClearManageUsers implements Action {
+export class ManageUsersClear implements Action {
   type = MangerUsersActions.ClearUsers;
 }
+
+export class ManageUsersSetOrg implements Action {
+  type = MangerUsersActions.SetOrg;
+  constructor(public selectedOrg: string) { }
+}
+
+export const selectManageUsers = (state: AppState): ManageUsersState => state.manageUsers;

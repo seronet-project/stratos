@@ -67,12 +67,7 @@ const manageUser = [
     }]
   },
   {
-    path: 'organizations/:orgId/spaces/:spaceId/users/:userId/manage',
-    component: ManageUsersComponent,
-    pathMatch: 'full'
-  },
-  {
-    path: 'organizations/:orgId/spaces/:spaceId/users/manage',
+    path: 'organizations/:orgId/users/manage',
     component: ManageUsersComponent,
     pathMatch: 'full'
   },
@@ -82,7 +77,12 @@ const manageUser = [
     pathMatch: 'full'
   },
   {
-    path: 'organizations/:orgId/users/manage',
+    path: 'organizations/:orgId/spaces/:spaceId/users/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'organizations/:orgId/spaces/:spaceId/users/:userId/manage',
     component: ManageUsersComponent,
     pathMatch: 'full'
   },

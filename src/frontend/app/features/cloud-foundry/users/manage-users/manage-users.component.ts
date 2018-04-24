@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { getActiveRouteCfOrgSpaceProvider, getIdFromRoute } from '../../cf.helpers';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -8,10 +8,13 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../../../../store/app-state';
 import { selectEntity } from '../../../../store/selectors/api.selectors';
 import { cfUserSchemaKey, entityFactory } from '../../../../store/helpers/entity-factory';
-import { first } from 'rxjs/operators';
+import { first, map, filter } from 'rxjs/operators';
 import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
-import { GetUser } from '../../../../store/actions/users.actions';
+import { GetUser, ManageUsersClear, selectManageUsers } from '../../../../store/actions/users.actions';
+import { ManageUsersState } from '../../../../store/reducers/manage-users.reducer';
+import { CfUserService } from '../../../../shared/data-services/cf-user.service';
+import { CfRolesService, CfOrgRolesSelected, CfUserRolesSelected } from './cf-roles.service';
 
 export class ActiveCfUser {
   userId: string;
@@ -36,28 +39,96 @@ export class ActiveCfUser {
     }
   ]
 })
-export class ManageUsersComponent {
-  singleUserGuid$: Observable<string>;
-  singleUser$: Observable<EntityInfo<APIResource<CfUser>>>;
+export class ManageUsersComponent implements OnDestroy {
+  users$: Observable<CfUser[]>;
+  singleUser$: Observable<CfUser>;
+  defaultCancelUrl: string;
+
+  // TODO: RC storify these
+  roles: CfUserRolesSelected;
 
   constructor(
     private store: Store<AppState>,
     private activeCfUser: ActiveCfUser,
     private entityServiceFactory: EntityServiceFactory,
-    public activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
-    // TODO: RC tie this in with single user in multi user store section
-    this.singleUserGuid$ = Observable.of(activeCfUser.userId);
+    private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
+    private cfRolesService: CfRolesService
+  ) {
 
-    this.singleUserGuid$.pipe(
-      first(),
-    ).subscribe(singleUserGuid => {
-      this.singleUser$ = entityServiceFactory.create<APIResource<CfUser>>(
+    this.defaultCancelUrl = this.createReturnUrl(activeRouteCfOrgSpace);
+
+    if (activeCfUser.userId) {
+      this.users$ = entityServiceFactory.create<APIResource<CfUser>>(
         cfUserSchemaKey,
         entityFactory(cfUserSchemaKey),
-        singleUserGuid,
-        new GetUser(activeRouteCfOrgSpace.cfGuid, singleUserGuid),
+        activeCfUser.userId,
+        new GetUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId),
         true
-      ).entityObs$;
-    });
+      ).entityObs$.pipe(
+        filter(entity => !!entity),
+        map(entity => [entity.entity.entity])
+      );
+      cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]).pipe(
+        first(),
+      ).subscribe(roles => this.roles = roles);
+    } else {
+      this.users$ = this.store.select(selectManageUsers).pipe(
+        map((manageUsers: ManageUsersState) => {
+          const userGuids = manageUsers.users.map(user => user.guid);
+          cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids).pipe(
+            first(),
+          ).subscribe(roles => this.roles = roles);
+
+          return manageUsers.users;
+        })
+      );
+    }
+
+    this.singleUser$ = this.users$.pipe(
+      filter(users => users && !!users.length),
+      first(),
+      map(users => users.length === 1 ? users[0] : null)
+    );
+
+
+  }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(new ManageUsersClear());
+  }
+
+  createReturnUrl(activeRouteCfOrgSpace: ActiveRouteCfOrgSpace): string {
+    let route = `/cloud-foundry/${activeRouteCfOrgSpace.cfGuid}`;
+    if (this.activeRouteCfOrgSpace.orgGuid) {
+      route += `/organizations/${activeRouteCfOrgSpace.orgGuid}`;
+      if (this.activeRouteCfOrgSpace.spaceGuid) {
+        route += `/spaces/${activeRouteCfOrgSpace.spaceGuid}`;
+      }
+    }
+    route += `/users`;
+    return route;
   }
 }
+
+// if (activeCfUser.userId) {
+    //   this.singleUser$ = entityServiceFactory.create<APIResource<CfUser>>(
+    //     cfUserSchemaKey,
+    //     entityFactory(cfUserSchemaKey),
+    //     activeCfUser.userId,
+    //     new GetUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId),
+    //     true
+    //   ).entityObs$.pipe(
+    //     filter(entity => !!entity),
+    //     map(entity => entity.entity.entity)
+    //   );
+    // } else {
+    //   this.singleUser$ = this.store.select(selectManageUsers).pipe(
+    //     map((manageUsers: ManageUsersState) => {
+    //       const users = manageUsers.users;
+    //       if (users.length === 1) {
+    //         return users[0];
+    //       }
+    //       return null;
+    //     })
+    //   );
+    // }

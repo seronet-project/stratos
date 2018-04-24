@@ -1,11 +1,12 @@
 <app-page-header>
-  <span *ngIf="singleUser$ | async as singleUser; else multiUser">Manager Roles: {{singleUser.entity.entity.username }}</span>
+  <span *ngIf="singleUser$ | async as singleUser; else multiUser">Manager Roles: {{singleUser.username }}</span>
   <ng-template #multiUser>Manager Users Roles</ng-template>
 </app-page-header>
-<app-steppers cancel="/applications">
+<app-steppers cancel="{{defaultCancelUrl}}">
   <!-- <app-step title="Select">
   </app-step> -->
   <app-step title="Modify">
+    <app-manage-users-modify [users]="users$ | async" [roles]="roles"></app-manage-users-modify>
   </app-step>
   <app-step title="Confirm">
   </app-step>

@@ -12,7 +12,7 @@ import { CfOrgPermissionCellComponent } from './cf-org-permission-cell/cf-org-pe
 import { CfSpacePermissionCellComponent } from './cf-space-permission-cell/cf-space-permission-cell.component';
 import { Router } from '@angular/router';
 import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
-import { SetManageUsers } from '../../../../../store/actions/users.actions';
+import { ManageUsersSetUsers } from '../../../../../store/actions/users.actions';
 
 @Injectable()
 export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
@@ -68,7 +68,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageMultiUserAction = {
     action: (users: APIResource<CfUser>[]) => {
-      this.store.dispatch(new SetManageUsers(users.map(user => user.entity)));
+      this.store.dispatch(new ManageUsersSetUsers(users.map(user => user.entity)));
       this.router.navigate([this.createManagerUsersUrl()]);
       return false;
     },
