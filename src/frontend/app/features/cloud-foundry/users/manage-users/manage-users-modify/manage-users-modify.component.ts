@@ -40,7 +40,7 @@ export class ManageUsersModifyComponent implements OnInit {
 
   @Input('users') users: CfUser[];
   // TODO: RC storify these
-  @Input('roles') roles: Observable<CfUserRolesSelected>;
+  // @Input('roles') roles: Observable<CfUserRolesSelected>;
   orgRoles: CfOrgRolesSelected = {
     name: '',
     orgGuid: '',
@@ -114,11 +114,11 @@ export class ManageUsersModifyComponent implements OnInit {
       return;
     }
     ///TODO: RC orgRoles in multi user mode
-    if (this.users && this.users.length > 0) {
-      this.roles.pipe(
-        filter(roles => !!roles),
-      ).subscribe(roles => this.orgRoles = roles[this.users[0].guid][orgGuid]);
-    }
+    // if (this.users && this.users.length > 0) {
+    //   this.roles.pipe(
+    //     filter(roles => !!roles),
+    //   ).subscribe(roles => this.orgRoles = roles[this.users[0].guid][orgGuid]);
+    // }
     this.store.dispatch(new ManageUsersSetOrg(orgGuid));
     this.store.select(selectManageUsers).pipe(
       filter(selectManageUsers => selectManageUsers.selectedOrgGuid === orgGuid),

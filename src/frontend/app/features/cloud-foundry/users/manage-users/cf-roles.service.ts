@@ -19,10 +19,26 @@ export interface CfUserRolesSelected {
 @Injectable()
 export class CfRolesService {
 
+  existingPermissions: CfUserRolesSelected;
+  newPermissions: CfOrgRolesSelected;
+
   constructor(private cfUserService: CfUserService) { }
 
-  populateRoles(cfGuid: string, userGuids: string[]): Observable<CfUserRolesSelected> {
-    return this.cfUserService.getUsers(cfGuid).pipe(
+  populateRoles(cfGuid: string, userGuids: string[]) {
+    this.existingPermissions = {};
+    this.newPermissions = {
+      name: '',
+      orgGuid: '', // TODO: RC
+      permissions: {
+        auditor: false,
+        billingManager: false,
+        orgManager: false,
+        user: false
+      },
+      spaces: {}
+    };
+
+    this.cfUserService.getUsers(cfGuid).pipe(
       first(),
       map(users => {
         const roles = {};
@@ -46,11 +62,11 @@ export class CfRolesService {
           });
           roles[user.metadata.guid] = mappedUser;
         });
-        return roles;
+        this.existingPermissions = roles;
       }),
-      publishReplay(1),
-      refCount()
-    );
+      // publishReplay(1),
+      // refCount()
+    ).subscribe();
   }
 
 }
