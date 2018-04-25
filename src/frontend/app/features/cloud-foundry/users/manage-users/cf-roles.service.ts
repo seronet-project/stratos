@@ -4,6 +4,9 @@ import { first, map, publishReplay, refCount } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
 import { IUserPermissionInOrg, IUserPermissionInSpace } from '../../../../store/types/user.types';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../../store/app-state';
+import { ManageUsersSetOrg } from '../../../../store/actions/users.actions';
 
 export interface CfSpaceRolesSelected extends IUserPermissionInSpace { }
 export interface CfOrgRolesSelected extends IUserPermissionInOrg {
@@ -15,20 +18,18 @@ export interface CfUserRolesSelected {
   };
 }
 
-
 @Injectable()
 export class CfRolesService {
 
-  existingPermissions: CfUserRolesSelected;
-  newPermissions: CfOrgRolesSelected;
+  existingRoles$: Observable<CfUserRolesSelected>;
+  newRoles: CfOrgRolesSelected;
 
-  constructor(private cfUserService: CfUserService) { }
+  constructor(private store: Store<AppState>, private cfUserService: CfUserService) { }
 
-  populateRoles(cfGuid: string, userGuids: string[]) {
-    this.existingPermissions = {};
-    this.newPermissions = {
+  createOrgRoles(orgGuid: string): CfOrgRolesSelected {
+    return {
       name: '',
-      orgGuid: '', // TODO: RC
+      orgGuid: orgGuid,
       permissions: {
         auditor: false,
         billingManager: false,
@@ -37,8 +38,29 @@ export class CfRolesService {
       },
       spaces: {}
     };
+  }
 
-    this.cfUserService.getUsers(cfGuid).pipe(
+  createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelected {
+    return {
+      name: '',
+      spaceGuid,
+      orgGuid,
+      permissions: {
+        auditor: false,
+        developer: false,
+        manager: false
+      }
+    };
+  }
+
+  setOrganization(orgGuid) {
+    this.store.dispatch(new ManageUsersSetOrg(orgGuid));
+    this.newRoles = this.createOrgRoles(orgGuid);
+  }
+
+  populateRoles(cfGuid: string, userGuids: string[]) {
+    // this.existingPermissions = {};
+    this.existingRoles$ = this.cfUserService.getUsers(cfGuid).pipe(
       first(),
       map(users => {
         const roles = {};
@@ -62,11 +84,11 @@ export class CfRolesService {
           });
           roles[user.metadata.guid] = mappedUser;
         });
-        this.existingPermissions = roles;
+        return roles;
       }),
-      // publishReplay(1),
-      // refCount()
-    ).subscribe();
+      publishReplay(1),
+      refCount()
+    );
   }
 
 }

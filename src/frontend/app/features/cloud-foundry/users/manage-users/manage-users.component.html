@@ -3,16 +3,18 @@
   <ng-template #multiUser>Manager Users Roles</ng-template>
 </app-page-header>
 <app-steppers cancel="{{defaultCancelUrl}}">
-  <!-- <app-step title="Select">
-  </app-step> -->
+  <app-step *ngIf="(initialUsers$ | async).length === 0" title="Select" [blocked$]="loading$">
+    <app-manage-users-select></app-manage-users-select>
+  </app-step>
   <app-step title="Modify">
-    <!-- [roles]="roles" -->
-    <app-manage-users-modify [users]="users$ | async"></app-manage-users-modify>
+    <!-- [roles]=" roles " -->
+    TODO: select straight from store
+    <!-- <app-manage-users-modify [users]="users$ | async"></app-manage-users-modify> -->
   </app-step>
-  <app-step title="Confirm">
+  <app-step title="Confirm ">
   </app-step>
-  <app-step title="Progress">
+  <app-step title="Progress ">
   </app-step>
 </app-steppers>
 
-<!-- cancelButtonText="Cancel" finishButtonText="Create" -->
+<!-- cancelButtonText="Cancel " finishButtonText="Create " -->

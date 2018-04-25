@@ -16,7 +16,7 @@ import { PaginationMonitorFactory } from '../../../../../shared/monitors/paginat
 import { filter, first, map, tap } from 'rxjs/operators';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
 import { ManageUsersSetOrg, selectManageUsers } from '../../../../../store/actions/users.actions';
-import { CfOrgRolesSelected, CfUserRolesSelected } from '../cf-roles.service';
+import { CfOrgRolesSelected, CfUserRolesSelected, CfRolesService } from '../cf-roles.service';
 
 
 
@@ -41,30 +41,29 @@ export class ManageUsersModifyComponent implements OnInit {
   @Input('users') users: CfUser[];
   // TODO: RC storify these
   // @Input('roles') roles: Observable<CfUserRolesSelected>;
-  orgRoles: CfOrgRolesSelected = {
-    name: '',
-    orgGuid: '',
-    permissions: {
-      auditor: false,
-      billingManager: false,
-      orgManager: false,
-      user: false
-    },
-    spaces: {}
-  };
+  // orgRoles: CfOrgRolesSelected = {
+  //   name: '',
+  //   orgGuid: '',
+  //   permissions: {
+  //     auditor: false,
+  //     billingManager: false,
+  //     orgManager: false,
+  //     user: false
+  //   },
+  //   spaces: {}
+  // };
 
   constructor(
     private store: Store<AppState>,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
     private entityServiceFactory: EntityServiceFactory,
     private paginationMonitorFactory: PaginationMonitorFactory,
-    private componentFactoryResolver: ComponentFactoryResolver, ) {
-
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private cfRolesService: CfRolesService) {
     this.wrapperFactory = this.componentFactoryResolver.resolveComponentFactory(SpaceRolesListWrapperComponent);
   }
 
   ngOnInit() {
-
     if (this.activeRouteCfOrgSpace.orgGuid) {
       this.singleOrg$ = this.entityServiceFactory.create<APIResource<IOrganization>>(
         organizationSchemaKey,
@@ -104,9 +103,6 @@ export class ManageUsersModifyComponent implements OnInit {
 
   updateOrgUser() {
     ///TODO: RC orgRoles in multi user mode
-    if (this.orgRoles.permissions.orgManager || this.orgRoles.permissions.billingManager || this.orgRoles.permissions.auditor) {
-      this.orgRoles.permissions.user = true;
-    }
   }
 
   updateOrg(orgGuid) {
@@ -119,8 +115,8 @@ export class ManageUsersModifyComponent implements OnInit {
     //     filter(roles => !!roles),
     //   ).subscribe(roles => this.orgRoles = roles[this.users[0].guid][orgGuid]);
     // }
-    this.store.dispatch(new ManageUsersSetOrg(orgGuid));
-    this.store.select(selectManageUsers).pipe(
+    this.cfRolesService.setOrganization(orgGuid);
+    this.store.select(selectManageUsers).pipe(// TODO: RC
       filter(selectManageUsers => selectManageUsers.selectedOrgGuid === orgGuid),
       first()
     ).subscribe(null, null, () => {

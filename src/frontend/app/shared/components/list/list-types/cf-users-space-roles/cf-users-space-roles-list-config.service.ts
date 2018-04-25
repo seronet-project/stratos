@@ -10,6 +10,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { selectManageUsers } from '../../../../../store/actions/users.actions';
 import { first } from 'rxjs/operators';
+import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
+import { CfUser } from '../../../../../store/types/user.types';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
@@ -17,6 +19,7 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
   dataSource: CfUsersSpaceRolesDataSourceService;
   defaultView = 'table' as ListView;
   enableTextFilter = true;
+  users: CfUser[] = [];
   text = {
     title: null,
     filter: 'Search by name',
@@ -33,15 +36,39 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
       orderKey: 'name',
       field: 'entity.name'
     }
+  }, {
+    columnId: 'manager',
+    headerCell: () => 'Manager',
+    cellComponent: TableCellSpaceRoleComponent,
+    cellConfig: {
+      role: 'manager',
+      users: this.users
+    }
+  }, {
+    columnId: 'auditor',
+    headerCell: () => 'Auditor',
+    cellComponent: TableCellSpaceRoleComponent,
+    cellConfig: {
+      role: 'auditor',
+      users: this.users
+    }
+  }, {
+    columnId: 'developer',
+    headerCell: () => 'Developer',
+    cellComponent: TableCellSpaceRoleComponent,
+    cellConfig: {
+      role: 'developer',
+      users: this.users
+    }
   }];
   initialised = new BehaviorSubject<boolean>(false);
-
 
   constructor(private store: Store<AppState>, private cfGuid: string) {
     this.store.select(selectManageUsers).pipe(
       first()
     ).subscribe(manageUsers => {
       this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, manageUsers.selectedOrgGuid, this.store, this);
+      this.users.push(...manageUsers.users);
       this.initialised.next(true);
     });
   }

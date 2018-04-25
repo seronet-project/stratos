@@ -95,6 +95,8 @@ import { IntroScreenComponent } from './components/intro-screen/intro-screen.com
 import { CloudFoundryService } from './data-services/cloud-foundry.service';
 import { CliInfoComponent } from './components/cli-info/cli-info.component';
 import { CliCommandComponent } from './components/cli-info/cli-command/cli-command.component';
+import { TableCellSpaceRoleComponent } from './components/list/list-types/cf-users-space-roles/table-cell-space-role/table-cell-space-role.component';
+import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-checkbox.component';
 
 @NgModule({
   imports: [
@@ -175,7 +177,8 @@ import { CliCommandComponent } from './components/cli-info/cli-command/cli-comma
     StratosTitleComponent,
     IntroScreenComponent,
     CliInfoComponent,
-    CliCommandComponent
+    CliCommandComponent,
+    CfRoleCheckboxComponent
   ],
   exports: [
     FormsModule,
@@ -240,7 +243,8 @@ import { CliCommandComponent } from './components/cli-info/cli-command/cli-comma
     StratosTitleComponent,
     IntroScreenComponent,
     CliInfoComponent,
-    CliCommandComponent
+    CliCommandComponent,
+    CfRoleCheckboxComponent
   ],
   entryComponents: [
     AppEventDetailDialogComponentComponent,

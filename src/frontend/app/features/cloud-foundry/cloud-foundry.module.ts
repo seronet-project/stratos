@@ -75,7 +75,7 @@ import {
 } from './users/manage-users/manage-users-modify/space-roles-list-wrapper/space-roles-list-wrapper.component';
 import { ManageUsersComponent } from './users/manage-users/manage-users.component';
 import { CfRolesService } from './users/manage-users/cf-roles.service';
-import { CfRoleCheckboxComponent } from './users/manage-users/cf-role-checkbox/cf-role-checkbox.component';
+import { ManageUsersSelectComponent } from './users/manage-users/manage-users-select/manage-users-select.component';
 
 
 @NgModule({
@@ -114,7 +114,7 @@ import { CfRoleCheckboxComponent } from './users/manage-users/cf-role-checkbox/c
     CliInfoCloudFoundryComponent,
     ManageUsersModifyComponent,
     SpaceRolesListWrapperComponent,
-    CfRoleCheckboxComponent
+    ManageUsersSelectComponent,
   ],
   providers: [
     CFEndpointsListConfigService,

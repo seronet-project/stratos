@@ -13,6 +13,7 @@ import { ActiveRouteCfOrgSpace } from '../../../../cf-page.types';
 @Component({
   selector: 'app-space-roles-list-wrapper',
   templateUrl: './space-roles-list-wrapper.component.html',
+  styleUrls: ['./space-roles-list-wrapper.component.scss'],
   providers: [
     {
       provide: ListConfig,
@@ -23,8 +24,7 @@ import { ActiveRouteCfOrgSpace } from '../../../../cf-page.types';
       },
       deps: [Store, ActiveRouteCfOrgSpace]
     }
-  ],
-  styleUrls: ['./space-roles-list-wrapper.component.scss']
+  ]
 })
 export class SpaceRolesListWrapperComponent implements OnInit {
 

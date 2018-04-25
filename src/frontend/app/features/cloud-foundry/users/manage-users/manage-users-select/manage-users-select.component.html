@@ -1,0 +1,12 @@
+<div>
+  Selected Users:
+  <div *ngIf="(selectedUsers$ | async).length > 0; else noUsers">
+    <span *ngFor="let user of (selectedUsers$ | async); let index = index">
+      {{user.username}}<span *ngIf="index !== (selectedUsers$ | async).length - 1">, </span>
+    </span>
+  </div>
+  <ng-template #noUsers>-</ng-template>
+</div>
+
+
+<app-list></app-list>

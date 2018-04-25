@@ -18,15 +18,11 @@
   </ng-template>
 </div>
 <div class="modify-users__org-roles">
-  <app-cf-role-checkbox [users]="users" [orgGuid]="selectedOrgGuid" [role]="'orgManager'"></app-cf-role-checkbox>
-
-  <!-- <mat-checkbox [(ngModel)]="orgRoles.permissions.orgManager" (change)="updateOrgUser()">Org Manager</mat-checkbox> -->
-  <!-- <mat-checkbox [(ngModel)]="orgRoles.permissions.auditor" (change)="updateOrgUser()">Org Auditor</mat-checkbox> -->
-  <!-- <mat-checkbox [(ngModel)]="orgRoles.permissions.billingManager" (change)="updateOrgUser()">Org Billing Manager</mat-checkbox> -->
-  <!-- <mat-checkbox [(ngModel)]="orgRoles.permissions.user" [disabled]="orgRoles.permissions.orgManager || orgRoles.permissions.billingManager || orgRoles.permissions.auditor">Org User</mat-checkbox> -->
+  <app-cf-role-checkbox [users]="users" [orgGuid]="selectedOrgGuid" [role]="'orgManager'" (change)="updateOrgUser()"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [users]="users" [orgGuid]="selectedOrgGuid" [role]="'auditor'" (change)="updateOrgUser()"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [users]="users" [orgGuid]="selectedOrgGuid" [role]="'billingManager'" (change)="updateOrgUser()"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [users]="users" [orgGuid]="selectedOrgGuid" [role]="'user'" (change)="updateOrgUser()"></app-cf-role-checkbox>
 </div>
 <div class="modify-users__spaces-roles">
-  <!-- <app-space-roles-list-wrapper [orgGuid]="selectedOrgGuid" [roles]="roles"></app-space-roles-list-wrapper> -->
   <div #spaceRolesTable></div>
 </div>
-<!-- ;trackBy:org.metadata.guid -->

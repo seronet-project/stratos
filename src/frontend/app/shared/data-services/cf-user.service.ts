@@ -36,7 +36,7 @@ export class CfUserService {
     public paginationMonitorFactory: PaginationMonitorFactory,
     public activeRouteCfOrgSpace: ActiveRouteCfOrgSpace
   ) {
-    // See issue #1741
+    // See issue #1741 - Will not work for non-admins
     this.allUsersAction = new GetAllUsers(
       createEntityRelationPaginationKey(endpointSchemaKey, activeRouteCfOrgSpace.cfGuid),
       activeRouteCfOrgSpace.cfGuid
