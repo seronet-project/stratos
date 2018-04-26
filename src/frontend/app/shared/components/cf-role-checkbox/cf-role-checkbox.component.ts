@@ -1,11 +1,6 @@
 import { Component, Input, OnInit, Output, OnDestroy } from '@angular/core';
-import { first, map, combineLatest } from 'rxjs/operators';
+import { first, map, combineLatest, withLatestFrom } from 'rxjs/operators';
 
-import {
-  CfOrgRolesSelected,
-  CfRolesService,
-  CfUserRolesSelected,
-} from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import { CfUser } from '../../../store/types/user.types';
 import { getActiveRouteCfOrgSpaceProvider } from '../../../features/cloud-foundry/cf.helpers';
 import { CfUserService } from '../../data-services/cf-user.service';
@@ -14,7 +9,8 @@ import { ActiveRouteCfOrgSpace } from '../../../features/cloud-foundry/cf-page.t
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/app-state';
-import { selectManageUsers } from '../../../store/actions/users.actions';
+import { selectManageUsers, ManageUsersSetSpaceRole, ManageUsersSetOrgRole } from '../../../store/actions/users.actions';
+import { CfRolesService, CfUserRolesSelected, CfOrgRolesSelected } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 
 const labels = {
   org: {
@@ -43,12 +39,13 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
   @Input() orgGuid: string;
   @Input() spaceGuid: string;
   @Input() role: string;
-  @Output() changed: (checked: boolean) => void;
+  // @Output() changed: (checked: boolean) => void;
   // @Output() update: () => void;
 
   checked: Boolean = false;
   tooltip = '';
   sub: Subscription;
+  users: CfUser[];
 
   constructor(private cfRolesService: CfRolesService, private store: Store<AppState>) { }
 
@@ -57,9 +54,10 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
       map(manageUsers => manageUsers.users)
     );
     this.sub = this.cfRolesService.existingRoles$.pipe(
-      combineLatest(users$)
-    ).subscribe(([existingRoles, users]) => {
-      if (this.hasRole(this.cfRolesService.newRoles)) {
+      combineLatest(this.cfRolesService.newRoles$),
+      withLatestFrom(users$)
+    ).subscribe(([[existingRoles, newRoles], users]) => {
+      if (this.hasRole(newRoles)) {
         this.checked = true;
       } else {
         // Do all or some have the role?
@@ -97,6 +95,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
           }
         }
       }
+      this.users = users;
     });
   }
 
@@ -114,21 +113,10 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     if (!checked) {
       this.tooltip = '';
     }
-    if (!this.cfRolesService.newRoles) {
-      this.cfRolesService.newRoles = this.cfRolesService.createOrgRoles(this.orgGuid);
-    }
-    const orgRoles = this.cfRolesService.newRoles;
     if (this.spaceGuid) {
-      if (!orgRoles.spaces[this.spaceGuid]) {
-        orgRoles.spaces[this.spaceGuid] = this.cfRolesService.createSpaceRoles(this.orgGuid, this.spaceGuid);
-      }
-      const spaceRoles = orgRoles.spaces[this.spaceGuid];
-      spaceRoles.permissions[this.role] = checked;
+      this.store.dispatch(new ManageUsersSetSpaceRole(this.orgGuid, this.spaceGuid, this.role, checked, this.users));
     } else {
-      orgRoles.permissions[this.role] = checked;
-    }
-    if (this.changed) {
-      this.changed(checked);
+      this.store.dispatch(new ManageUsersSetOrgRole(this.orgGuid, this.role, checked, this.users));
     }
   }
 

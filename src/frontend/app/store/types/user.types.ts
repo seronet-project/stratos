@@ -27,10 +27,10 @@ export interface CfUser {
 }
 
 export interface UserRoleInOrg {
-  orgManager: boolean;
-  billingManager: boolean;
-  auditor: boolean;
-  user: boolean;
+  orgManager: Boolean;
+  billingManager: Boolean;
+  auditor: Boolean;
+  user: Boolean;
 }
 
 // export interface CFSpaceRoles {
@@ -59,7 +59,7 @@ export interface IUserPermissionInSpace {
 }
 
 export interface UserRoleInSpace {
-  manager: boolean;
-  developer: boolean;
-  auditor: boolean;
+  manager: Boolean;
+  developer: Boolean;
+  auditor: Boolean;
 }

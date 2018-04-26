@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { first, map, publishReplay, refCount, tap, switchMap } from 'rxjs/operators';
+import { first, map, publishReplay, refCount, switchMap } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import { IUserPermissionInOrg, IUserPermissionInSpace, CfUser } from '../../../../store/types/user.types';
-import { Store } from '@ngrx/store';
-import { AppState } from '../../../../store/app-state';
 import { ManageUsersSetOrg, selectManageUsers } from '../../../../store/actions/users.actions';
+import { AppState } from '../../../../store/app-state';
+import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 
 export interface CfSpaceRolesSelected extends IUserPermissionInSpace { }
@@ -23,7 +23,7 @@ export interface CfUserRolesSelected {
 export class CfRolesService {
 
   existingRoles$: Observable<CfUserRolesSelected>;
-  newRoles: CfOrgRolesSelected;
+  newRoles$: Observable<CfOrgRolesSelected>;
 
   constructor(private store: Store<AppState>, private cfUserService: CfUserService, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
     this.existingRoles$ = this.store.select(selectManageUsers).pipe(
@@ -33,38 +33,15 @@ export class CfRolesService {
       publishReplay(1),
       refCount()
     );
+    this.newRoles$ = this.store.select(selectManageUsers).pipe(
+      map(manageUsers => manageUsers.newRoles)
+    );
   }
 
-  createOrgRoles(orgGuid: string): CfOrgRolesSelected {
-    return {
-      name: '',
-      orgGuid: orgGuid,
-      permissions: {
-        auditor: false,
-        billingManager: false,
-        orgManager: false,
-        user: false
-      },
-      spaces: {}
-    };
-  }
-
-  createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelected {
-    return {
-      name: '',
-      spaceGuid,
-      orgGuid,
-      permissions: {
-        auditor: false,
-        developer: false,
-        manager: false
-      }
-    };
-  }
 
   setOrganization(orgGuid) {
     this.store.dispatch(new ManageUsersSetOrg(orgGuid)); // TODO: RC remove, this is stored in CfOrgRolesSelected
-    this.newRoles = this.createOrgRoles(orgGuid);
+    // this.newRoles = this.createOrgRoles(orgGuid);
   }
 
   populateRoles(cfGuid: string, selectedUsers: CfUser[]): Observable<CfUserRolesSelected> {

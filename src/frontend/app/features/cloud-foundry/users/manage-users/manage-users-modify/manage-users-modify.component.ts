@@ -133,7 +133,7 @@ export class ManageUsersModifyComponent implements OnInit {
     // }
     this.cfRolesService.setOrganization(orgGuid);
     this.store.select(selectManageUsers).pipe(// TODO: RC
-      filter(selectManageUsers => selectManageUsers.selectedOrgGuid === orgGuid),
+      filter(selectManageUsers => selectManageUsers.newRoles.orgGuid === orgGuid),
       first()
     ).subscribe(null, null, () => {
       if (this.wrapperRef) {

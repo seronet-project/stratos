@@ -101,12 +101,26 @@ export class GetUser extends CFStartAction {
 export class MangerUsersActions {
   static SetUsers = '[Manage Users] Set users';
   static ClearUsers = '[Manage Users] Clear users';
-  static SetOrg = '[Manage Users] Set Org';
+  static SetOrg = '[Manage Users] Set org';
+  static SetOrgRole = '[Manage Users] Set org role';
+  static SetSpaceRole = '[Manage Users] Set space role';
 }
 export class ManageUsersSetUsers implements Action {
   type = MangerUsersActions.SetUsers;
   constructor(public cfGuid: string, public users: CfUser[]) { }
 }
+export class ManageUsersSetOrgRole implements Action {
+  type = MangerUsersActions.SetOrgRole;
+  constructor(public orgGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
+}
+export class ManageUsersSetSpaceRole implements Action {
+  type = MangerUsersActions.SetSpaceRole;
+  // TODO: RC remove users
+  constructor(public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
+}
+// abstract class ManageUsersSetRole implements Action {
+//   constructor(public type: string, public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
+// }
 
 export class ManageUsersClear implements Action {
   type = MangerUsersActions.ClearUsers;

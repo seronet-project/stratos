@@ -1,7 +1,6 @@
 import { ListViewTypes, IListConfig } from '../../list.component.types';
 import { APIResource } from '../../../../../store/types/api.types';
 import { ISpace } from '../../../../../core/cf-api.types';
-import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
 import { ListView } from '../../../../../store/actions/list.actions';
 import { ITableColumn } from '../../list-table/table.types';
 import { Store } from '@ngrx/store';
@@ -12,6 +11,7 @@ import { selectManageUsers } from '../../../../../store/actions/users.actions';
 import { first } from 'rxjs/operators';
 import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
 import { CfUser } from '../../../../../store/types/user.types';
+import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
@@ -63,7 +63,7 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
     this.store.select(selectManageUsers).pipe(
       first()
     ).subscribe(manageUsers => {
-      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, manageUsers.selectedOrgGuid, this.store, this);
+      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, manageUsers.newRoles.orgGuid, this.store, this);
       // this.users.push(...manageUsers.users);
       this.initialised.next(true);
     });
