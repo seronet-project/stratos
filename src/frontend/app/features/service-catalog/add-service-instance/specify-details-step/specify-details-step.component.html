@@ -1,0 +1,32 @@
+<div class="specify-details">
+  <form class="stepper-form" [formGroup]="stepperForm">
+    <mat-form-field>
+      <input matInput class="form-control" formControlName="name" placeholder="Name" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select class="form-control" placeholder="Organization" required formControlName="org" (change)="setOrg($event.value)">
+        <mat-option *ngFor="let organization of orgs$ | async" [value]="organization.metadata.guid">{{ organization.entity.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select class="form-control" placeholder="Space" required formControlName="space">
+        <mat-option [disabled]="!stepperForm.controls.org.value" *ngFor="let space of spaces$ | async" [value]="space.metadata.guid">{{ space.entity.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- <mat-form-field>
+      <textarea matInput placeholder="Tags" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5" ></textarea>
+    </mat-form-field> -->
+    <mat-form-field class="tags-chip-list">
+      <mat-chip-list #chipList formControlName="tags">
+        <mat-chip *ngFor="let tag of tags" [selectable]="tagsSelectable" [removable]="tagsRemovable" (remove)="removeTag(tag)">
+          {{tag.label}}
+          <mat-icon matChipRemove *ngIf="tagsRemovable">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Tags" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="tagsAddOnBlur" (matChipInputTokenEnd)="addTag($event)" />
+      </mat-chip-list>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea matInput placeholder="JSON parameters" formControlName="params"></textarea>
+    </mat-form-field>
+  </form>
+</div>
