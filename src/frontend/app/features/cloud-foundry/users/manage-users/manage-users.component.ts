@@ -40,7 +40,7 @@ export class ActiveCfUser {
   ]
 })
 export class ManageUsersComponent implements OnDestroy {
-  selectedUsers$: Observable<CfUser[]>;
+  // selectedUsers$: Observable<CfUser[]>;
   initialUsers$: Observable<CfUser[]>;
   singleUser$: Observable<CfUser>;
   loading$: Observable<boolean>;
@@ -60,8 +60,9 @@ export class ManageUsersComponent implements OnDestroy {
 
     this.defaultCancelUrl = this.createReturnUrl(activeRouteCfOrgSpace);
 
+    let selectedUsers$: Observable<CfUser[]>;
     if (activeCfUser.userId) {
-      this.selectedUsers$ = entityServiceFactory.create<APIResource<CfUser>>(
+      selectedUsers$ = entityServiceFactory.create<APIResource<CfUser>>(
         cfUserSchemaKey,
         entityFactory(cfUserSchemaKey),
         activeCfUser.userId,
@@ -71,18 +72,18 @@ export class ManageUsersComponent implements OnDestroy {
         filter(entity => !!entity),
         map(entity => [entity.entity.entity])
       );
-      cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]);
+      // cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]);
     } else {
-      this.selectedUsers$ = this.store.select(selectManageUsers).pipe(
+      selectedUsers$ = this.store.select(selectManageUsers).pipe(
         map((manageUsers: ManageUsersState) => {
           const userGuids = manageUsers.users.map(user => user.guid);
-          cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids);
+          // cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids);
           return manageUsers.users;
         })
       );
     }
 
-    this.initialUsers$ = this.selectedUsers$.pipe(
+    this.initialUsers$ = selectedUsers$.pipe(
       first(),
     );
 

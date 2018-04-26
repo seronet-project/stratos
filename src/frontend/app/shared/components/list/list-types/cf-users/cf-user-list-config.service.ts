@@ -68,7 +68,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageMultiUserAction = {
     action: (users: APIResource<CfUser>[]) => {
-      this.store.dispatch(new ManageUsersSetUsers(users.map(user => user.entity)));
+      this.store.dispatch(new ManageUsersSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, users.map(user => user.entity)));
       this.router.navigate([this.createManagerUsersUrl()]);
       return false;
     },

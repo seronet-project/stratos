@@ -1,22 +1,30 @@
-import { Component, Input, OnInit, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
+  OnInit,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { filter, first, map, tap, distinctUntilChanged } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
-import { GetOrganization, GetAllOrganizations } from '../../../../../store/actions/organization.actions';
+import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
+import { GetAllOrganizations, GetOrganization } from '../../../../../store/actions/organization.actions';
+import { selectManageUsers } from '../../../../../store/actions/users.actions';
+import { AppState } from '../../../../../store/app-state';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../../store/helpers/entity-factory';
+import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
+import { getPaginationObservables } from '../../../../../store/reducers/pagination-reducer/pagination-reducer.helper';
+import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
-import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
-import { APIResource } from '../../../../../store/types/api.types';
-import { getPaginationObservables } from '../../../../../store/reducers/pagination-reducer/pagination-reducer.helper';
-import { Store } from '@ngrx/store';
-import { AppState } from '../../../../../store/app-state';
-import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
-import { filter, first, map, tap } from 'rxjs/operators';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
-import { ManageUsersSetOrg, selectManageUsers } from '../../../../../store/actions/users.actions';
-import { CfOrgRolesSelected, CfUserRolesSelected, CfRolesService } from '../cf-roles.service';
+import { CfRolesService } from '../cf-roles.service';
 
 
 
@@ -38,7 +46,8 @@ export class ManageUsersModifyComponent implements OnInit {
   organizations$: Observable<APIResource<IOrganization>[]>;
   selectedOrgGuid: string;
 
-  @Input('users') users: CfUser[];
+  // @Input('users') users: CfUser[];
+  users$: Observable<CfUser[]>;
   // TODO: RC storify these
   // @Input('roles') roles: Observable<CfUserRolesSelected>;
   // orgRoles: CfOrgRolesSelected = {
@@ -99,6 +108,13 @@ export class ManageUsersModifyComponent implements OnInit {
         this.updateOrg(this.selectedOrgGuid);
       });
     }
+    this.users$ = this.store.select(selectManageUsers).pipe(
+      map(manageUsers => manageUsers.users),
+      distinctUntilChanged(),
+      tap(users => {
+        // this.cfRolesService.populateRoles(this.activeRouteCfOrgSpace.cfGuid, users);
+      })
+    );
   }
 
   updateOrgUser() {

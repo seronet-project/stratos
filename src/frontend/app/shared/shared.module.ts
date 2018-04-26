@@ -97,6 +97,7 @@ import { CliInfoComponent } from './components/cli-info/cli-info.component';
 import { CliCommandComponent } from './components/cli-info/cli-command/cli-command.component';
 import { TableCellSpaceRoleComponent } from './components/list/list-types/cf-users-space-roles/table-cell-space-role/table-cell-space-role.component';
 import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-checkbox.component';
+import { EnumerateComponent } from './components/enumerate/enumerate.component';
 
 @NgModule({
   imports: [
@@ -178,7 +179,8 @@ import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-c
     IntroScreenComponent,
     CliInfoComponent,
     CliCommandComponent,
-    CfRoleCheckboxComponent
+    CfRoleCheckboxComponent,
+    EnumerateComponent
   ],
   exports: [
     FormsModule,
@@ -244,7 +246,8 @@ import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-c
     IntroScreenComponent,
     CliInfoComponent,
     CliCommandComponent,
-    CfRoleCheckboxComponent
+    CfRoleCheckboxComponent,
+    EnumerateComponent
   ],
   entryComponents: [
     AppEventDetailDialogComponentComponent,

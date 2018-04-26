@@ -3,10 +3,12 @@ import { MangerUsersActions, ManageUsersSetUsers, ManageUsersSetOrg } from '../a
 import { CfUser } from '../types/user.types';
 
 export interface ManageUsersState {
+  cfGuid: string;
   users: CfUser[];
   selectedOrgGuid: string;
 }
 const defaultState: ManageUsersState = {
+  cfGuid: '',
   users: [],
   selectedOrgGuid: ''
 };
@@ -17,6 +19,7 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
       const setUsersAction = action as ManageUsersSetUsers;
       return {
         ...state,
+        cfGuid: setUsersAction.cfGuid,
         users: setUsersAction.users
       };
     case MangerUsersActions.ClearUsers:

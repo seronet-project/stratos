@@ -10,7 +10,9 @@ import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { APIResource } from '../../../../../store/types/api.types';
 import { Observable } from 'rxjs/Observable';
-import { tap, map } from 'rxjs/operators';
+import { tap, map, first } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ManageUsersSetUsers } from '../../../../../store/actions/users.actions';
 
 @Component({
   selector: 'app-manage-users-select',
@@ -31,15 +33,29 @@ import { tap, map } from 'rxjs/operators';
 export class ManageUsersSelectComponent implements OnInit {
 
   selectedUsers$: Observable<CfUser[]>;
+  valid$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private listConfig: ListConfig<APIResource<CfUser>>) {
+  constructor(private store: Store<AppState>, private listConfig: ListConfig<APIResource<CfUser>>, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
     const dataSource = listConfig.getDataSource();
     this.selectedUsers$ = dataSource.isSelecting$.pipe(
-      map(isSelecting => Array.from(dataSource.selectedRows.values()))
+      map(isSelecting => {
+        const users = Array.from<APIResource<CfUser>>(dataSource.selectedRows.values()).map(row => row.entity);
+        this.valid$.next(!!users.length);
+        return users;
+      })
     );
   }
 
   ngOnInit() {
   }
 
+  onNext = () => {
+    return this.selectedUsers$.pipe(
+      first(),
+      tap(users => {
+        this.store.dispatch(new ManageUsersSetUsers(this.activeRouteCfOrgSpace.cfGuid, users));
+      }),
+      map(() => ({ success: true }))
+    );
+  }
 }

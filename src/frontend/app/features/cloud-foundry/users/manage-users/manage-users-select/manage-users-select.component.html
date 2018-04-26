@@ -1,13 +1,6 @@
-<div class="manager-users-select__selected-users">
+<div class="select-users__selected-users">
   Selected Users:
-  <div *ngIf="(selectedUsers$ | async).length > 0; else noUsers">
-    <span *ngFor="let user of (selectedUsers$ | async); let index = index">
-      {{user.entity.username}}<span *ngIf="index !== (selectedUsers$ | async).length - 1">, </span>
-    </span>
-  </div>
-  <ng-template #noUsers>
-    <div>-</div>
-  </ng-template>
+  <app-enumerate [collection]="selectedUsers$" [labelPath]="'username'"></app-enumerate>
 </div>
 
 

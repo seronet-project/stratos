@@ -105,7 +105,7 @@ export class MangerUsersActions {
 }
 export class ManageUsersSetUsers implements Action {
   type = MangerUsersActions.SetUsers;
-  constructor(public users: CfUser[]) { }
+  constructor(public cfGuid: string, public users: CfUser[]) { }
 }
 
 export class ManageUsersClear implements Action {

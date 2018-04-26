@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
-import { first } from 'rxjs/operators';
+import { Component, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { first, map, combineLatest } from 'rxjs/operators';
 
 import {
   CfOrgRolesSelected,
@@ -7,6 +7,14 @@ import {
   CfUserRolesSelected,
 } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import { CfUser } from '../../../store/types/user.types';
+import { getActiveRouteCfOrgSpaceProvider } from '../../../features/cloud-foundry/cf.helpers';
+import { CfUserService } from '../../data-services/cf-user.service';
+import { CloudFoundryEndpointService } from '../../../features/cloud-foundry/services/cloud-foundry-endpoint.service';
+import { ActiveRouteCfOrgSpace } from '../../../features/cloud-foundry/cf-page.types';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../store/app-state';
+import { selectManageUsers } from '../../../store/actions/users.actions';
 
 const labels = {
   org: {
@@ -25,11 +33,13 @@ const labels = {
 @Component({
   selector: 'app-cf-role-checkbox',
   templateUrl: './cf-role-checkbox.component.html',
-  styleUrls: ['./cf-role-checkbox.component.scss']
+  styleUrls: ['./cf-role-checkbox.component.scss'],
+  // providers: [
+  //   getActiveRouteCfOrgSpaceProvider,
+  // ]
 })
-export class CfRoleCheckboxComponent implements OnInit {
+export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
 
-  @Input() users: CfUser[];
   @Input() orgGuid: string;
   @Input() spaceGuid: string;
   @Input() role: string;
@@ -38,25 +48,29 @@ export class CfRoleCheckboxComponent implements OnInit {
 
   checked: Boolean = false;
   tooltip = '';
+  sub: Subscription;
 
-  constructor(private cfRolesService: CfRolesService) { }
+  constructor(private cfRolesService: CfRolesService, private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.cfRolesService.existingRoles$.pipe(
-      first()
-    ).subscribe(existingRoles => {
+    const users$ = this.store.select(selectManageUsers).pipe(
+      map(manageUsers => manageUsers.users)
+    );
+    this.sub = this.cfRolesService.existingRoles$.pipe(
+      combineLatest(users$)
+    ).subscribe(([existingRoles, users]) => {
       if (this.hasRole(this.cfRolesService.newRoles)) {
         this.checked = true;
       } else {
         // Do all or some have the role?
-        if (this.users.length === 1) {
-          const userGuid = this.users[0].guid;
+        if (users.length === 1) {
+          const userGuid = users[0].guid;
           this.checked = this.hasExistingRole(existingRoles, userGuid, this.orgGuid);
         } else {
           let oneWithout = false;
           this.tooltip = '';
-          for (let i = 0; i < this.users.length; i++) {
-            const user = this.users[i];
+          for (let i = 0; i < users.length; i++) {
+            const user = users[i];
             if (this.hasExistingRole(existingRoles, user.guid, this.orgGuid)) {
               this.tooltip += `${user.username}, `;
             } else {
@@ -84,6 +98,12 @@ export class CfRoleCheckboxComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   public getLabel(): string {

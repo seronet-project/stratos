@@ -19,7 +19,6 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
   dataSource: CfUsersSpaceRolesDataSourceService;
   defaultView = 'table' as ListView;
   enableTextFilter = true;
-  users: CfUser[] = [];
   text = {
     title: null,
     filter: 'Search by name',
@@ -42,7 +41,6 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
       role: 'manager',
-      users: this.users
     }
   }, {
     columnId: 'auditor',
@@ -50,7 +48,6 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
       role: 'auditor',
-      users: this.users
     }
   }, {
     columnId: 'developer',
@@ -58,7 +55,6 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
       role: 'developer',
-      users: this.users
     }
   }];
   initialised = new BehaviorSubject<boolean>(false);
@@ -68,7 +64,7 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
       first()
     ).subscribe(manageUsers => {
       this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, manageUsers.selectedOrgGuid, this.store, this);
-      this.users.push(...manageUsers.users);
+      // this.users.push(...manageUsers.users);
       this.initialised.next(true);
     });
   }
