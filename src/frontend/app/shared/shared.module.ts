@@ -179,7 +179,7 @@ import { UploadProgressIndicatorComponent } from './components/upload-progress-i
     CliInfoComponent,
     CliCommandComponent,
     UserProfileBannerComponent,
-    GithubCommitAuthorComponent
+    GithubCommitAuthorComponent,
     UploadProgressIndicatorComponent
   ],
   exports: [
@@ -246,7 +246,7 @@ import { UploadProgressIndicatorComponent } from './components/upload-progress-i
     UserProfileBannerComponent,
     CliInfoComponent,
     CliCommandComponent,
-    GithubCommitAuthorComponent
+    GithubCommitAuthorComponent,
     UploadProgressIndicatorComponent,
   ],
   entryComponents: [
