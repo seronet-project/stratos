@@ -10,7 +10,7 @@ import { cfUserSchemaKey } from '../helpers/entity-factory';
 import { OrgUserRoles, SpaceUserRoles } from '../../features/cloud-foundry/cf.helpers';
 import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/entity-relations.types';
 import { getActions } from './action.helper';
-import { Action } from '@ngrx/store';
+import { Action, compose } from '@ngrx/store';
 import { CfUser } from '../types/user.types';
 import { AppState } from '../app-state';
 import { ManageUsersState } from '../reducers/manage-users.reducer';
@@ -111,12 +111,12 @@ export class ManageUsersSetUsers implements Action {
 }
 export class ManageUsersSetOrgRole implements Action {
   type = MangerUsersActions.SetOrgRole;
-  constructor(public orgGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
+  constructor(public orgGuid: string, public role: string, public haveRole: boolean) { }
 }
 export class ManageUsersSetSpaceRole implements Action {
   type = MangerUsersActions.SetSpaceRole;
   // TODO: RC remove users
-  constructor(public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
+  constructor(public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean) { }
 }
 // abstract class ManageUsersSetRole implements Action {
 //   constructor(public type: string, public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
@@ -132,3 +132,22 @@ export class ManageUsersSetOrg implements Action {
 }
 
 export const selectManageUsers = (state: AppState): ManageUsersState => state.manageUsers;
+
+const selectUsers = (manageUsers: ManageUsersState) => manageUsers.users;
+export const selectManageUsersPicked = compose(
+  selectUsers,
+  selectManageUsers
+);
+
+const selectNewRoles = (manageUsers: ManageUsersState) => manageUsers.newRoles;
+export const selectManageUsersRoles = compose(
+  selectNewRoles,
+  selectManageUsers
+);
+
+const selectCfGuid = (manageUsers: ManageUsersState) => manageUsers.cfGuid;
+export const selectManageUsersCf = compose(
+  selectCfGuid,
+  selectManageUsers
+);
+// export const selectManageUsersOrgRoles;

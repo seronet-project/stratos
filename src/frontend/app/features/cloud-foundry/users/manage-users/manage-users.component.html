@@ -1,5 +1,5 @@
 <app-page-header>
-  <span *ngIf="singleUser$ | async as singleUser; else multiUser">Manager Roles: {{singleUser.username }}</span>
+  <span *ngIf="(singleUser$ | async) as singleUser; else multiUser">Manager Roles: {{singleUser.username }}</span>
   <ng-template #multiUser>Manager Users Roles</ng-template>
 </app-page-header>
 <app-steppers cancel="{{defaultCancelUrl}}">

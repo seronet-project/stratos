@@ -1,2 +1,2 @@
 <!-- !!{{checked}}!!<br>{{checked === null}}<br>a -->
-<mat-checkbox [(ngModel)]="checked" (change)="roleUpdated($event.checked)" [indeterminate]="checked === null" [matTooltip]="tooltip" [matTooltipPosition]="'below'">{{getLabel()}}</mat-checkbox>
+<mat-checkbox [checked]="checked" (change)="roleUpdated($event.checked)" [indeterminate]="checked === null" [matTooltip]="tooltip" [matTooltipPosition]="'below'" [disabled]="disabled">{{getLabel()}}</mat-checkbox>

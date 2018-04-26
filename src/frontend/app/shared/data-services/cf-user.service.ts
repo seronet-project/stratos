@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { filter, first, map, publishReplay, refCount } from 'rxjs/operators';
+import { filter, first, map, publishReplay, refCount, tap } from 'rxjs/operators';
 
 import { IOrganization, ISpace } from '../../core/cf-api.types';
 import {
@@ -45,11 +45,11 @@ export class CfUserService {
 
   getUsers = (endpointGuid: string): Observable<APIResource<CfUser>[]> =>
     this.getAllUsers().entities$.pipe(
+      publishReplay(1),
+      refCount(),
       filter(p => !!p),
       map(users => users.filter(p => p.entity.cfGuid === endpointGuid)),
       filter(p => p.length > 0),
-      publishReplay(1),
-      refCount()
     )
 
   getOrgRolesFromUser(user: CfUser): IUserPermissionInOrg[] {

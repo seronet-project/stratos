@@ -16,10 +16,10 @@
   </ng-template>
 </div>
 <div class="modify-users__org-roles">
-  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'orgManager'" (change)="updateOrgUser()"></app-cf-role-checkbox>
-  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'auditor'" (change)="updateOrgUser()"></app-cf-role-checkbox>
-  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'billingManager'" (change)="updateOrgUser()"></app-cf-role-checkbox>
-  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'user'" (change)="updateOrgUser()"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'orgManager'" (changed)="updateOrgUser($event, 0)"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'auditor'" (changed)="updateOrgUser($event, 1)"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'billingManager'" (changed)="updateOrgUser($event, 2)"></app-cf-role-checkbox>
+  <app-cf-role-checkbox [orgGuid]="selectedOrgGuid" [role]="'user'" [disabled]="disableOrgUser.disable"></app-cf-role-checkbox>
 </div>
 <div class="modify-users__spaces-roles">
   <div #spaceRolesTable></div>

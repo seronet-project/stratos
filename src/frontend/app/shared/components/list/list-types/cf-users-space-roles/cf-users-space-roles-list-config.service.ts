@@ -1,17 +1,17 @@
-import { ListViewTypes, IListConfig } from '../../list.component.types';
-import { APIResource } from '../../../../../store/types/api.types';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { first } from 'rxjs/operators';
+
 import { ISpace } from '../../../../../core/cf-api.types';
 import { ListView } from '../../../../../store/actions/list.actions';
-import { ITableColumn } from '../../list-table/table.types';
-import { Store } from '@ngrx/store';
+import { selectManageUsersRoles } from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { selectManageUsers } from '../../../../../store/actions/users.actions';
-import { first } from 'rxjs/operators';
-import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
-import { CfUser } from '../../../../../store/types/user.types';
+import { APIResource } from '../../../../../store/types/api.types';
+import { ITableColumn } from '../../list-table/table.types';
+import { IListConfig, ListViewTypes } from '../../list.component.types';
 import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
+import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
@@ -60,10 +60,10 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
   initialised = new BehaviorSubject<boolean>(false);
 
   constructor(private store: Store<AppState>, private cfGuid: string) {
-    this.store.select(selectManageUsers).pipe(
+    this.store.select(selectManageUsersRoles).pipe(
       first()
-    ).subscribe(manageUsers => {
-      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, manageUsers.newRoles.orgGuid, this.store, this);
+    ).subscribe(newRoles => {
+      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, newRoles.orgGuid, this.store, this);
       // this.users.push(...manageUsers.users);
       this.initialised.next(true);
     });

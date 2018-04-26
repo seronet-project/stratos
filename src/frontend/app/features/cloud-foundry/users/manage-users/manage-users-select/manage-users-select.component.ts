@@ -35,7 +35,11 @@ export class ManageUsersSelectComponent implements OnInit {
   selectedUsers$: Observable<CfUser[]>;
   valid$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private store: Store<AppState>, private listConfig: ListConfig<APIResource<CfUser>>, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
+  constructor(
+    private store: Store<AppState>,
+    private listConfig: ListConfig<APIResource<CfUser>>,
+    private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace
+  ) {
     const dataSource = listConfig.getDataSource();
     this.selectedUsers$ = dataSource.isSelecting$.pipe(
       map(isSelecting => {

@@ -17,7 +17,6 @@ import { CfUser } from '../types/user.types';
 export interface ManageUsersState {
   cfGuid: string;
   users: CfUser[];
-  existingRoles: CfUserRolesSelected;
   newRoles: CfOrgRolesSelected;
 }
 
@@ -51,7 +50,6 @@ function createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelec
 const defaultState: ManageUsersState = {
   cfGuid: '',
   users: [],
-  existingRoles: {},
   newRoles: createOrgRoles('')
 };
 
@@ -62,7 +60,8 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
       return {
         ...state,
         cfGuid: setUsersAction.cfGuid,
-        users: setUsersAction.users
+        users: setUsersAction.users,
+        newRoles: null
       };
     case MangerUsersActions.ClearUsers:
       return defaultState;

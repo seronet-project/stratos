@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { first, map, publishReplay, refCount, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, publishReplay, refCount, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import { ManageUsersSetOrg, selectManageUsers } from '../../../../store/actions/users.actions';
+import {
+  ManageUsersSetOrg,
+  selectManageUsersCf,
+  selectManageUsersPicked,
+  selectManageUsersRoles,
+} from '../../../../store/actions/users.actions';
 import { AppState } from '../../../../store/app-state';
 import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
@@ -26,15 +31,20 @@ export class CfRolesService {
   newRoles$: Observable<CfOrgRolesSelected>;
 
   constructor(private store: Store<AppState>, private cfUserService: CfUserService, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
-    this.existingRoles$ = this.store.select(selectManageUsers).pipe(
-      switchMap(manageUsers => {
-        return this.populateRoles(manageUsers.cfGuid, manageUsers.users);
+    console.log('!!!!!: ', activeRouteCfOrgSpace.cfGuid);
+    this.existingRoles$ = this.store.select(selectManageUsersPicked).pipe(
+      withLatestFrom(this.store.select(selectManageUsersCf)),
+      switchMap(([users, cfGuid]) => {
+        return this.populateRoles(cfGuid, users);
       }),
+      distinctUntilChanged(),
       publishReplay(1),
       refCount()
     );
-    this.newRoles$ = this.store.select(selectManageUsers).pipe(
-      map(manageUsers => manageUsers.newRoles)
+    this.newRoles$ = this.store.select(selectManageUsersRoles).pipe(
+      distinctUntilChanged(),
+      publishReplay(1),
+      refCount()
     );
   }
 
@@ -53,7 +63,7 @@ export class CfRolesService {
 
     // this.existingPermissions = {};
     return this.cfUserService.getUsers(cfGuid).pipe(
-      first(),
+      // first(),
       map(users => {
         const roles = {};
         users.forEach(user => {

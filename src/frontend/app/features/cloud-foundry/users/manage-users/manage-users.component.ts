@@ -1,20 +1,19 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { getActiveRouteCfOrgSpaceProvider, getIdFromRoute } from '../../cf.helpers';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import { APIResource, EntityInfo } from '../../../../store/types/api.types';
-import { CfUser } from '../../../../store/types/user.types';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../../store/app-state';
-import { selectEntity } from '../../../../store/selectors/api.selectors';
-import { cfUserSchemaKey, entityFactory } from '../../../../store/helpers/entity-factory';
-import { first, map, filter, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs/Observable';
+import { filter, first, map, startWith } from 'rxjs/operators';
+
 import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
-import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
-import { GetUser, ManageUsersClear, selectManageUsers } from '../../../../store/actions/users.actions';
-import { ManageUsersState } from '../../../../store/reducers/manage-users.reducer';
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import { CfRolesService, CfOrgRolesSelected, CfUserRolesSelected } from './cf-roles.service';
+import { GetUser, ManageUsersClear, selectManageUsersPicked } from '../../../../store/actions/users.actions';
+import { AppState } from '../../../../store/app-state';
+import { cfUserSchemaKey, entityFactory } from '../../../../store/helpers/entity-factory';
+import { APIResource } from '../../../../store/types/api.types';
+import { CfUser } from '../../../../store/types/user.types';
+import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
+import { getActiveRouteCfOrgSpaceProvider, getIdFromRoute } from '../../cf.helpers';
+import { CfRolesService } from './cf-roles.service';
 
 export class ActiveCfUser {
   userId: string;
@@ -46,9 +45,6 @@ export class ManageUsersComponent implements OnDestroy {
   loading$: Observable<boolean>;
   defaultCancelUrl: string;
 
-  // TODO: RC storify these
-  // roles: Observable<CfUserRolesSelected>;
-
   constructor(
     private store: Store<AppState>,
     private activeCfUser: ActiveCfUser,
@@ -72,15 +68,8 @@ export class ManageUsersComponent implements OnDestroy {
         filter(entity => !!entity),
         map(entity => [entity.entity.entity])
       );
-      // cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, [activeCfUser.userId]);
     } else {
-      selectedUsers$ = this.store.select(selectManageUsers).pipe(
-        map((manageUsers: ManageUsersState) => {
-          const userGuids = manageUsers.users.map(user => user.guid);
-          // cfRolesService.populateRoles(activeRouteCfOrgSpace.cfGuid, userGuids);
-          return manageUsers.users;
-        })
-      );
+      selectedUsers$ = this.store.select(selectManageUsersPicked);
     }
 
     this.initialUsers$ = selectedUsers$.pipe(
@@ -88,9 +77,8 @@ export class ManageUsersComponent implements OnDestroy {
     );
 
     this.singleUser$ = this.initialUsers$.pipe(
-      filter(users => users && !!users.length),
-      first(),
-      map(users => users.length === 1 ? users[0] : null)
+      filter(users => users && users.length > 0),
+      map(users => users.length === 1 ? users[0] : null),
     );
 
     this.loading$ = this.cfUserService.getUsers(activeRouteCfOrgSpace.cfGuid).pipe(
