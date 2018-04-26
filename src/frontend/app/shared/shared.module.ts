@@ -97,6 +97,7 @@ import { UsageBytesPipe } from './pipes/usage-bytes.pipe';
 import { ValuesPipe } from './pipes/values.pipe';
 import { UserProfileBannerComponent } from './components/user-profile-banner/user-profile-banner.component';
 import { GithubCommitAuthorComponent } from './components/github-commit-author/github-commit-author.component';
+import { UploadProgressIndicatorComponent } from './components/upload-progress-indicator/upload-progress-indicator.component';
 
 @NgModule({
   imports: [
@@ -177,8 +178,9 @@ import { GithubCommitAuthorComponent } from './components/github-commit-author/g
     IntroScreenComponent,
     CliInfoComponent,
     CliCommandComponent,
-    UserProfileBannerComponent
+    UserProfileBannerComponent,
     GithubCommitAuthorComponent
+    UploadProgressIndicatorComponent
   ],
   exports: [
     FormsModule,
@@ -245,6 +247,7 @@ import { GithubCommitAuthorComponent } from './components/github-commit-author/g
     CliInfoComponent,
     CliCommandComponent,
     GithubCommitAuthorComponent
+    UploadProgressIndicatorComponent,
   ],
   entryComponents: [
     AppEventDetailDialogComponentComponent,
