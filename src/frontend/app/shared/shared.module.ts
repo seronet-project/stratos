@@ -96,6 +96,7 @@ import { UptimePipe } from './pipes/uptime.pipe';
 import { UsageBytesPipe } from './pipes/usage-bytes.pipe';
 import { ValuesPipe } from './pipes/values.pipe';
 import { UserProfileBannerComponent } from './components/user-profile-banner/user-profile-banner.component';
+import { GithubCommitAuthorComponent } from './components/github-commit-author/github-commit-author.component';
 
 @NgModule({
   imports: [
@@ -177,6 +178,7 @@ import { UserProfileBannerComponent } from './components/user-profile-banner/use
     CliInfoComponent,
     CliCommandComponent,
     UserProfileBannerComponent
+    GithubCommitAuthorComponent
   ],
   exports: [
     FormsModule,
@@ -241,7 +243,8 @@ import { UserProfileBannerComponent } from './components/user-profile-banner/use
     IntroScreenComponent,
     UserProfileBannerComponent,
     CliInfoComponent,
-    CliCommandComponent
+    CliCommandComponent,
+    GithubCommitAuthorComponent
   ],
   entryComponents: [
     AppEventDetailDialogComponentComponent,

@@ -566,7 +566,8 @@ const testInitialStoreState: AppState = {
     },
     serviceInstance: {},
     serviceBinding: {},
-    service: {}
+    service: {},
+    githubCommits: {}
   },
   dashboard: {
     sidenavOpen: true,
@@ -584,6 +585,17 @@ const testInitialStoreState: AppState = {
   },
   deployApplication: {
     cloudFoundryDetails: null,
+    applicationSource: {
+      type: {
+        id: '',
+        name: ''
+      }
+    },
+    projectExists: {
+      checking: false,
+      exists: false,
+      name: ''
+    }
   },
   request: {
     serviceInstance: {},
