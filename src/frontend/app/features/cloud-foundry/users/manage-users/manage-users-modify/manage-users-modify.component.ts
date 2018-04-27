@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, filter, first, map } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
@@ -65,11 +65,19 @@ export class ManageUsersModifyComponent implements OnInit {
         organizationSchemaKey,
         entityFactory(organizationSchemaKey),
         this.activeRouteCfOrgSpace.orgGuid,
-        new GetOrganization(this.activeRouteCfOrgSpace.orgGuid, this.activeRouteCfOrgSpace.spaceGuid, [
+        new GetOrganization(this.activeRouteCfOrgSpace.orgGuid, this.activeRouteCfOrgSpace.cfGuid, [
           createEntityRelationKey(organizationSchemaKey, spaceSchemaKey)
         ], true),
         true
-      ).entityMonitor.entity$;
+      ).waitForEntity$.pipe(
+        filter(entityInfo => !!entityInfo.entity),
+        map(entityInfo => entityInfo.entity),
+      );
+      this.singleOrg$.pipe(
+        first()
+      ).subscribe(null, null, () => {
+        this.updateOrg(this.activeRouteCfOrgSpace.orgGuid);
+      });
     } else {
       this.singleOrg$ = Observable.of(null);
       const paginationKey = 'todo';

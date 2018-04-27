@@ -2,17 +2,21 @@
   Selected Users:
   <app-enumerate [collection]="users$" [labelPath]="'username'"></app-enumerate>
 </div>
-<div class="modify-users__orgs stepper-form">
-  <div *ngIf="singleOrg$ | async as singleOrg; then singleOrg else manyOrgs"></div>
-  <ng-template #singleOrg>{{singleOrg.entity.name }}</ng-template>
+<div class="modify-users__orgs">
+  <div *ngIf="(singleOrg$ | async); then singleOrg else manyOrgs"></div>
+  <ng-template #singleOrg>
+    <div class="modify-users__orgs__single">Organisation: {{(singleOrg$ | async).entity.name }}</div>
+  </ng-template>
   <ng-template #manyOrgs>
-    <mat-form-field>
-      <mat-select #cfSelect="ngModel" [ngModel]="selectedOrgGuid" (change)="updateOrg($event.value)" required placeholder="Organization">
-        <mat-option *ngFor="let org of organizations$ | async;trackBy:org?.metadata?.guid" [value]="org.metadata.guid">
-          {{org.entity.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="stepper-form">
+      <mat-form-field>
+        <mat-select #cfSelect="ngModel" [ngModel]="selectedOrgGuid" (change)="updateOrg($event.value)" required placeholder="Organization">
+          <mat-option *ngFor="let org of organizations$ | async;trackBy:org?.metadata?.guid" [value]="org.metadata.guid">
+            {{org.entity.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </ng-template>
 </div>
 <div class="modify-users__org-roles" *ngIf="selectedOrgGuid">
