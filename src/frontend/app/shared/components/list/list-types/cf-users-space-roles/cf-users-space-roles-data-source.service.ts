@@ -9,6 +9,7 @@ import {
   spaceSchemaKey,
   spaceWithOrgKey,
   entityFactory,
+  cfUserSchemaKey,
 } from '../../../../../store/helpers/entity-factory';
 import {
   createEntityRelationKey,
@@ -19,11 +20,20 @@ import { ListDataSource } from '../../data-sources-controllers/list-data-source'
 import { IListConfig } from '../../list.component.types';
 import { getRowMetadata } from '../../../../../features/cloud-foundry/cf.helpers';
 import { GetAllOrganizationSpaces } from '../../../../../store/actions/organization.actions';
+import { PaginationEntityState } from '../../../../../store/types/pagination.types';
 
 export class CfUsersSpaceRolesDataSourceService extends ListDataSource<APIResource> {
-  constructor(cfGuid: string, orgGuid: string, store: Store<AppState>, listConfig?: IListConfig<APIResource>) {
-    const paginationKey = createEntityRelationPaginationKey(organizationSchemaKey, orgGuid);
+  constructor(cfGuid: string, orgGuid: string, spaceGuid: string, store: Store<AppState>, listConfig?: IListConfig<APIResource>) {
+    const paginationKey = cfUserSchemaKey + '-' + orgGuid;
     const action = new GetAllOrganizationSpaces(paginationKey, orgGuid, cfGuid, []);
+    const transformEntities = spaceGuid ? [
+      (entities: APIResource[], paginationState: PaginationEntityState) => {
+        return entities.filter(e => {
+          const validSpace = !(spaceGuid && spaceGuid !== e.metadata.guid);
+          return validSpace;
+        });
+      }
+    ] : [];
     super({
       store,
       action,
@@ -31,7 +41,7 @@ export class CfUsersSpaceRolesDataSourceService extends ListDataSource<APIResour
       getRowUniqueId: getRowMetadata,
       paginationKey: action.paginationKey,
       isLocal: true,
-      // transformEntities: [{ type: 'filter', field: 'entity.name' }],
+      transformEntities,
       listConfig
     });
   }

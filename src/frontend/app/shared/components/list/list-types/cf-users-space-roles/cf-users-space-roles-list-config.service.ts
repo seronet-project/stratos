@@ -59,12 +59,11 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
   }];
   initialised = new BehaviorSubject<boolean>(false);
 
-  constructor(private store: Store<AppState>, private cfGuid: string) {
+  constructor(private store: Store<AppState>, private cfGuid: string, private spaceGuid: string) {
     this.store.select(selectManageUsersRoles).pipe(
       first()
     ).subscribe(newRoles => {
-      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, newRoles.orgGuid, this.store, this);
-      // this.users.push(...manageUsers.users);
+      this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, newRoles.orgGuid, spaceGuid, this.store, this);
       this.initialised.next(true);
     });
   }
