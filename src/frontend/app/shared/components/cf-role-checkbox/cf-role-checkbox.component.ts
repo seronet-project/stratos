@@ -1,11 +1,10 @@
 import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { combineLatest, first, withLatestFrom, filter } from 'rxjs/operators';
+import { combineLatest, filter, first } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 
 import {
-  CfOrgRolesSelected,
   CfRolesService,
   CfUserRolesSelected,
 } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
@@ -15,7 +14,7 @@ import {
   selectManageUsersPicked,
 } from '../../../store/actions/users.actions';
 import { AppState } from '../../../store/app-state';
-import { CfUser } from '../../../store/types/user.types';
+import { CfUser, IUserPermissionInOrg } from '../../../store/types/user.types';
 
 const labels = {
   org: {
@@ -62,7 +61,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  private static hasRole(role: string, orgRoles: CfOrgRolesSelected, spaceGuid: string): Boolean {
+  private static hasRole(role: string, orgRoles: IUserPermissionInOrg, spaceGuid: string): Boolean {
     if (!orgRoles) {
       return undefined;
     }
@@ -78,7 +77,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     role: string,
     users: CfUser[],
     existingRoles: CfUserRolesSelected,
-    newRoles: CfOrgRolesSelected,
+    newRoles: IUserPermissionInOrg,
     orgGuid: string,
     spaceGuid?: string): {
       checked: Boolean;
@@ -132,7 +131,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     role: string,
     users: CfUser[],
     existingRoles: CfUserRolesSelected,
-    newRoles: CfOrgRolesSelected,
+    newRoles: IUserPermissionInOrg,
     orgGuid: string): boolean {
     // Determine if the checkbox is disabled (is this the org user checkbox and are other org roles true (true || null))
     if (isOrgRole && role === 'user') {

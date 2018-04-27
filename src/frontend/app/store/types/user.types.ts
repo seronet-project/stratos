@@ -50,6 +50,7 @@ export interface IUserPermissionInOrg {
   name: string;
   orgGuid: string;
   permissions: UserRoleInOrg;
+  spaces?: { [spaceGuid: string]: IUserPermissionInSpace };
 }
 export interface IUserPermissionInSpace {
   name: string;

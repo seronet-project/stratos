@@ -1,26 +1,21 @@
 import { Action } from '@ngrx/store';
 
 import {
-  CfOrgRolesSelected,
-  CfSpaceRolesSelected,
-  CfUserRolesSelected,
-} from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
-import {
   ManageUsersSetOrg,
   ManageUsersSetOrgRole,
   ManageUsersSetSpaceRole,
   ManageUsersSetUsers,
   MangerUsersActions,
 } from '../actions/users.actions';
-import { CfUser } from '../types/user.types';
+import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../types/user.types';
 
 export interface ManageUsersState {
   cfGuid: string;
   users: CfUser[];
-  newRoles: CfOrgRolesSelected;
+  newRoles: IUserPermissionInOrg;
 }
 
-export function createDefaultOrgRoles(orgGuid: string): CfOrgRolesSelected {
+export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {
     name: '',
     orgGuid: orgGuid,
@@ -34,7 +29,7 @@ export function createDefaultOrgRoles(orgGuid: string): CfOrgRolesSelected {
   };
 }
 
-export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelected {
+export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): IUserPermissionInSpace {
   return {
     name: '',
     spaceGuid,
@@ -82,7 +77,7 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
   return state;
 }
 
-function setPermission(roles: CfOrgRolesSelected | CfSpaceRolesSelected, role: string, setRole: boolean) {
+function setPermission(roles: IUserPermissionInOrg | IUserPermissionInSpace, role: string, setRole: boolean) {
   if (roles.permissions[role] === setRole) {
     return false;
   }

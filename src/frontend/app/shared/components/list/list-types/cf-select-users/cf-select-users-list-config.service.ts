@@ -1,12 +1,13 @@
-import { CfSelectUsersDataSourceService } from './cf-select-users-data-source.service';
-import { IListConfig, ListViewTypes } from '../../list.component.types';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+
+import { ListView } from '../../../../../store/actions/list.actions';
+import { AppState } from '../../../../../store/app-state';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
-import { ListView } from '../../../../../store/actions/list.actions';
 import { ITableColumn } from '../../list-table/table.types';
-import { Store } from '@ngrx/store';
-import { AppState } from '../../../../../store/app-state';
-import { Injectable } from '@angular/core';
+import { IListConfig, ListViewTypes } from '../../list.component.types';
+import { CfSelectUsersDataSourceService } from './cf-select-users-data-source.service';
 
 @Injectable()
 export class CfSelectUsersListConfigService implements IListConfig<APIResource<CfUser>> {
@@ -32,17 +33,10 @@ export class CfSelectUsersListConfigService implements IListConfig<APIResource<C
       orderKey: 'username',
       field: 'entity.username'
     }
-  },];
-  // initialised = new BehaviorSubject<boolean>(false);
+  }];
 
   constructor(private store: Store<AppState>, private cfGuid: string) {
-    // this.store.select(selectManageUsers).pipe(
-    //   first()
-    // ).subscribe(manageUsers => {
     this.dataSource = new CfSelectUsersDataSourceService(cfGuid, this.store, this);
-    // this.users.push(...manageUsers.users);
-    // this.initialised.next(true);
-    // });
   }
 
   getColumns = () => this.columns;
@@ -57,5 +51,4 @@ export class CfSelectUsersListConfigService implements IListConfig<APIResource<C
   getSingleActions = () => [];
   getMultiFiltersConfigs = () => [];
   getDataSource = () => this.dataSource;
-  // public getInitialised = () => this.initialised;
 }

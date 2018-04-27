@@ -112,7 +112,7 @@ export class ManageUsersModifyComponent implements OnInit {
     );
 
     this.valid$ = this.store.select(selectManageUsersRoles).pipe(
-      debounceTime(250),
+      debounceTime(150),
       switchMap(orgRoles => this.cfRolesService.createRolesDiff(orgRoles.orgGuid)),
       map(changes => !!changes.length)
     );

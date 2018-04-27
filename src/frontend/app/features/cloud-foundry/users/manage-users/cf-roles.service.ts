@@ -30,13 +30,9 @@ import {
 } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 
-export interface CfSpaceRolesSelected extends IUserPermissionInSpace { }
-export interface CfOrgRolesSelected extends IUserPermissionInOrg {
-  spaces: { [spaceGuid: string]: CfSpaceRolesSelected };
-}
 export interface CfUserRolesSelected {
   [userGuid: string]: {
-    [orgGuid: string]: CfOrgRolesSelected
+    [orgGuid: string]: IUserPermissionInOrg
   };
 }
 
@@ -52,7 +48,7 @@ export class CfRoleChange {
 export class CfRolesService {
 
   existingRoles$: Observable<CfUserRolesSelected>;
-  newRoles$: Observable<CfOrgRolesSelected>;
+  newRoles$: Observable<IUserPermissionInOrg>;
   loading$: Observable<boolean>;
 
   constructor(private store: Store<AppState>, private cfUserService: CfUserService, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
