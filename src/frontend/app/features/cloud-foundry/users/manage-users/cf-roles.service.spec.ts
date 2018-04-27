@@ -1,11 +1,24 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
+import { CfUserService } from '../../../../shared/data-services/cf-user.service';
+import { SharedModule } from '../../../../shared/shared.module';
+import { createBasicStoreModule } from '../../../../test-framework/store-test-helper';
+import { CloudFoundryModule } from '../../cloud-foundry.module';
 import { CfRolesService } from './cf-roles.service';
+
 
 describe('CfRolesService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CfRolesService]
+      imports: [
+        createBasicStoreModule(),
+        SharedModule,
+        CloudFoundryModule
+      ],
+      providers: [
+        CfRolesService,
+        CfUserService
+      ]
     });
   });
 

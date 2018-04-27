@@ -1,5 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 
+import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
 import {
   CloudFoundryOrganizationService,
 } from '../../../../../features/cloud-foundry/services/cloud-foundry-organization.service';
@@ -18,7 +19,8 @@ describe('CfOrgUsersListConfigService', () => {
         CfOrgUsersListConfigService,
         { provide: CloudFoundryOrganizationService, useClass: CloudFoundryOrganizationServiceMock },
         generateTestCfUserServiceProvider(),
-        PaginationMonitorFactory
+        PaginationMonitorFactory,
+        ActiveRouteCfOrgSpace
       ],
       imports: [...BaseTestModulesNoShared]
     });

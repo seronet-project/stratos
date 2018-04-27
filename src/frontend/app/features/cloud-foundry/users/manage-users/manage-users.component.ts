@@ -44,6 +44,7 @@ export class ManageUsersComponent implements OnDestroy {
   // loading$: Observable<boolean>;
   defaultCancelUrl: string;
 
+  // TODO: RC show manage user's button always
   // TODO: RC space refresh (also refresh users.. specific to those on screen?)
   // TODO: RC (?) always show users stepper, but skip when appropriate. if back pressed ensure selection is shown
 
