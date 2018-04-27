@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, map, publishReplay, refCount, switchMap, withLatestFrom, startWith, combineLatest, first } from 'rxjs/operators';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  first,
+  map,
+  publishReplay,
+  refCount,
+  startWith,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
 import {
@@ -10,9 +20,15 @@ import {
   selectManageUsersRoles,
 } from '../../../../store/actions/users.actions';
 import { AppState } from '../../../../store/app-state';
-import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace, UserRoleInOrg, UserRoleInSpace } from '../../../../store/types/user.types';
-import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/manage-users.reducer';
+import {
+  CfUser,
+  IUserPermissionInOrg,
+  IUserPermissionInSpace,
+  UserRoleInOrg,
+  UserRoleInSpace,
+} from '../../../../store/types/user.types';
+import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 
 export interface CfSpaceRolesSelected extends IUserPermissionInSpace { }
 export interface CfOrgRolesSelected extends IUserPermissionInOrg {
@@ -56,7 +72,8 @@ export class CfRolesService {
     );
 
     this.loading$ = this.existingRoles$.pipe(
-      map(roles => !roles),
+      combineLatest(this.newRoles$),
+      map(([existingRoles, newRoles]) => !existingRoles || !newRoles),
       startWith(true)
     );
   }

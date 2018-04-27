@@ -44,7 +44,6 @@ export class ManageUsersComponent implements OnDestroy {
   // loading$: Observable<boolean>;
   defaultCancelUrl: string;
 
-  // TODO: RC Loading indicator coming from org/space level (and not from cf level)
   // TODO: RC space refresh (also refresh users.. specific to those on screen?)
   // TODO: RC (?) always show users stepper, but skip when appropriate. if back pressed ensure selection is shown
   // TODO: RC top align select user button

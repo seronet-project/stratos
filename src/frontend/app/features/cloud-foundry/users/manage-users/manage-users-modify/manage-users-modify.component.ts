@@ -6,11 +6,10 @@ import {
   OnInit,
   ViewChild,
   ViewContainerRef,
-  Input,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, filter, first, map, tap, combineLatest, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, first, map, switchMap } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
@@ -53,6 +52,7 @@ export class ManageUsersModifyComponent implements OnInit {
   selectedOrgGuid: string;
   users$: Observable<CfUser[]>;
   blocked$: Observable<boolean>;
+  valid$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
@@ -110,13 +110,12 @@ export class ManageUsersModifyComponent implements OnInit {
     this.users$ = this.store.select(selectManageUsersPicked).pipe(
       distinctUntilChanged(),
     );
-    // this.blocked$ = this.initialUsers$.pipe(
-    //   combineLatest(this.cfRolesService.loading$),
-    //   map(([initialUsers, loading]) => {
-    //     return initialUsers.length > 0 && loading;
-    //   }),
-    //   startWith(true)
-    // );
+
+    this.valid$ = this.store.select(selectManageUsersRoles).pipe(
+      debounceTime(250),
+      switchMap(orgRoles => this.cfRolesService.createRolesDiff(orgRoles.orgGuid)),
+      map(changes => !!changes.length)
+    );
   }
 
   updateOrg(orgGuid) {
