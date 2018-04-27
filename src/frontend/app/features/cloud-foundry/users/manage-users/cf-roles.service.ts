@@ -5,7 +5,6 @@ import { distinctUntilChanged, map, publishReplay, refCount, switchMap, withLate
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
 import {
-  ManageUsersSetOrg,
   selectManageUsersCf,
   selectManageUsersPicked,
   selectManageUsersRoles,
@@ -31,7 +30,6 @@ export class CfRolesService {
   newRoles$: Observable<CfOrgRolesSelected>;
 
   constructor(private store: Store<AppState>, private cfUserService: CfUserService, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
-    console.log('!!!!!: ', activeRouteCfOrgSpace.cfGuid);
     this.existingRoles$ = this.store.select(selectManageUsersPicked).pipe(
       withLatestFrom(this.store.select(selectManageUsersCf)),
       switchMap(([users, cfGuid]) => {
@@ -48,12 +46,6 @@ export class CfRolesService {
     );
   }
 
-
-  setOrganization(orgGuid) {
-    this.store.dispatch(new ManageUsersSetOrg(orgGuid)); // TODO: RC remove, this is stored in CfOrgRolesSelected
-    // this.newRoles = this.createOrgRoles(orgGuid);
-  }
-
   populateRoles(cfGuid: string, selectedUsers: CfUser[]): Observable<CfUserRolesSelected> {
     if (!cfGuid || !selectedUsers || selectedUsers.length === 0) {
       return Observable.of({});
@@ -61,9 +53,7 @@ export class CfRolesService {
 
     const userGuids: string[] = selectedUsers.map(user => user.guid);
 
-    // this.existingPermissions = {};
     return this.cfUserService.getUsers(cfGuid).pipe(
-      // first(),
       map(users => {
         const roles = {};
         users.forEach(user => {

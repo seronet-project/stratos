@@ -15,7 +15,11 @@ import { IOrganization } from '../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
 import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
 import { GetAllOrganizations, GetOrganization } from '../../../../../store/actions/organization.actions';
-import { selectManageUsersPicked, selectManageUsersRoles } from '../../../../../store/actions/users.actions';
+import {
+  ManageUsersSetOrg,
+  selectManageUsersPicked,
+  selectManageUsersRoles,
+} from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../../store/helpers/entity-factory';
 import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
@@ -25,7 +29,6 @@ import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 import { CfRolesService } from '../cf-roles.service';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
-
 
 
 @Component({
@@ -45,13 +48,6 @@ export class ManageUsersModifyComponent implements OnInit {
   singleOrg$: Observable<APIResource<IOrganization>>;
   organizations$: Observable<APIResource<IOrganization>[]>;
   selectedOrgGuid: string;
-  disableOrgUser: {
-    [index: number]: boolean,
-    disable: boolean
-  } = {
-      disable: false
-    };
-
   users$: Observable<CfUser[]>;
 
   constructor(
@@ -59,8 +55,7 @@ export class ManageUsersModifyComponent implements OnInit {
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
     private entityServiceFactory: EntityServiceFactory,
     private paginationMonitorFactory: PaginationMonitorFactory,
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private cfRolesService: CfRolesService) {
+    private componentFactoryResolver: ComponentFactoryResolver) {
     this.wrapperFactory = this.componentFactoryResolver.resolveComponentFactory(SpaceRolesListWrapperComponent);
   }
 
@@ -96,8 +91,7 @@ export class ManageUsersModifyComponent implements OnInit {
         filter(orgs => orgs && !!orgs.length),
         first()
       ).subscribe(orgs => {
-        this.selectedOrgGuid = orgs[0].metadata.guid;
-        this.updateOrg(this.selectedOrgGuid);
+        this.updateOrg(orgs[0].metadata.guid);
       });
     }
     this.users$ = this.store.select(selectManageUsersPicked).pipe(
@@ -105,24 +99,14 @@ export class ManageUsersModifyComponent implements OnInit {
     );
   }
 
-  updateOrgUser(checked: boolean, index: number) {
-    this.disableOrgUser[index] = checked;
-    this.disableOrgUser.disable = this.disableOrgUser[0] || this.disableOrgUser[1] || this.disableOrgUser[2];
-    ///TODO: RC orgRoles in multi user mode
-  }
-
   updateOrg(orgGuid) {
+    this.selectedOrgGuid = orgGuid;
     if (!orgGuid) {
       return;
     }
-    ///TODO: RC orgRoles in multi user mode
-    // if (this.users && this.users.length > 0) {
-    //   this.roles.pipe(
-    //     filter(roles => !!roles),
-    //   ).subscribe(roles => this.orgRoles = roles[this.users[0].guid][orgGuid]);
-    // }
-    this.cfRolesService.setOrganization(orgGuid);
-    this.store.select(selectManageUsersRoles).pipe(// TODO: RC
+
+    this.store.dispatch(new ManageUsersSetOrg(orgGuid));
+    this.store.select(selectManageUsersRoles).pipe(
       filter(newRoles => newRoles && newRoles.orgGuid === orgGuid),
       first()
     ).subscribe(null, null, () => {
@@ -132,7 +116,7 @@ export class ManageUsersModifyComponent implements OnInit {
       if (this.spaceRolesTable) {
         this.spaceRolesTable.clear();
       }
-      // this.wrapperRef = this.spaceRolesTable.createComponent(this.wrapperFactory);
+      this.wrapperRef = this.spaceRolesTable.createComponent(this.wrapperFactory);
     });
   }
 

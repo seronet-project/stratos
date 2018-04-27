@@ -42,7 +42,6 @@ const labels = {
 export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
 
 
-  @Input() orgGuid: string;
   @Input() spaceGuid: string;
   @Input() role: string;
   @Output() changed = new BehaviorSubject(false);
@@ -54,6 +53,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
   // users: CfUser[];
   isOrgRole = false;
   disabled = false;
+  orgGuid: string;
 
   private static hasExistingRole(role: string, roles: CfUserRolesSelected, userGuid: string, orgGuid: string, spaceGuid: string): boolean {
     if (roles && roles[userGuid] && roles[userGuid][orgGuid]) {
@@ -153,8 +153,9 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     // this.cfRolesService.newRoles$.subscribe((a) => console.log(`${this.orgGuid} ${this.spaceGuid} new Roles UpdateD: `, a));
     this.sub = this.cfRolesService.existingRoles$.pipe(
       combineLatest(this.cfRolesService.newRoles$, users$),
-      filter(([existingRoles, newRoles, users]) => !!users.length)
+      filter(([existingRoles, newRoles, users]) => !!users.length && !!newRoles.orgGuid)
     ).subscribe(([existingRoles, newRoles, users]) => {
+      this.orgGuid = newRoles.orgGuid;
       // console.log('Both Updated');
       const { checked, tooltip } = CfRoleCheckboxComponent.getCheckedState(
         this.role, users, existingRoles, newRoles, this.orgGuid, this.spaceGuid);

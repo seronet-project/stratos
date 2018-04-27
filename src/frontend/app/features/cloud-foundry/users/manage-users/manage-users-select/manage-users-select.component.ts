@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { first, map, tap } from 'rxjs/operators';
 
 import {
   CfSelectUsersListConfigService,
 } from '../../../../../shared/components/list/list-types/cf-select-users/cf-select-users-list-config.service';
 import { ListConfig } from '../../../../../shared/components/list/list.component.types';
-import { AppState } from '../../../../../store/app-state';
-import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
-import { CfUser } from '../../../../../store/types/user.types';
-import { APIResource } from '../../../../../store/types/api.types';
-import { Observable } from 'rxjs/Observable';
-import { tap, map, first } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ManageUsersSetUsers } from '../../../../../store/actions/users.actions';
+import { AppState } from '../../../../../store/app-state';
+import { APIResource } from '../../../../../store/types/api.types';
+import { CfUser } from '../../../../../store/types/user.types';
+import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 
 @Component({
   selector: 'app-manage-users-select',

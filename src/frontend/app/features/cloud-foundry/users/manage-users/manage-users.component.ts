@@ -13,7 +13,6 @@ import { APIResource } from '../../../../store/types/api.types';
 import { CfUser } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 import { getActiveRouteCfOrgSpaceProvider, getIdFromRoute } from '../../cf.helpers';
-import { CfRolesService } from './cf-roles.service';
 
 export class ActiveCfUser {
   userId: string;
@@ -50,8 +49,7 @@ export class ManageUsersComponent implements OnDestroy {
     private activeCfUser: ActiveCfUser,
     private entityServiceFactory: EntityServiceFactory,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
-    private cfRolesService: CfRolesService,
-    private cfUserService: CfUserService// TODO: RC remove un-needed
+    private cfUserService: CfUserService
   ) {
 
     this.defaultCancelUrl = this.createReturnUrl(activeRouteCfOrgSpace);
@@ -104,26 +102,3 @@ export class ManageUsersComponent implements OnDestroy {
     return route;
   }
 }
-
-// if (activeCfUser.userId) {
-    //   this.singleUser$ = entityServiceFactory.create<APIResource<CfUser>>(
-    //     cfUserSchemaKey,
-    //     entityFactory(cfUserSchemaKey),
-    //     activeCfUser.userId,
-    //     new GetUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId),
-    //     true
-    //   ).entityObs$.pipe(
-    //     filter(entity => !!entity),
-    //     map(entity => entity.entity.entity)
-    //   );
-    // } else {
-    //   this.singleUser$ = this.store.select(selectManageUsers).pipe(
-    //     map((manageUsers: ManageUsersState) => {
-    //       const users = manageUsers.users;
-    //       if (users.length === 1) {
-    //         return users[0];
-    //       }
-    //       return null;
-    //     })
-    //   );
-    // }

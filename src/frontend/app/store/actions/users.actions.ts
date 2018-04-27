@@ -115,17 +115,11 @@ export class ManageUsersSetOrgRole implements Action {
 }
 export class ManageUsersSetSpaceRole implements Action {
   type = MangerUsersActions.SetSpaceRole;
-  // TODO: RC remove users
   constructor(public orgGuid: string, public spaceGuid: string, public role: string, public setRole: boolean) { }
 }
-// abstract class ManageUsersSetRole implements Action {
-//   constructor(public type: string, public orgGuid: string, public spaceGuid: string, public role: string, public haveRole: boolean, public users: CfUser[]) { }
-// }
-
 export class ManageUsersClear implements Action {
   type = MangerUsersActions.ClearUsers;
 }
-
 export class ManageUsersSetOrg implements Action {
   type = MangerUsersActions.SetOrg;
   constructor(public selectedOrg: string) { }

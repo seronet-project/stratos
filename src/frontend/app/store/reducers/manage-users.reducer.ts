@@ -61,7 +61,8 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
         ...state,
         cfGuid: setUsersAction.cfGuid,
         users: setUsersAction.users,
-        newRoles: null
+        // Clear all roles but retain the selected org
+        newRoles: createOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
       };
     case MangerUsersActions.ClearUsers:
       return defaultState;
