@@ -52,6 +52,7 @@ export class TableComponent<T extends object> implements OnInit, OnDestroy {
   @Input('text') text: ITableText;
   @Input('enableFilter') enableFilter = false;
   @Input('fixedRowHeight') fixedRowHeight = false;
+  @Input('rowAlignSelf') rowAlignSelf = 'auto';
   @Input('addForm') addForm: NgForm;
   public safeAddForm() {
     // Something strange is afoot. When using addform in [disabled] it thinks this is null, even when initialised

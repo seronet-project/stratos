@@ -19,12 +19,12 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
   isLocal = true;
   viewType = ListViewTypes.TABLE_ONLY;
   dataSource: CfUserDataSourceService;
+  tableRowAlignSelf = 'end';
   columns: ITableColumn<APIResource<CfUser>>[] = [
     {
       columnId: 'username',
       headerCell: () => 'Username',
       cellFlex: '1',
-      cellAlignSelf: 'baseline',
       cellDefinition: {
         getValue: row => row.entity.username || row.metadata.guid
       },
@@ -38,14 +38,12 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
       columnId: 'roles',
       headerCell: () => 'Organization Roles',
       cellFlex: '3',
-      cellAlignSelf: 'baseline',
       cellComponent: CfOrgPermissionCellComponent
     },
     {
       columnId: 'space-roles',
       headerCell: () => 'Space Roles',
       cellFlex: '3',
-      cellAlignSelf: 'baseline',
       cellComponent: CfSpacePermissionCellComponent
     },
   ];
