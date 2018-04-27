@@ -132,7 +132,7 @@ export class ManageUsersModifyComponent implements OnInit {
       if (this.spaceRolesTable) {
         this.spaceRolesTable.clear();
       }
-      this.wrapperRef = this.spaceRolesTable.createComponent(this.wrapperFactory);
+      // this.wrapperRef = this.spaceRolesTable.createComponent(this.wrapperFactory);
     });
   }
 

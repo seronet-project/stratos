@@ -25,10 +25,10 @@ function createOrgRoles(orgGuid: string): CfOrgRolesSelected {
     name: '',
     orgGuid: orgGuid,
     permissions: {
-      auditor: null,
-      billingManager: null,
-      orgManager: null,
-      user: null
+      auditor: undefined,
+      billingManager: undefined,
+      orgManager: undefined,
+      user: undefined
     },
     spaces: {}
   };
@@ -40,9 +40,9 @@ function createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelec
     spaceGuid,
     orgGuid,
     permissions: {
-      auditor: null,
-      developer: null,
-      manager: null
+      auditor: undefined,
+      developer: undefined,
+      manager: undefined
     }
   };
 }
@@ -73,26 +73,26 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
       };
     case MangerUsersActions.SetOrgRole:
       const setOrgRoleAction = action as ManageUsersSetOrgRole;
-      return setRole(state, setOrgRoleAction.orgGuid, null, setOrgRoleAction.role, setOrgRoleAction.haveRole);
+      return setRole(state, setOrgRoleAction.orgGuid, null, setOrgRoleAction.role, setOrgRoleAction.setRole);
     case MangerUsersActions.SetSpaceRole:
       const setSpaceRoleAction = action as ManageUsersSetSpaceRole;
-      return setRole(state, setSpaceRoleAction.orgGuid, setSpaceRoleAction.spaceGuid, setSpaceRoleAction.role, setSpaceRoleAction.haveRole);
+      return setRole(state, setSpaceRoleAction.orgGuid, setSpaceRoleAction.spaceGuid, setSpaceRoleAction.role, setSpaceRoleAction.setRole);
   }
   return state;
 }
 
-function setPermission(roles: CfOrgRolesSelected | CfSpaceRolesSelected, role: string, haveRole: boolean) {
-  if (roles.permissions[role] === haveRole) {
+function setPermission(roles: CfOrgRolesSelected | CfSpaceRolesSelected, role: string, setRole: boolean) {
+  if (roles.permissions[role] === setRole) {
     return false;
   }
   roles.permissions = {
     ...roles.permissions,
-    [role]: haveRole
+    [role]: setRole
   };
   return true;
 }
 
-function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: string, role: string, haveRole: boolean): ManageUsersState {
+function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: string, role: string, setRole: boolean): ManageUsersState {
   const existingOrgRoles = existingState.newRoles;
   let newOrgRoles = existingOrgRoles ? {
     ...existingOrgRoles,
@@ -108,9 +108,15 @@ function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: st
     const spaceRoles = newOrgRoles.spaces[spaceGuid] = {
       ...newOrgRoles.spaces[spaceGuid]
     };
-    newOrgRoles = setPermission(spaceRoles, role, haveRole) ? newOrgRoles : null;
+    newOrgRoles = setPermission(spaceRoles, role, setRole) ? newOrgRoles : null;
   } else {
-    newOrgRoles = setPermission(newOrgRoles, role, haveRole) ? newOrgRoles : null;
+    newOrgRoles = setPermission(newOrgRoles, role, setRole) ? newOrgRoles : null;
+    if (newOrgRoles && role !== 'user' && setRole) {
+      newOrgRoles.permissions = {
+        ...newOrgRoles.permissions,
+        user: true
+      };
+    }
   }
 
   if (newOrgRoles) {

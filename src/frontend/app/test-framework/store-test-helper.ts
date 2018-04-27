@@ -21614,7 +21614,18 @@ const testInitialStoreState: AppState = {
   },
   manageUsers: {
     users: [],
-    selectedOrgGuid: ''
+    cfGuid: '',
+    newRoles: {
+      name: '',
+      orgGuid: '',
+      spaces: { },
+      permissions: {
+        auditor: undefined,
+        billingManager: undefined,
+        orgManager: undefined,
+        user: undefined
+      }
+    }
   }
 };
 /* tslint:enable */
