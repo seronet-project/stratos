@@ -41,10 +41,14 @@ export class ManageUsersComponent implements OnDestroy {
   // selectedUsers$: Observable<CfUser[]>;
   initialUsers$: Observable<CfUser[]>;
   singleUser$: Observable<CfUser>;
-  loading$: Observable<boolean>;
+  // loading$: Observable<boolean>;
   defaultCancelUrl: string;
 
   // TODO: RC at org/space level click top users option.... cancel... return to previous step
+  // TODO: RC Loading indicator coming from org/space level (and not from cf level)
+  // TODO: RC space refresh (also refresh users.. specific to those on screen?)
+  // TODO: RC (?) always show users stepper, but skip when appropriate. if back pressed ensure selection is shown
+  // TODO: RC top align select user button
 
   constructor(
     private store: Store<AppState>,
@@ -78,12 +82,7 @@ export class ManageUsersComponent implements OnDestroy {
 
     this.singleUser$ = this.initialUsers$.pipe(
       filter(users => users && users.length > 0),
-      map(users => users.length === 1 ? users[0] : null),
-    );
-
-    this.loading$ = this.cfUserService.getUsers(activeRouteCfOrgSpace.cfGuid).pipe(
-      map(users => !users),
-      startWith(true)
+      map(users => users.length === 1 ? users[0] : {} as CfUser),
     );
 
   }

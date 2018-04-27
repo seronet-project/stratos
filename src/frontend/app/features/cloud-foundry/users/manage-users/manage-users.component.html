@@ -1,14 +1,14 @@
 <app-page-header>
-  <span *ngIf="(singleUser$ | async) as singleUser; else multiUser">Manager Roles: {{singleUser.username }}</span>
-  <ng-template #multiUser>Manager Users Roles</ng-template>
+  <!-- <span *ngIf="(singleUser$ | async); else multiUser">Manager Roles: {{(singleUser$ | async).username }}</span>
+  <ng-template #multiUser>Manager Users Roles</ng-template> -->
 </app-page-header>
 <app-steppers cancel="{{defaultCancelUrl}}">
-  <app-step *ngIf="(initialUsers$ | async).length === 0" title="Select" [blocked$]="loading$" [onNext]="select.onNext" [valid]="select.valid$ | async">
+  <!-- <br>!!{{select?.cfRolesService.loading$ | async}}!!<br> !!{{modify.blocked$ | async}}!!<br> -->
+  <app-step *ngIf="(initialUsers$ | async).length === 0" title="Select" [blocked$]="select.cfRolesService.loading$" [onNext]="select.onNext" [valid]="select.valid$ | async">
     <app-manage-users-select #select></app-manage-users-select>
   </app-step>
-  <app-step title="Modify">
-    <!-- [roles]=" roles " -->
-    <app-manage-users-modify></app-manage-users-modify>
+  <app-step title="Modify" [blocked$]="modify.cfRolesService.loading$" [onNext]="modify.onNext">
+    <app-manage-users-modify #modify></app-manage-users-modify>
   </app-step>
   <app-step title="Confirm ">
   </app-step>

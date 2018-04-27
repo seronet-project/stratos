@@ -13,6 +13,7 @@ import { AppState } from '../../../../../store/app-state';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
+import { CfRolesService } from '../cf-roles.service';
 
 @Component({
   selector: 'app-manage-users-select',
@@ -38,7 +39,8 @@ export class ManageUsersSelectComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private listConfig: ListConfig<APIResource<CfUser>>,
-    private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace
+    private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
+    public cfRolesService: CfRolesService
   ) {
     const dataSource = listConfig.getDataSource();
     this.selectedUsers$ = dataSource.isSelecting$.pipe(

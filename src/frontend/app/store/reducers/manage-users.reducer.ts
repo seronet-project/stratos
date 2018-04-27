@@ -20,7 +20,7 @@ export interface ManageUsersState {
   newRoles: CfOrgRolesSelected;
 }
 
-function createOrgRoles(orgGuid: string): CfOrgRolesSelected {
+export function createDefaultOrgRoles(orgGuid: string): CfOrgRolesSelected {
   return {
     name: '',
     orgGuid: orgGuid,
@@ -34,7 +34,7 @@ function createOrgRoles(orgGuid: string): CfOrgRolesSelected {
   };
 }
 
-function createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelected {
+export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelected {
   return {
     name: '',
     spaceGuid,
@@ -50,7 +50,7 @@ function createSpaceRoles(orgGuid: string, spaceGuid: string): CfSpaceRolesSelec
 const defaultState: ManageUsersState = {
   cfGuid: '',
   users: [],
-  newRoles: createOrgRoles('')
+  newRoles: createDefaultOrgRoles('')
 };
 
 export function manageUsersReducer(state: ManageUsersState = defaultState, action: Action): ManageUsersState {
@@ -62,7 +62,7 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
         cfGuid: setUsersAction.cfGuid,
         users: setUsersAction.users,
         // Clear all roles but retain the selected org
-        newRoles: createOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
+        newRoles: createDefaultOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
       };
     case MangerUsersActions.ClearUsers:
       return defaultState;
@@ -70,7 +70,7 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
       const setOrgAction = action as ManageUsersSetOrg;
       return {
         ...state,
-        newRoles: createOrgRoles(setOrgAction.selectedOrg)
+        newRoles: createDefaultOrgRoles(setOrgAction.selectedOrg)
       };
     case MangerUsersActions.SetOrgRole:
       const setOrgRoleAction = action as ManageUsersSetOrgRole;
@@ -100,11 +100,11 @@ function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: st
     spaces: {
       ...existingOrgRoles.spaces
     }
-  } : createOrgRoles(orgGuid);
+  } : createDefaultOrgRoles(orgGuid);
 
   if (spaceGuid) {
     if (!newOrgRoles.spaces[spaceGuid]) {
-      newOrgRoles.spaces[spaceGuid] = createSpaceRoles(orgGuid, spaceGuid);
+      newOrgRoles.spaces[spaceGuid] = createDefaultSpaceRoles(orgGuid, spaceGuid);
     }
     const spaceRoles = newOrgRoles.spaces[spaceGuid] = {
       ...newOrgRoles.spaces[spaceGuid]

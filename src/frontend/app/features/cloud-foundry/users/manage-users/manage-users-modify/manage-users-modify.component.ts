@@ -6,10 +6,11 @@ import {
   OnInit,
   ViewChild,
   ViewContainerRef,
+  Input,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, map, tap, combineLatest, startWith } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
@@ -39,6 +40,8 @@ import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space
 })
 export class ManageUsersModifyComponent implements OnInit {
 
+  // @Input() initialUsers$: Observable<CfUser[]>;
+
   @ViewChild('spaceRolesTable', { read: ViewContainerRef })
   spaceRolesTable: ViewContainerRef;
 
@@ -49,13 +52,15 @@ export class ManageUsersModifyComponent implements OnInit {
   organizations$: Observable<APIResource<IOrganization>[]>;
   selectedOrgGuid: string;
   users$: Observable<CfUser[]>;
+  blocked$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
     private entityServiceFactory: EntityServiceFactory,
     private paginationMonitorFactory: PaginationMonitorFactory,
-    private componentFactoryResolver: ComponentFactoryResolver) {
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private cfRolesService: CfRolesService) {
     this.wrapperFactory = this.componentFactoryResolver.resolveComponentFactory(SpaceRolesListWrapperComponent);
   }
 
@@ -105,6 +110,13 @@ export class ManageUsersModifyComponent implements OnInit {
     this.users$ = this.store.select(selectManageUsersPicked).pipe(
       distinctUntilChanged(),
     );
+    // this.blocked$ = this.initialUsers$.pipe(
+    //   combineLatest(this.cfRolesService.loading$),
+    //   map(([initialUsers, loading]) => {
+    //     return initialUsers.length > 0 && loading;
+    //   }),
+    //   startWith(true)
+    // );
   }
 
   updateOrg(orgGuid) {
@@ -128,4 +140,13 @@ export class ManageUsersModifyComponent implements OnInit {
     });
   }
 
+  onNext = () => {
+    return this.cfRolesService.createRolesDiff(this.selectedOrgGuid).pipe(
+      map(() => {
+        return { success: true };
+      })
+    ).catch(err => {
+      return Observable.of({ success: false });
+    });
+  }
 }
