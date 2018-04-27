@@ -6,7 +6,7 @@ import { filter, first, map, startWith } from 'rxjs/operators';
 
 import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import { GetUser, ManageUsersClear, selectManageUsersPicked } from '../../../../store/actions/users.actions';
+import { GetUser, ManageUsersClear, selectManageUsersPicked, selectManageUsersCf } from '../../../../store/actions/users.actions';
 import { AppState } from '../../../../store/app-state';
 import { cfUserSchemaKey, entityFactory } from '../../../../store/helpers/entity-factory';
 import { APIResource } from '../../../../store/types/api.types';
@@ -44,7 +44,6 @@ export class ManageUsersComponent implements OnDestroy {
   // loading$: Observable<boolean>;
   defaultCancelUrl: string;
 
-  // TODO: RC at org/space level click top users option.... cancel... return to previous step
   // TODO: RC Loading indicator coming from org/space level (and not from cf level)
   // TODO: RC space refresh (also refresh users.. specific to those on screen?)
   // TODO: RC (?) always show users stepper, but skip when appropriate. if back pressed ensure selection is shown
@@ -91,6 +90,13 @@ export class ManageUsersComponent implements OnDestroy {
     this.store.dispatch(new ManageUsersClear());
   }
 
+  /**
+   * Determine where the return url should be. This will only apply when user visits modal directly (otherwise stepper uses previous state)
+   *
+   * @param {ActiveRouteCfOrgSpace} activeRouteCfOrgSpace
+   * @returns {Observable<string>}
+   * @memberof ManageUsersComponent
+   */
   createReturnUrl(activeRouteCfOrgSpace: ActiveRouteCfOrgSpace): string {
     let route = `/cloud-foundry/${activeRouteCfOrgSpace.cfGuid}`;
     if (this.activeRouteCfOrgSpace.orgGuid) {
