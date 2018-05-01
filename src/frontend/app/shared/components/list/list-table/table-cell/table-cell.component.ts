@@ -78,7 +78,9 @@ import { TableCellEditComponent } from '../table-cell-edit/table-cell-edit.compo
 import { TableCellSelectComponent } from '../table-cell-select/table-cell-select.component';
 import { TableHeaderSelectComponent } from '../table-header-select/table-header-select.component';
 import { ICellDefinition } from '../table.types';
+import { TableCellRequestMonitorIconComponent } from '../table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 /* tslint:enable:max-line-length */
+
 export const listTableCells = [
   TableCellDefaultComponent,
   TableHeaderSelectComponent,
@@ -108,7 +110,8 @@ export const listTableCells = [
   CfOrgPermissionCellComponent,
   CfSpacePermissionCellComponent,
   TableCellFeatureFlagStateComponent,
-  TableCellSpaceRoleComponent
+  TableCellSpaceRoleComponent,
+  TableCellRequestMonitorIconComponent
 ];
 
 @Component({
@@ -164,7 +167,9 @@ export class TableCellComponent<T> implements OnInit, OnChanges {
       this.cellComponent.row = this.row;
       this.cellComponent.dataSource = this.dataSource;
       this.cellComponent.config = this.config;
-      this.cellComponent.rowState = this.dataSource.getRowState(this.row);
+      if (this.dataSource.getRowState) {
+        this.cellComponent.rowState = this.dataSource.getRowState(this.row);
+      }
       if (this.cellDefinition) {
         const defaultTableCell = this.cellComponent as TableCellDefaultComponent<T>;
         defaultTableCell.cellDefinition = this.cellDefinition;

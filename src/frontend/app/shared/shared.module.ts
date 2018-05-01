@@ -11,6 +11,8 @@ import { CoreModule } from '../core/core.module';
 import {
   ApplicationInstanceChartComponent,
 } from '../features/applications/application/application-instance-chart/application-instance-chart.component';
+import { AppActionMonitorIconComponent } from './components/app-action-monitor-icon/app-action-monitor-icon.component';
+import { AppActionMonitorComponent } from './components/app-action-monitor/app-action-monitor.component';
 import {
   ApplicationStateIconComponent,
 } from './components/application-state/application-state-icon/application-state-icon.component';
@@ -27,18 +29,12 @@ import { CardCfOrgUsageComponent } from './components/cards/card-cf-org-usage/ca
 import {
   CardCfOrgUserDetailsComponent,
 } from './components/cards/card-cf-org-user-details/card-cf-org-user-details.component';
-import {
-  CardCfRecentAppsComponent,
-} from './components/cards/card-cf-recent-apps/card-cf-recent-apps.component';
-import {
-  CompactAppCardComponent,
-} from './components/cards/card-cf-recent-apps/compact-app-card/compact-app-card.component';
+import { CardCfRecentAppsComponent } from './components/cards/card-cf-recent-apps/card-cf-recent-apps.component';
+import { CompactAppCardComponent } from './components/cards/card-cf-recent-apps/compact-app-card/compact-app-card.component';
 import { CardCfSpaceDetailsComponent } from './components/cards/card-cf-space-details/card-cf-space-details.component';
 import { CardCfUsageComponent } from './components/cards/card-cf-usage/card-cf-usage.component';
 import { CardCfUserInfoComponent } from './components/cards/card-cf-user-info/card-cf-user-info.component';
-import {
-  CardNumberMetricComponent,
-} from './components/cards/card-number-metric/card-number-metric.component';
+import { CardNumberMetricComponent } from './components/cards/card-number-metric/card-number-metric.component';
 import { CardStatusComponent } from './components/cards/card-status/card-status.component';
 import { CfAuthModule } from './components/cf-auth/cf-auth.module';
 import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-checkbox.component';
@@ -67,6 +63,9 @@ import { MetaCardItemComponent } from './components/list/list-cards/meta-card/me
 import { MetaCardKeyComponent } from './components/list/list-cards/meta-card/meta-card-key/meta-card-key.component';
 import { MetaCardTitleComponent } from './components/list/list-cards/meta-card/meta-card-title/meta-card-title.component';
 import { MetaCardValueComponent } from './components/list/list-cards/meta-card/meta-card-value/meta-card-value.component';
+import {
+  TableCellRequestMonitorIconComponent,
+} from './components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 import { listTableComponents } from './components/list/list-table/table.types';
 import {
   EventTabActorIconPipe,
@@ -186,7 +185,11 @@ import { ValuesPipe } from './pipes/values.pipe';
     CliCommandComponent,
     CfRoleCheckboxComponent,
     EnumerateComponent,
-    UserProfileBannerComponent
+    UserProfileBannerComponent,
+    AppActionMonitorComponent,
+    AppActionMonitorIconComponent,
+    UserProfileBannerComponent,
+    TableCellRequestMonitorIconComponent
   ],
   exports: [
     FormsModule,
@@ -253,7 +256,10 @@ import { ValuesPipe } from './pipes/values.pipe';
     CliInfoComponent,
     CliCommandComponent,
     CfRoleCheckboxComponent,
-    EnumerateComponent
+    EnumerateComponent,
+    AppActionMonitorComponent,
+    CliCommandComponent,
+    AppActionMonitorIconComponent
   ],
   entryComponents: [
     AppEventDetailDialogComponentComponent,
