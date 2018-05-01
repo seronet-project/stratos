@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import {
   CfRolesService,
   CfUserRolesSelected,
+  UserRoleLabels,
 } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import {
   ManageUsersSetOrgRole,
@@ -17,19 +18,7 @@ import { AppState } from '../../../store/app-state';
 import { CfUser, IUserPermissionInOrg } from '../../../store/types/user.types';
 import { OrgUserRoleNames } from '../../../features/cloud-foundry/cf.helpers';
 
-const labels = {
-  org: {
-    [OrgUserRoleNames.MANAGER]: 'Org Manager',
-    [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
-    [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
-    [OrgUserRoleNames.USER]: 'Org User'
-  },
-  // space: {
-  //   manager: 'Manager',
-  //   developer: 'Developer',
-  //   auditor: 'Auditor',
-  // }
-};
+
 
 @Component({
   selector: 'app-cf-role-checkbox',
@@ -149,19 +138,15 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isOrgRole = !this.spaceGuid;
     const users$ = this.store.select(selectManageUsersPicked);
-    // this.cfRolesService.existingRoles$.subscribe((a) => console.log(`${this.orgGuid} ${this.spaceGuid} Existing Roles UpdateD: `, a));
-    // this.cfRolesService.newRoles$.subscribe((a) => console.log(`${this.orgGuid} ${this.spaceGuid} new Roles UpdateD: `, a));
     this.sub = this.cfRolesService.existingRoles$.pipe(
       combineLatest(this.cfRolesService.newRoles$, users$),
       filter(([existingRoles, newRoles, users]) => !!users.length && !!newRoles.orgGuid)
     ).subscribe(([existingRoles, newRoles, users]) => {
       this.orgGuid = newRoles.orgGuid;
-      // console.log('Both Updated');
       const { checked, tooltip } = CfRoleCheckboxComponent.getCheckedState(
         this.role, users, existingRoles, newRoles, this.orgGuid, this.spaceGuid);
       this.checked = checked;
       this.tooltip = tooltip;
-
       this.disabled = CfRoleCheckboxComponent.isDisabled(this.isOrgRole, this.role, users, existingRoles, newRoles, this.orgGuid);
     });
   }
@@ -173,7 +158,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
   }
 
   public getLabel(): string {
-    return this.spaceGuid ? '' : labels.org[this.role];
+    return this.spaceGuid ? '' : UserRoleLabels.org[this.role];
   }
 
   public roleUpdated(checked: boolean) {

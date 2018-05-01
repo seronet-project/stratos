@@ -19,18 +19,18 @@ import { pathGet } from '../../core/utils.service';
  * Org user roles, string values as per CF API
  */
 export enum OrgUserRoleNames {
-  MANAGER = 'manager',
-  BILLING_MANAGERS = 'billing_manager',
-  AUDITOR = 'auditor',
-  USER = 'user'
+  MANAGER = 'managers',
+  BILLING_MANAGERS = 'billing_managers',
+  AUDITOR = 'auditors',
+  USER = 'users'
 }
 /**
  * Space user roles, string values as per CF API
  */
 export enum SpaceUserRoleNames {
-  MANAGER = 'manager',
-  AUDITOR = 'auditor',
-  DEVELOPER = 'developer'
+  MANAGER = 'managers',
+  AUDITOR = 'auditors',
+  DEVELOPER = 'developers'
 }
 
 export interface IUserRole<T> {

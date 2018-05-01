@@ -32,28 +32,28 @@ export class UserRoleInOrg {
    * @type {Boolean}
    * @memberof UserRoleInOrg
    */
-  manager: Boolean;
+  managers: Boolean;
   /**
    * See {OrgUserRoleNames.BILLING_MANAGERS} for name
    *
    * @type {Boolean}
    * @memberof UserRoleInOrg
    */
-  billing_manager: Boolean;
+  billing_managers: Boolean;
   /**
    * See {OrgUserRoleNames.AUDITOR} for name
    *
    * @type {Boolean}
    * @memberof UserRoleInOrg
    */
-  auditor: Boolean;
+  auditors: Boolean;
   /**
    * See {OrgUserRoleNames.USER} for name
    *
    * @type {Boolean}
    * @memberof UserRoleInOrg
    */
-  user: Boolean;
+  users: Boolean;
 }
 /**
  * Temporary function. Once we move to typescript 2.7 (blocked on angular/compiler cli) we can use constant named properties in
@@ -89,21 +89,21 @@ export interface UserRoleInSpace {
    * @type {Boolean}
    * @memberof UserRoleInSpace
    */
-  manager: Boolean;
+  managers: Boolean;
   /**
    * See {SpaceUserRoleNames.DEVELOPER} for name
    *
    * @type {Boolean}
    * @memberof UserRoleInSpace
    */
-  developer: Boolean;
+  developers: Boolean;
   /**
    * See {SpaceUserRoleNames.AUDITOR} for name
    *
    * @type {Boolean}
    * @memberof UserRoleInSpace
    */
-  auditor: Boolean;
+  auditors: Boolean;
 }
 
 /**

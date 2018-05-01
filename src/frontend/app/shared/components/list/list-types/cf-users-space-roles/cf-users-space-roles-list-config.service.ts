@@ -12,6 +12,7 @@ import { ITableColumn } from '../../list-table/table.types';
 import { IListConfig, ListViewTypes } from '../../list.component.types';
 import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
 import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
+import { SpaceUserRoleNames } from '../../../../../features/cloud-foundry/cf.helpers';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
@@ -40,21 +41,21 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
     headerCell: () => 'Manager',
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
-      role: 'manager',
+      role: SpaceUserRoleNames.MANAGER,
     }
   }, {
     columnId: 'auditor',
     headerCell: () => 'Auditor',
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
-      role: 'auditor',
+      role: SpaceUserRoleNames.AUDITOR,
     }
   }, {
     columnId: 'developer',
     headerCell: () => 'Developer',
     cellComponent: TableCellSpaceRoleComponent,
     cellConfig: {
-      role: 'developer',
+      role: SpaceUserRoleNames.DEVELOPER,
     }
   }];
   initialised = new BehaviorSubject<boolean>(false);

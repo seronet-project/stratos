@@ -11,6 +11,7 @@ import {
   startWith,
   switchMap,
   withLatestFrom,
+  filter,
 } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
@@ -30,6 +31,13 @@ import {
   UserRoleInSpace,
 } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../../cf.helpers';
+import { IOrganization } from '../../../../core/cf-api.types';
+import { APIResource } from '../../../../store/types/api.types';
+import { organizationSchemaKey, entityFactory, spaceSchemaKey } from '../../../../store/helpers/entity-factory';
+import { GetOrganization } from '../../../../store/actions/organization.actions';
+import { createEntityRelationKey } from '../../../../store/helpers/entity-relations.types';
+import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
 
 export interface CfUserRolesSelected {
   [userGuid: string]: {
@@ -42,8 +50,22 @@ export class CfRoleChange {
   orgGuid: string;
   spaceGuid?: string;
   add: boolean;
-  role: string;
+  role: OrgUserRoleNames | SpaceUserRoleNames;
 }
+
+export const UserRoleLabels = {
+  org: {
+    [OrgUserRoleNames.MANAGER]: 'Org Manager',
+    [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
+    [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
+    [OrgUserRoleNames.USER]: 'Org User'
+  },
+  space: {
+    [SpaceUserRoleNames.MANAGER]: 'Space Manager',
+    [SpaceUserRoleNames.DEVELOPER]: 'Space Developer',
+    [SpaceUserRoleNames.AUDITOR]: 'Space Auditor',
+  }
+};
 
 @Injectable()
 export class CfRolesService {
@@ -52,7 +74,10 @@ export class CfRolesService {
   newRoles$: Observable<IUserPermissionInOrg>;
   loading$: Observable<boolean>;
 
-  constructor(private store: Store<AppState>, private cfUserService: CfUserService, private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace) {
+  constructor(
+    private store: Store<AppState>,
+    private cfUserService: CfUserService,
+    private entityServiceFactory: EntityServiceFactory) {
     this.existingRoles$ = this.store.select(selectManageUsersPicked).pipe(
       withLatestFrom(this.store.select(selectManageUsersCf)),
       switchMap(([users, cfGuid]) => {
@@ -148,7 +173,7 @@ export class CfRolesService {
             userGuid,
             orgGuid,
             add: false,
-            role: ''
+            role: null
           }, existingOrgRoles.permissions, newRoles.permissions));
 
           // Compare space roles
@@ -160,13 +185,28 @@ export class CfRolesService {
               orgGuid,
               spaceGuid,
               add: false,
-              role: ''
+              role: null
             }, oldSpace.permissions, newSpace.permissions));
           });
         });
         this.store.dispatch(new ManageUsersSetChanges(changes));
         return changes;
       })
+    );
+  }
+
+  fetchOrg(cfGuid: string, orgGuid: string): Observable<APIResource<IOrganization>> {
+    return this.entityServiceFactory.create<APIResource<IOrganization>>(
+      organizationSchemaKey,
+      entityFactory(organizationSchemaKey),
+      orgGuid,
+      new GetOrganization(orgGuid, cfGuid, [
+        createEntityRelationKey(organizationSchemaKey, spaceSchemaKey)
+      ], true),
+      true
+    ).waitForEntity$.pipe(
+      filter(entityInfo => !!entityInfo.entity),
+      map(entityInfo => entityInfo.entity),
     );
   }
 

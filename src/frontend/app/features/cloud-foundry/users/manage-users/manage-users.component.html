@@ -3,16 +3,14 @@
   <ng-template #multiUser>Manager Users Roles</ng-template>
 </app-page-header>
 <app-steppers cancel="{{defaultCancelUrl}}">
-  <app-step *ngIf="(initialUsers$ | async).length === 0" title="Select" [blocked$]="select.cfRolesService.loading$" [onNext]="select.onNext" [valid]="select.valid$ | async">
+  <app-step *ngIf="(initialUsers$ | async).length === 0" title="Users" [blocked$]="select.cfRolesService.loading$" [onNext]="select.onNext" [valid]="select.valid$ | async">
     <app-manage-users-select #select></app-manage-users-select>
   </app-step>
-  <app-step title="Modify" [blocked$]="modify.cfRolesService.loading$" [onNext]="modify.onNext" [valid]="modify.valid$ | async">
+  <app-step title="Roles" [blocked$]="modify.cfRolesService.loading$" [onNext]="modify.onNext" [valid]="modify.valid$ | async">
     <app-manage-users-modify #modify></app-manage-users-modify>
   </app-step>
-  <app-step title="Confirm ">
+  <app-step title="Confirm" [onEnter]="confirm.onEnter" [canClose]="!updateStarted" [disablePrevious]="updateStarted" [destructiveStep]="!updateStarted" [onNext]="confirm.startApply" [finishButtonText]="updateStarted ? 'Close' : 'Apply'">
     <app-manage-users-confirm #confirm></app-manage-users-confirm>
-  </app-step>
-  <app-step title="Progress ">
   </app-step>
 </app-steppers>
 

@@ -12,9 +12,8 @@ import { Observable } from 'rxjs/Observable';
 import { debounceTime, distinctUntilChanged, filter, first, map, switchMap } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
-import { EntityServiceFactory } from '../../../../../core/entity-service-factory.service';
 import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
-import { GetAllOrganizations, GetOrganization } from '../../../../../store/actions/organization.actions';
+import { GetAllOrganizations } from '../../../../../store/actions/organization.actions';
 import {
   ManageUsersSetOrg,
   selectManageUsersPicked,
@@ -27,9 +26,9 @@ import { getPaginationObservables } from '../../../../../store/reducers/paginati
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
+import { OrgUserRoleNames } from '../../../cf.helpers';
 import { CfRolesService } from '../cf-roles.service';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
-import { OrgUserRoleNames } from '../../../cf.helpers';
 
 
 @Component({
@@ -59,7 +58,6 @@ export class ManageUsersModifyComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
-    private entityServiceFactory: EntityServiceFactory,
     private paginationMonitorFactory: PaginationMonitorFactory,
     private componentFactoryResolver: ComponentFactoryResolver,
     private cfRolesService: CfRolesService) {
@@ -68,18 +66,7 @@ export class ManageUsersModifyComponent implements OnInit {
 
   ngOnInit() {
     if (this.activeRouteCfOrgSpace.orgGuid) {
-      this.singleOrg$ = this.entityServiceFactory.create<APIResource<IOrganization>>(
-        organizationSchemaKey,
-        entityFactory(organizationSchemaKey),
-        this.activeRouteCfOrgSpace.orgGuid,
-        new GetOrganization(this.activeRouteCfOrgSpace.orgGuid, this.activeRouteCfOrgSpace.cfGuid, [
-          createEntityRelationKey(organizationSchemaKey, spaceSchemaKey)
-        ], true),
-        true
-      ).waitForEntity$.pipe(
-        filter(entityInfo => !!entityInfo.entity),
-        map(entityInfo => entityInfo.entity),
-      );
+      this.singleOrg$ = this.cfRolesService.fetchOrg(this.activeRouteCfOrgSpace.cfGuid, this.activeRouteCfOrgSpace.orgGuid);
       this.singleOrg$.pipe(
         first()
       ).subscribe(null, null, () => {

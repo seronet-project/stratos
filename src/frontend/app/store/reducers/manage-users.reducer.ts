@@ -16,6 +16,7 @@ import {
   IUserPermissionInSpace,
 } from '../types/user.types';
 import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
+import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 
 export interface ManageUsersState {
   cfGuid: string;
@@ -122,10 +123,11 @@ function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: st
     newOrgRoles = setPermission(spaceRoles, role, setRole) ? newOrgRoles : null;
   } else {
     newOrgRoles = setPermission(newOrgRoles, role, setRole) ? newOrgRoles : null;
+    // If the user as applied the org manager, auditor or billing manager role they must also have the org user role applied too.
     if (newOrgRoles && role !== 'user' && setRole) {
       newOrgRoles.permissions = {
         ...newOrgRoles.permissions,
-        user: true
+        [OrgUserRoleNames.USER]: true
       };
     }
   }

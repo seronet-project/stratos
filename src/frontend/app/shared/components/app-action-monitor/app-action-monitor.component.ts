@@ -31,8 +31,8 @@ export class AppActionMonitorComponent<T> implements OnInit {
   @Input('monitorState')
   public monitorState: AppMonitorComponentTypes = AppMonitorComponentTypes.FETCHING;
 
-  @Input('updateKey')
-  public updateKey = rootUpdatingKey;
+  @Input('getUpdateKey')
+  public getUpdateKey = ((element) => rootUpdatingKey);
 
   @Input('getId')
   public getId: (element) => string;
@@ -57,7 +57,7 @@ export class AppActionMonitorComponent<T> implements OnInit {
       entityKey: this.entityKey,
       schema: this.schema,
       monitorState: this.monitorState,
-      updateKey: this.updateKey,
+      getUpdateKey: this.getUpdateKey,
       getId: this.getId
     };
     const monitorColumn = {

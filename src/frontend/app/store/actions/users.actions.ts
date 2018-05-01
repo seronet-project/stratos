@@ -5,7 +5,7 @@ import { schema } from 'normalizr';
 
 import { ApiActionTypes } from './request.actions';
 import { PaginatedAction } from '../types/pagination.types';
-import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../helpers/entity-factory';
+import { entityFactory, organizationSchemaKey, spaceSchemaKey, EntitySchema } from '../helpers/entity-factory';
 import { cfUserSchemaKey } from '../helpers/entity-factory';
 import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/entity-relations.types';
@@ -62,52 +62,33 @@ export class GetAllUsers extends CFStartAction implements PaginatedAction, Entit
   flattenPagination = true;
 }
 
-// export class AddUserPermission<T> extends CFStartAction implements IRequestAction {
-//   constructor(
-//     public guid: string,
-//     public orgGuid: string,
-//     public permissionTypeKey: T
-//   ) {
-//     super();
-//     this.updatingKey = AddUserPermission.generateUpdatingKey<T>(orgGuid, permissionTypeKey, guid);
-//     this.options = new RequestOptions();
-//     this.options.url = `organizations/${this.updatingKey}`;
-//     this.options.method = 'put';
-//   }
-//   actions = [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED];
-//   entity = entityFactory(cfUserSchemaKey);
-//   entityKey = cfUserSchemaKey;
-//   options: RequestOptions;
-//   updatingKey: string;
-
-//   static generateUpdatingKey<T>(guid: string, permissionType: T, userGuid: string) {
-//     return `${guid}/${permissionType}/${userGuid}`;
-//   }
-// }
-
-abstract class ChangeUserPermission extends CFStartAction implements IRequestAction {
+export class ChangeUserPermission extends CFStartAction implements IRequestAction {
   constructor(
-    public guid: string,
+    public userGuid: string,
     public method: string,
     public actions: string[],
     public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    public orgGuid?: string,
+    public orgGuid: string,
     public spaceGuid?: string,
   ) {
     super();
-    this.updatingKey = ChangeUserPermission.generateUpdatingKey(spaceGuid || orgGuid, permissionTypeKey, guid);
+    this.guid = spaceGuid || orgGuid;
+    this.updatingKey = ChangeUserPermission.generateUpdatingKey(this.guid, permissionTypeKey, userGuid);
     this.options = new RequestOptions();
     this.options.url = `${spaceGuid ? 'spaces' : 'organizations'}/${this.updatingKey}`;
     this.options.method = method;
+    this.entityKey = spaceGuid ? spaceSchemaKey : organizationSchemaKey;
+    this.entity = entityFactory(this.entityKey);
   }
 
-  entity = entityFactory(cfUserSchemaKey);
-  entityKey = cfUserSchemaKey;
+  guid: string;
+  entity: EntitySchema;
+  entityKey: string;
   options: RequestOptions;
   updatingKey: string;
 
-  static generateUpdatingKey<T>(guid: string, permissionType: OrgUserRoleNames | SpaceUserRoleNames, userGuid: string) {
-    return `${guid}/${permissionType}/${userGuid}`;
+  static generateUpdatingKey<T>(spaceOrgGuid: string, permissionType: OrgUserRoleNames | SpaceUserRoleNames, userGuid: string) {
+    return `${spaceOrgGuid}/${permissionType}/${userGuid}`;
   }
 }
 

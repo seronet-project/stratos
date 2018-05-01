@@ -38,7 +38,7 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
 
   private getSpacePermissions(spacePerms: IUserPermissionInSpace, row: APIResource<CfUser>) {
     return getSpaceRoles(spacePerms.permissions).map(perm => {
-      const updatingKey = RemoveUserPermission.generateUpdatingKey<SpaceUserRoleNames>(
+      const updatingKey = RemoveUserPermission.generateUpdatingKey(
         spacePerms.orgGuid,
         perm.key,
         row.metadata.guid

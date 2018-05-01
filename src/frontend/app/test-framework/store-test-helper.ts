@@ -21654,7 +21654,7 @@ const testInitialStoreState: AppState = {
   },
   internalEvents: {
     types: {}
-  }
+  },
 };
 /* tslint:enable */
 
