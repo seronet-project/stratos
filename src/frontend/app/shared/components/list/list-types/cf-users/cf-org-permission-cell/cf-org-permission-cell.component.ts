@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 
 import { arrayHelper } from '../../../../../../core/helper-classes/array.helper';
-import { getOrgRoles, OrgUserRoles } from '../../../../../../features/cloud-foundry/cf.helpers';
+import { getOrgRoles, OrgUserRoleNames } from '../../../../../../features/cloud-foundry/cf.helpers';
 import { RemoveUserPermission } from '../../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../../store/app-state';
 import { cfUserSchemaKey, entityFactory } from '../../../../../../store/helpers/entity-factory';
@@ -19,7 +19,7 @@ import { CfPermissionCell, ICellPermissionList } from '../cf-permission-cell';
   styleUrls: ['./cf-org-permission-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CfOrgPermissionCellComponent extends CfPermissionCell<OrgUserRoles> {
+export class CfOrgPermissionCellComponent extends CfPermissionCell<OrgUserRoleNames> {
   constructor(
     public store: Store<AppState>,
     public cfUserService: CfUserService
@@ -29,7 +29,7 @@ export class CfOrgPermissionCellComponent extends CfPermissionCell<OrgUserRoles>
 
   protected setChipConfig(row: APIResource<CfUser>) {
     const userRoles = this.cfUserService.getOrgRolesFromUser(row.entity);
-    const userOrgPermInfo = arrayHelper.flatten<ICellPermissionList<OrgUserRoles>>(
+    const userOrgPermInfo = arrayHelper.flatten<ICellPermissionList<OrgUserRoleNames>>(
       userRoles.map(orgPerms => this.getOrgPermissions(orgPerms, row))
     );
     this.chipsConfig = this.getChipConfig(userOrgPermInfo);
@@ -58,7 +58,7 @@ export class CfOrgPermissionCellComponent extends CfPermissionCell<OrgUserRoles>
     });
   }
 
-  public removePermission(cellPermission: ICellPermissionList<OrgUserRoles>) {
+  public removePermission(cellPermission: ICellPermissionList<OrgUserRoleNames>) {
     this.store.dispatch(new RemoveUserPermission(
       this.guid,
       cellPermission.id,

@@ -15,13 +15,14 @@ import {
 } from '../../../store/actions/users.actions';
 import { AppState } from '../../../store/app-state';
 import { CfUser, IUserPermissionInOrg } from '../../../store/types/user.types';
+import { OrgUserRoleNames } from '../../../features/cloud-foundry/cf.helpers';
 
 const labels = {
   org: {
-    orgManager: 'Org Manager',
-    billingManager: 'Org Billing Manager',
-    auditor: 'Org Auditor',
-    user: 'Org User'
+    [OrgUserRoleNames.MANAGER]: 'Org Manager',
+    [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
+    [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
+    [OrgUserRoleNames.USER]: 'Org User'
   },
   // space: {
   //   manager: 'Manager',
@@ -135,9 +136,9 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     orgGuid: string): boolean {
     // Determine if the checkbox is disabled (is this the org user checkbox and are other org roles true (true || null))
     if (isOrgRole && role === 'user') {
-      return CfRoleCheckboxComponent.getCheckedState('orgManager', users, existingRoles, newRoles, orgGuid).checked !== false ||
-        CfRoleCheckboxComponent.getCheckedState('billingManager', users, existingRoles, newRoles, orgGuid).checked !== false ||
-        CfRoleCheckboxComponent.getCheckedState('auditor', users, existingRoles, newRoles, orgGuid).checked !== false;
+      return CfRoleCheckboxComponent.getCheckedState(OrgUserRoleNames.MANAGER, users, existingRoles, newRoles, orgGuid).checked !== false ||
+        CfRoleCheckboxComponent.getCheckedState(OrgUserRoleNames.BILLING_MANAGERS, users, existingRoles, newRoles, orgGuid).checked !== false ||
+        CfRoleCheckboxComponent.getCheckedState(OrgUserRoleNames.AUDITOR, users, existingRoles, newRoles, orgGuid).checked !== false;
     }
     return false;
   }

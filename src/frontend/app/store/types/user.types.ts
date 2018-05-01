@@ -1,7 +1,6 @@
+import { IOrganization, ISpace } from '../../core/cf-api.types';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { APIResource } from './api.types';
-import { schema } from 'normalizr';
-import { getAPIResourceGuid } from '../selectors/api.selectors';
-import { ISpace, IOrganization } from '../../core/cf-api.types';
 
 export interface CfUser {
   organizations?: APIResource<IOrganization>[];
@@ -26,25 +25,49 @@ export interface CfUser {
   default_space_guid: string;
 }
 
-export interface UserRoleInOrg {
-  orgManager: Boolean;
-  billingManager: Boolean;
+export class UserRoleInOrg {
+  /**
+   * See {OrgUserRoleNames.MANAGER} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInOrg
+   */
+  manager: Boolean;
+  /**
+   * See {OrgUserRoleNames.BILLING_MANAGERS} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInOrg
+   */
+  billing_manager: Boolean;
+  /**
+   * See {OrgUserRoleNames.AUDITOR} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInOrg
+   */
   auditor: Boolean;
+  /**
+   * See {OrgUserRoleNames.USER} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInOrg
+   */
   user: Boolean;
 }
-
-// export interface CFSpaceRoles {
-//   manager: boolean;
-//   auditor: boolean;
-//   developer: boolean;
-// }
-
-// export interface CFOrgRoles {
-//   orgManager: boolean;
-//   auditor: boolean;
-//   billingManager: boolean;
-//   user: boolean;
-// }
+/**
+ * Temporary function. Once we move to typescript 2.7 (blocked on angular/compiler cli) we can use constant named properties in
+ * UserRoleInOrg, thus can create roles without this workaround function. See
+ * https://github.com/Microsoft/TypeScript/wiki/What%27s-new-in-TypeScript#constant-named-properties for details
+ */
+export function createUserRoleInOrg(manager: Boolean, billingManager: Boolean, auditor: Boolean, user: Boolean): UserRoleInOrg {
+  const res = {};
+  res[OrgUserRoleNames.MANAGER] = manager;
+  res[OrgUserRoleNames.BILLING_MANAGERS] = billingManager;
+  res[OrgUserRoleNames.AUDITOR] = auditor;
+  res[OrgUserRoleNames.USER] = user;
+  return res as UserRoleInOrg;
+}
 
 export interface IUserPermissionInOrg {
   name: string;
@@ -60,7 +83,39 @@ export interface IUserPermissionInSpace {
 }
 
 export interface UserRoleInSpace {
+  /**
+   * See {SpaceUserRoleNames.MANAGER} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInSpace
+   */
   manager: Boolean;
+  /**
+   * See {SpaceUserRoleNames.DEVELOPER} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInSpace
+   */
   developer: Boolean;
+  /**
+   * See {SpaceUserRoleNames.AUDITOR} for name
+   *
+   * @type {Boolean}
+   * @memberof UserRoleInSpace
+   */
   auditor: Boolean;
+}
+
+/**
+ * Temporary function. Once we move to typescript 2.7 (blocked on angular/compiler cli) we can use constant named properties in
+ * UserRoleInSpace, thus can create roles without this workaround function. See
+ * https://github.com/Microsoft/TypeScript/wiki/What%27s-new-in-TypeScript#constant-named-properties for details
+ *
+ */
+export function createUserRoleInSpace(manager: Boolean, auditor: Boolean, developer: Boolean): UserRoleInSpace {
+  const res = {};
+  res[SpaceUserRoleNames.MANAGER] = manager;
+  res[SpaceUserRoleNames.DEVELOPER] = developer;
+  res[SpaceUserRoleNames.AUDITOR] = auditor;
+  return res as UserRoleInSpace;
 }

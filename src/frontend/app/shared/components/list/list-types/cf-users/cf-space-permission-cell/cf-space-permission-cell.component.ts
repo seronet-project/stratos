@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 
 import { arrayHelper } from '../../../../../../core/helper-classes/array.helper';
-import { getSpaceRoles, SpaceUserRoles } from '../../../../../../features/cloud-foundry/cf.helpers';
+import { getSpaceRoles, SpaceUserRoleNames } from '../../../../../../features/cloud-foundry/cf.helpers';
 import { RemoveUserPermission } from '../../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../../store/app-state';
 import { cfUserSchemaKey, entityFactory } from '../../../../../../store/helpers/entity-factory';
@@ -19,7 +19,7 @@ import { CfPermissionCell, ICellPermissionList } from '../cf-permission-cell';
   styleUrls: ['./cf-space-permission-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRoles> {
+export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRoleNames> {
 
   constructor(
     public store: Store<AppState>,
@@ -30,7 +30,7 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
 
   protected setChipConfig(row: APIResource<CfUser>) {
     const userRoles = this.cfUserService.getSpaceRolesFromUser(row.entity);
-    const userPermInfo = arrayHelper.flatten<ICellPermissionList<SpaceUserRoles>>(
+    const userPermInfo = arrayHelper.flatten<ICellPermissionList<SpaceUserRoleNames>>(
       userRoles.map(spacePerms => this.getSpacePermissions(spacePerms, row))
     );
     this.chipsConfig = this.getChipConfig(userPermInfo);
@@ -38,7 +38,7 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
 
   private getSpacePermissions(spacePerms: IUserPermissionInSpace, row: APIResource<CfUser>) {
     return getSpaceRoles(spacePerms.permissions).map(perm => {
-      const updatingKey = RemoveUserPermission.generateUpdatingKey<SpaceUserRoles>(
+      const updatingKey = RemoveUserPermission.generateUpdatingKey<SpaceUserRoleNames>(
         spacePerms.orgGuid,
         perm.key,
         row.metadata.guid
@@ -59,7 +59,7 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
     });
   }
 
-  public removePermission(cellPermission: ICellPermissionList<SpaceUserRoles>) {
+  public removePermission(cellPermission: ICellPermissionList<SpaceUserRoleNames>) {
     console.log('NOT IMPLEMENTED');
   }
 }

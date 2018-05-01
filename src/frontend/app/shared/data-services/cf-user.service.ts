@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { filter, first, map, publishReplay, refCount, tap } from 'rxjs/operators';
+import { filter, first, map, publishReplay, refCount } from 'rxjs/operators';
 
 import { IOrganization, ISpace } from '../../core/cf-api.types';
 import {
@@ -22,7 +22,15 @@ import {
   PaginationObservables,
 } from '../../store/reducers/pagination-reducer/pagination-reducer.helper';
 import { APIResource } from '../../store/types/api.types';
-import { CfUser, IUserPermissionInOrg, UserRoleInOrg, UserRoleInSpace, IUserPermissionInSpace } from '../../store/types/user.types';
+import {
+  CfUser,
+  createUserRoleInOrg,
+  createUserRoleInSpace,
+  IUserPermissionInOrg,
+  IUserPermissionInSpace,
+  UserRoleInOrg,
+  UserRoleInSpace,
+} from '../../store/types/user.types';
 import { PaginationMonitorFactory } from '../monitors/pagination-monitor.factory';
 import { ActiveRouteCfOrgSpace } from './../../features/cloud-foundry/cf-page.types';
 
@@ -59,15 +67,13 @@ export class CfUserService {
       return {
         name: org.entity.name as string,
         orgGuid: org.metadata.guid,
-        permissions: {
-          orgManager: isOrgManager(user, orgGuid),
-          billingManager: isOrgBillingManager(user, orgGuid),
-          auditor: isOrgAuditor(user, orgGuid),
-          user: isOrgUser(user, orgGuid)
-        }
+        permissions: createUserRoleInOrg(
+          isOrgManager(user, orgGuid),
+          isOrgBillingManager(user, orgGuid),
+          isOrgAuditor(user, orgGuid),
+          isOrgUser(user, orgGuid)
+        )
       };
-
-
     });
   }
 
@@ -79,11 +85,11 @@ export class CfUserService {
         name: space.entity.name as string,
         orgGuid: space.entity.organization_guid,
         spaceGuid: spaceGuid,
-        permissions: {
-          manager: isSpaceManager(user, spaceGuid),
-          auditor: isSpaceAuditor(user, spaceGuid),
-          developer: isSpaceDeveloper(user, spaceGuid)
-        }
+        permissions: createUserRoleInSpace(
+          isSpaceManager(user, spaceGuid),
+          isSpaceAuditor(user, spaceGuid),
+          isSpaceDeveloper(user, spaceGuid)
+        )
       };
     });
   }
@@ -96,12 +102,12 @@ export class CfUserService {
     return this.getUsers(cfGuid).pipe(
       this.getUser(userGuid),
       map(user => {
-        return {
-          orgManager: isOrgManager(user.entity, orgGuid),
-          billingManager: isOrgBillingManager(user.entity, orgGuid),
-          auditor: isOrgAuditor(user.entity, orgGuid),
-          user: isOrgUser(user.entity, orgGuid)
-        };
+        return createUserRoleInOrg(
+          isOrgManager(user.entity, orgGuid),
+          isOrgBillingManager(user.entity, orgGuid),
+          isOrgAuditor(user.entity, orgGuid),
+          isOrgUser(user.entity, orgGuid)
+        );
       }),
       first()
     );
@@ -115,11 +121,11 @@ export class CfUserService {
     return this.getUsers(cfGuid).pipe(
       this.getUser(userGuid),
       map(user => {
-        return {
-          manager: isSpaceManager(user.entity, spaceGuid),
-          auditor: isSpaceAuditor(user.entity, spaceGuid),
-          developer: isSpaceDeveloper(user.entity, spaceGuid)
-        };
+        return createUserRoleInSpace(
+          isSpaceManager(user.entity, spaceGuid),
+          isSpaceAuditor(user.entity, spaceGuid),
+          isSpaceDeveloper(user.entity, spaceGuid)
+        );
       })
     );
   }

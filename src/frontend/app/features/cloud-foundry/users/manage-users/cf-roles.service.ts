@@ -163,7 +163,6 @@ export class CfRolesService {
             }, oldSpace.permissions, newSpace.permissions));
           });
         });
-        console.log(changes);
         return changes;
       })
     );

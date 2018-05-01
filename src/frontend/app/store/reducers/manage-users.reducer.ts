@@ -7,7 +7,13 @@ import {
   ManageUsersSetUsers,
   MangerUsersActions,
 } from '../actions/users.actions';
-import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../types/user.types';
+import {
+  CfUser,
+  createUserRoleInOrg,
+  createUserRoleInSpace,
+  IUserPermissionInOrg,
+  IUserPermissionInSpace,
+} from '../types/user.types';
 
 export interface ManageUsersState {
   cfGuid: string;
@@ -19,12 +25,11 @@ export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {
     name: '',
     orgGuid: orgGuid,
-    permissions: {
-      auditor: undefined,
-      billingManager: undefined,
-      orgManager: undefined,
-      user: undefined
-    },
+    permissions: createUserRoleInOrg(
+      undefined,
+      undefined,
+      undefined,
+      undefined),
     spaces: {}
   };
 }
@@ -34,11 +39,11 @@ export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): IUs
     name: '',
     spaceGuid,
     orgGuid,
-    permissions: {
-      auditor: undefined,
-      developer: undefined,
-      manager: undefined
-    }
+    permissions: createUserRoleInSpace(
+      undefined,
+      undefined,
+      undefined
+    )
   };
 }
 

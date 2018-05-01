@@ -29,6 +29,7 @@ import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 import { CfRolesService } from '../cf-roles.service';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
+import { OrgUserRoleNames } from '../../../cf.helpers';
 
 
 @Component({
@@ -53,6 +54,7 @@ export class ManageUsersModifyComponent implements OnInit {
   users$: Observable<CfUser[]>;
   blocked$: Observable<boolean>;
   valid$: Observable<boolean>;
+  orgRoles = OrgUserRoleNames;
 
   constructor(
     private store: Store<AppState>,

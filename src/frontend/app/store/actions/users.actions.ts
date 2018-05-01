@@ -7,11 +7,11 @@ import { ApiActionTypes } from './request.actions';
 import { PaginatedAction } from '../types/pagination.types';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../helpers/entity-factory';
 import { cfUserSchemaKey } from '../helpers/entity-factory';
-import { OrgUserRoles, SpaceUserRoles } from '../../features/cloud-foundry/cf.helpers';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/entity-relations.types';
 import { getActions } from './action.helper';
 import { Action, compose } from '@ngrx/store';
-import { CfUser } from '../types/user.types';
+import { CfUser, UserRoleInOrg, UserRoleInSpace } from '../types/user.types';
 import { AppState } from '../app-state';
 import { ManageUsersState } from '../reducers/manage-users.reducer';
 
@@ -22,6 +22,10 @@ export const GET_ALL_FAILED = '[Users] Get all failed';
 export const REMOVE_PERMISSION = '[Users] Remove Permission';
 export const REMOVE_PERMISSION_SUCCESS = '[Users]  Remove Permission success';
 export const REMOVE_PERMISSION_FAILED = '[Users]  Remove Permission failed';
+
+export const ADD_PERMISSION = '[Users] Add Permission';
+export const ADD_PERMISSION_SUCCESS = '[Users]  Add Permission success';
+export const ADD_PERMISSION_FAILED = '[Users]  Add Permission failed';
 
 const defaultUserRelations = [
   createEntityRelationKey(cfUserSchemaKey, organizationSchemaKey),
@@ -57,28 +61,91 @@ export class GetAllUsers extends CFStartAction implements PaginatedAction, Entit
   flattenPagination = true;
 }
 
-export class RemoveUserPermission<T> extends CFStartAction implements IRequestAction {
+// export class AddUserPermission<T> extends CFStartAction implements IRequestAction {
+//   constructor(
+//     public guid: string,
+//     public orgGuid: string,
+//     public permissionTypeKey: T
+//   ) {
+//     super();
+//     this.updatingKey = AddUserPermission.generateUpdatingKey<T>(orgGuid, permissionTypeKey, guid);
+//     this.options = new RequestOptions();
+//     this.options.url = `organizations/${this.updatingKey}`;
+//     this.options.method = 'put';
+//   }
+//   actions = [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED];
+//   entity = entityFactory(cfUserSchemaKey);
+//   entityKey = cfUserSchemaKey;
+//   options: RequestOptions;
+//   updatingKey: string;
+
+//   static generateUpdatingKey<T>(guid: string, permissionType: T, userGuid: string) {
+//     return `${guid}/${permissionType}/${userGuid}`;
+//   }
+// }
+
+abstract class ChangeUserPermission extends CFStartAction implements IRequestAction {
   constructor(
     public guid: string,
-    public orgGuid: string,
-    public permissionTypeKey: T
+    public method: string,
+    public actions: string[],
+    public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
+    public orgGuid?: string,
+    public spaceGuid?: string,
   ) {
     super();
-    this.updatingKey = RemoveUserPermission.generateUpdatingKey<T>(orgGuid, permissionTypeKey, guid);
+    this.updatingKey = ChangeUserPermission.generateUpdatingKey(spaceGuid || orgGuid, permissionTypeKey, guid);
     this.options = new RequestOptions();
-    this.options.url = `organizations/${this.updatingKey}`;
-    this.options.method = 'delete';
+    this.options.url = `${spaceGuid ? 'spaces' : 'organizations'}/${this.updatingKey}`;
+    this.options.method = method;
   }
-  actions = [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED];
+
   entity = entityFactory(cfUserSchemaKey);
   entityKey = cfUserSchemaKey;
   options: RequestOptions;
   updatingKey: string;
 
-  static generateUpdatingKey<T>(guid: string, permissionType: T, userGuid: string) {
+  static generateUpdatingKey<T>(guid: string, permissionType: OrgUserRoleNames | SpaceUserRoleNames, userGuid: string) {
     return `${guid}/${permissionType}/${userGuid}`;
   }
 }
+
+export class AddUserPermission extends ChangeUserPermission {
+  constructor(
+    public guid: string,
+    public orgGuid: string,
+    public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
+    public spaceGuid?: string
+  ) {
+    super(
+      guid,
+      'put',
+      [ADD_PERMISSION, ADD_PERMISSION_SUCCESS, ADD_PERMISSION_FAILED],
+      permissionTypeKey,
+      orgGuid,
+      spaceGuid
+    );
+  }
+}
+
+export class RemoveUserPermission extends ChangeUserPermission {
+  constructor(
+    public guid: string,
+    public orgGuid: string,
+    public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
+    public spaceGuid?: string
+  ) {
+    super(
+      guid,
+      'delete',
+      [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED],
+      permissionTypeKey,
+      orgGuid,
+      spaceGuid
+    );
+  }
+}
+
 
 export class GetUser extends CFStartAction {
   constructor(

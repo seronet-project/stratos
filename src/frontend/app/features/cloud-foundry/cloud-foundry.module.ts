@@ -76,6 +76,7 @@ import {
 import { ManageUsersComponent } from './users/manage-users/manage-users.component';
 import { CfRolesService } from './users/manage-users/cf-roles.service';
 import { ManageUsersSelectComponent } from './users/manage-users/manage-users-select/manage-users-select.component';
+import { ManageUsersConfirmComponent } from './users/manage-users/manage-users-confirm/manage-users-confirm.component';
 
 
 @NgModule({
@@ -115,6 +116,7 @@ import { ManageUsersSelectComponent } from './users/manage-users/manage-users-se
     ManageUsersModifyComponent,
     SpaceRolesListWrapperComponent,
     ManageUsersSelectComponent,
+    ManageUsersConfirmComponent,
   ],
   providers: [
     CFEndpointsListConfigService,

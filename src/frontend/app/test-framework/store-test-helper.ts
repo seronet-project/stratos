@@ -3,6 +3,8 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppState } from '../store/app-state';
 import { appReducers } from '../store/reducers.module';
+import { OrgUserRoleNames } from '../features/cloud-foundry/cf.helpers';
+import { createUserRoleInOrg } from '../store/types/user.types';
 
 /* tslint:disable */
 const testInitialStoreState: AppState = {
@@ -21641,12 +21643,12 @@ const testInitialStoreState: AppState = {
       name: '',
       orgGuid: '',
       spaces: {},
-      permissions: {
-        auditor: undefined,
-        billingManager: undefined,
-        orgManager: undefined,
-        user: undefined
-      }
+      permissions: createUserRoleInOrg(
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     }
   },
   internalEvents: {

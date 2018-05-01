@@ -14,13 +14,20 @@ import { PaginationState, PaginationEntityState } from '../../store/types/pagina
 import { getPath } from '../../helper';
 import { pathGet } from '../../core/utils.service';
 
-export enum OrgUserRoles {
+// TODO: RC move to user types
+/**
+ * Org user roles, string values as per CF API
+ */
+export enum OrgUserRoleNames {
   MANAGER = 'manager',
   BILLING_MANAGERS = 'billing_manager',
   AUDITOR = 'auditor',
   USER = 'user'
 }
-export enum SpaceUserRoles {
+/**
+ * Space user roles, string values as per CF API
+ */
+export enum SpaceUserRoleNames {
   MANAGER = 'manager',
   AUDITOR = 'auditor',
   DEVELOPER = 'developer'
@@ -33,17 +40,17 @@ export interface IUserRole<T> {
 
 export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
   let roles = null;
-  if (userRolesInOrg.orgManager) {
-    roles = 'Manager';
+  if (userRolesInOrg[OrgUserRoleNames.MANAGER]) {
+    roles = 'Manager'; // TODO: RC use common labels
   }
-  if (userRolesInOrg.billingManager) {
+  if (userRolesInOrg[OrgUserRoleNames.BILLING_MANAGERS]) {
     roles = assignRole(roles, 'Billing Manager');
   }
-  if (userRolesInOrg.auditor) {
+  if (userRolesInOrg[OrgUserRoleNames.AUDITOR]) {
     roles = assignRole(roles, 'Auditor');
 
   }
-  if (userRolesInOrg.user && !userRolesInOrg.orgManager) {
+  if (userRolesInOrg[OrgUserRoleNames.USER] && !userRolesInOrg[OrgUserRoleNames.MANAGER]) {
     roles = assignRole(roles, 'User');
   }
 
@@ -51,67 +58,67 @@ export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
 }
 export function getSpaceRolesString(userRolesInSpace: UserRoleInSpace): string {
   let roles = null;
-  if (userRolesInSpace.manager) {
-    roles = 'Manager';
+  if (userRolesInSpace[SpaceUserRoleNames.MANAGER]) {
+    roles = 'Manager'; // TODO: RC use common labels
   }
-  if (userRolesInSpace.auditor) {
+  if (userRolesInSpace[SpaceUserRoleNames.AUDITOR]) {
     roles = assignRole(roles, 'Auditor');
 
   }
-  if (userRolesInSpace.developer) {
+  if (userRolesInSpace[SpaceUserRoleNames.DEVELOPER]) {
     roles = assignRole(roles, 'Developer');
   }
 
   return roles ? roles : 'None';
 }
 
-export function getOrgRoles(userRolesInOrg: UserRoleInOrg): IUserRole<OrgUserRoles>[] {
+export function getOrgRoles(userRolesInOrg: UserRoleInOrg): IUserRole<OrgUserRoleNames>[] {
   const roles = [];
-  if (userRolesInOrg.orgManager) {
+  if (userRolesInOrg[OrgUserRoleNames.MANAGER]) {
     roles.push({
-      string: 'Manager',
-      key: OrgUserRoles.MANAGER
+      string: 'Manager', // TODO: RC use central conversion
+      key: OrgUserRoleNames.MANAGER
     });
   }
-  if (userRolesInOrg.billingManager) {
+  if (userRolesInOrg[OrgUserRoleNames.BILLING_MANAGERS]) {
     roles.push({
       string: 'Billing Manager',
-      key: OrgUserRoles.BILLING_MANAGERS
+      key: OrgUserRoleNames.BILLING_MANAGERS
     });
   }
-  if (userRolesInOrg.auditor) {
+  if (userRolesInOrg[OrgUserRoleNames.AUDITOR]) {
     roles.push({
       string: 'Auditor',
-      key: OrgUserRoles.AUDITOR
+      key: OrgUserRoleNames.AUDITOR
     });
   }
-  if (userRolesInOrg.user) {
+  if (userRolesInOrg[OrgUserRoleNames.USER]) {
     roles.push({
       string: 'User',
-      key: OrgUserRoles.USER
+      key: OrgUserRoleNames.USER
     });
   }
   return roles;
 }
 
-export function getSpaceRoles(userRolesInSpace: UserRoleInSpace): IUserRole<SpaceUserRoles>[] {
+export function getSpaceRoles(userRolesInSpace: UserRoleInSpace): IUserRole<SpaceUserRoleNames>[] {
   const roles = [];
-  if (userRolesInSpace.manager) {
+  if (userRolesInSpace[SpaceUserRoleNames.MANAGER]) {
     roles.push({
       string: 'Manager',
-      key: SpaceUserRoles.MANAGER
+      key: SpaceUserRoleNames.MANAGER
     });
   }
-  if (userRolesInSpace.auditor) {
+  if (userRolesInSpace[SpaceUserRoleNames.AUDITOR]) {
     roles.push({
       string: 'Auditor',
-      key: SpaceUserRoles.AUDITOR
+      key: SpaceUserRoleNames.AUDITOR
     });
   }
-  if (userRolesInSpace.developer) {
+  if (userRolesInSpace[SpaceUserRoleNames.DEVELOPER]) {
     roles.push({
       string: 'Developer',
-      key: SpaceUserRoles.DEVELOPER
+      key: SpaceUserRoleNames.DEVELOPER
     });
   }
   return roles;
