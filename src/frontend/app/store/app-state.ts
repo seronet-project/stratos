@@ -7,6 +7,7 @@ import { CreateNewApplicationState } from './types/create-application.types';
 import { DeployApplicationState } from './types/deploy-application.types';
 import { EndpointState } from './types/endpoint.types';
 import { IRequestDataState, IRequestState } from './types/entity.types';
+import { InternalEventsState } from './types/internal-events.types';
 import { PaginationState } from './types/pagination.types';
 import { RoutingHistory } from './types/routing.type';
 import { UAASetupState } from './types/uaa-setup.types';
@@ -31,4 +32,5 @@ export interface AppState {
   lists: ListsState;
   routing: RoutingHistory;
   manageUsers: ManageUsersState;
+  internalEvents: InternalEventsState;
 }
