@@ -18,6 +18,7 @@ import {
   selectManageUsersCf,
   selectManageUsersPicked,
   selectManageUsersRoles,
+  ManageUsersSetChanges,
 } from '../../../../store/actions/users.actions';
 import { AppState } from '../../../../store/app-state';
 import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/manage-users.reducer';
@@ -163,6 +164,7 @@ export class CfRolesService {
             }, oldSpace.permissions, newSpace.permissions));
           });
         });
+        this.store.dispatch(new ManageUsersSetChanges(changes));
         return changes;
       })
     );

@@ -5,9 +5,10 @@ import { Observable } from 'rxjs/Observable';
 import { cfUserSchemaKey } from '../../../../../store/helpers/entity-factory';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../../../store/app-state';
-import { selectManageUsers } from '../../../../../store/actions/users.actions';
-import { first, switchMap } from 'rxjs/operators';
+import { selectManageUsers, selectManageUsersChangedRoles } from '../../../../../store/actions/users.actions';
+import { first, switchMap, filter } from 'rxjs/operators';
 import { ManageUsersState } from '../../../../../store/reducers/manage-users.reducer';
+import { AppMonitorComponentTypes } from '../../../../../shared/components/app-action-monitor-icon/app-action-monitor-icon.component';
 
 @Component({
   selector: 'app-manage-users-confirm',
@@ -23,7 +24,12 @@ export class ManageUsersConfirmComponent implements OnInit {
       cellDefinition: {
         valuePath: 'userGuid'
       },
-      cellFlex: '1'
+      cellFlex: '1',
+      // sort: {
+      //   type: 'sort',
+      //   orderKey: 'user',
+      //   field: 'userGuid',
+      // }
     },
     // {
     //   headerCell: () => 'Organization',
@@ -60,20 +66,28 @@ export class ManageUsersConfirmComponent implements OnInit {
   ];
   changes$: Observable<CfRoleChange[]>;
   userSchemaKey = cfUserSchemaKey;
+  monitorState = AppMonitorComponentTypes.UPDATE;
+
   public getId(row: CfRoleChange) {
     return row.userGuid + row.orgGuid + row.spaceGuid + row.role;
   }
 
   constructor(private store: Store<AppState>, private cfRolesService: CfRolesService) {
-    this.changes$ = this.store.select(selectManageUsers).pipe(
-      first(),
-      switchMap(manageUsers => {
-        return cfRolesService.createRolesDiff(manageUsers.newRoles.orgGuid);
-      })
+    // TODO: RC move to on en
+    this.changes$ = this.store.select(selectManageUsersChangedRoles).pipe(
+      // filter(changes => !!changes && !!changes.length)
     );
   }
 
   ngOnInit() {
+  }
+
+  onLeave() {
+
+  }
+
+  onEnter() {
+
   }
 
 }

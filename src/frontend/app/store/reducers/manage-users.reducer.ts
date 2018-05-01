@@ -5,7 +5,8 @@ import {
   ManageUsersSetOrgRole,
   ManageUsersSetSpaceRole,
   ManageUsersSetUsers,
-  MangerUsersActions,
+  ManageUsersActions,
+  ManageUsersSetChanges,
 } from '../actions/users.actions';
 import {
   CfUser,
@@ -14,11 +15,13 @@ import {
   IUserPermissionInOrg,
   IUserPermissionInSpace,
 } from '../types/user.types';
+import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
 
 export interface ManageUsersState {
   cfGuid: string;
   users: CfUser[];
   newRoles: IUserPermissionInOrg;
+  changedRoles: CfRoleChange[];
 }
 
 export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
@@ -30,7 +33,7 @@ export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
       undefined,
       undefined,
       undefined),
-    spaces: {}
+    spaces: {},
   };
 }
 
@@ -50,12 +53,13 @@ export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): IUs
 const defaultState: ManageUsersState = {
   cfGuid: '',
   users: [],
-  newRoles: createDefaultOrgRoles('')
+  newRoles: createDefaultOrgRoles(''),
+  changedRoles: []
 };
 
 export function manageUsersReducer(state: ManageUsersState = defaultState, action: Action): ManageUsersState {
   switch (action.type) {
-    case MangerUsersActions.SetUsers:
+    case ManageUsersActions.SetUsers:
       const setUsersAction = action as ManageUsersSetUsers;
       return {
         ...state,
@@ -64,20 +68,26 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
         // Clear all roles but retain the selected org
         newRoles: createDefaultOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
       };
-    case MangerUsersActions.ClearUsers:
+    case ManageUsersActions.ClearUsers:
       return defaultState;
-    case MangerUsersActions.SetOrg:
+    case ManageUsersActions.SetOrg:
       const setOrgAction = action as ManageUsersSetOrg;
       return {
         ...state,
         newRoles: createDefaultOrgRoles(setOrgAction.selectedOrg)
       };
-    case MangerUsersActions.SetOrgRole:
+    case ManageUsersActions.SetOrgRole:
       const setOrgRoleAction = action as ManageUsersSetOrgRole;
       return setRole(state, setOrgRoleAction.orgGuid, null, setOrgRoleAction.role, setOrgRoleAction.setRole);
-    case MangerUsersActions.SetSpaceRole:
+    case ManageUsersActions.SetSpaceRole:
       const setSpaceRoleAction = action as ManageUsersSetSpaceRole;
       return setRole(state, setSpaceRoleAction.orgGuid, setSpaceRoleAction.spaceGuid, setSpaceRoleAction.role, setSpaceRoleAction.setRole);
+    case ManageUsersActions.SetChanges:
+      const setChangesAction = action as ManageUsersSetChanges;
+      return {
+        ...state,
+        changedRoles: setChangesAction.changes
+      };
   }
   return state;
 }

@@ -21649,7 +21649,8 @@ const testInitialStoreState: AppState = {
         undefined,
         undefined
       )
-    }
+    },
+    changedRoles: []
   },
   internalEvents: {
     types: {}
