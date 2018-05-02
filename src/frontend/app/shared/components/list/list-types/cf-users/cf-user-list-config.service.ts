@@ -56,7 +56,8 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageUserAction = {
     action: (user: APIResource<CfUser>) => {
-      this.router.navigate([this.createManagerUsersUrl(user)]);
+      this.store.dispatch(new ManageUsersSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, [user.entity]));
+      this.router.navigate([this.createManagerUsersUrl()]);
     },
     label: 'Manage',
     description: ``,
@@ -85,11 +86,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
         route += `/spaces/${this.activeRouteCfOrgSpace.spaceGuid}`;
       }
     }
-    if (user) {
-      route += `/users/${user.metadata.guid}/manage`;
-    } else {
-      route += `/users/manage`;
-    }
+    route += `/users/manage`;
     return route;
   }
 

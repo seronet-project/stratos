@@ -14,27 +14,12 @@ import { CfUser } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 import { getActiveRouteCfOrgSpaceProvider, getIdFromRoute } from '../../cf.helpers';
 
-export class ActiveCfUser {
-  userId: string;
-}
-
 @Component({
   selector: 'app-manage-users',
   templateUrl: './manage-users.component.html',
   styleUrls: ['./manage-users.component.scss'],
   providers: [
     getActiveRouteCfOrgSpaceProvider,
-    {
-      provide: ActiveCfUser,
-      useFactory: (activatedRoute: ActivatedRoute) => {
-        return ({
-          userId: getIdFromRoute(activatedRoute, 'userId'),
-        });
-      },
-      deps: [
-        ActivatedRoute,
-      ]
-    }
   ]
 })
 export class ManageUsersComponent implements OnDestroy {
@@ -50,23 +35,13 @@ export class ManageUsersComponent implements OnDestroy {
 
   constructor(
     private store: Store<AppState>,
-    private activeCfUser: ActiveCfUser,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
     private cfUserService: CfUserService
   ) {
 
     this.defaultCancelUrl = this.createReturnUrl(activeRouteCfOrgSpace);
 
-    let selectedUsers$: Observable<CfUser[]>;
-    if (activeCfUser.userId) {
-      selectedUsers$ = cfUserService.getUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId).pipe(
-        map(entity => [entity.entity])
-      );
-    } else {
-      selectedUsers$ = this.store.select(selectManageUsersPicked);
-    }
-
-    this.initialUsers$ = selectedUsers$.pipe(
+    this.initialUsers$ = this.store.select(selectManageUsersPicked).pipe(
       first(),
     );
 

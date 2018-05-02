@@ -57,14 +57,9 @@ import { CliInfoCloudFoundryComponent } from './cli-info-cloud-foundry/cli-info-
 
 const manageUser = [
   {
-    path: 'users',
-    children: [{
-      path: ':userId/manage',
-      component: ManageUsersComponent
-    }, {
-      path: 'manage',
-      component: ManageUsersComponent
-    }]
+    path: 'users/manage',
+    component: ManageUsersComponent,
+    pathMatch: 'full'
   },
   {
     path: 'organizations/:orgId/users/manage',
@@ -72,17 +67,7 @@ const manageUser = [
     pathMatch: 'full'
   },
   {
-    path: 'organizations/:orgId/users/:userId/manage',
-    component: ManageUsersComponent,
-    pathMatch: 'full'
-  },
-  {
     path: 'organizations/:orgId/spaces/:spaceId/users/manage',
-    component: ManageUsersComponent,
-    pathMatch: 'full'
-  },
-  {
-    path: 'organizations/:orgId/spaces/:spaceId/users/:userId/manage',
     component: ManageUsersComponent,
     pathMatch: 'full'
   },
