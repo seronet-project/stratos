@@ -33,27 +33,27 @@ export function userReducer(state: IRequestEntityTypeState<APIResource<CfUser>>,
   }
   const successAction = action as APISuccessOrFailedAction;
   const addUserPermissionAction = successAction.apiAction as ChangeUserPermission;
-  const { orgGuid, spaceGuid, permissionTypeKey, userGuid } = addUserPermissionAction;
+  const { entityGuid, isSpace, permissionTypeKey, userGuid } = addUserPermissionAction;
   return {
     ...state,
     [userGuid]: {
       ...state[userGuid],
-      entity: updatePermission(state[userGuid].entity, orgGuid, spaceGuid, permissionTypeKey, action.type === ADD_PERMISSION_SUCCESS),
+      entity: updatePermission(state[userGuid].entity, entityGuid, isSpace, permissionTypeKey, action.type === ADD_PERMISSION_SUCCESS),
     }
   };
 }
 
 function updatePermission(
   user: CfUser,
-  orgGuid: string,
-  spaceGuid: string,
+  entityGuid: string,
+  isSpace: boolean,
   permissionType: OrgUserRoleNames | SpaceUserRoleNames,
   add = false) {
-  const type = spaceGuid ? 'space' : 'org';
+  const type = isSpace ? 'space' : 'org';
   const paramName = properties[type][permissionType];
   const newCollection = add ?
-    [...user[paramName], spaceGuid || orgGuid] :
-    user[paramName].filter(guid => guid !== (spaceGuid || orgGuid));
+    [...user[paramName], entityGuid] :
+    user[paramName].filter(guid => guid !== entityGuid);
   return {
     ...user,
     [paramName]: newCollection

@@ -10,7 +10,8 @@ import { TableCellCustom } from '../../list.types';
 export interface ICellPermissionList<T> extends IUserRole<T> {
   busy: Observable<boolean>;
   name: string;
-  id: string;
+  guid: string;
+  userGuid: string;
 }
 
 interface ICellPermissionUpdates {

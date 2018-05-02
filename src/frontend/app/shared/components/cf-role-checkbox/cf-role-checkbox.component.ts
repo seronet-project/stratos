@@ -171,6 +171,9 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
     for (let x = 0; x < existingUserGuids.length; x++) {
       const orgs = existingRoles[existingUserGuids[x]];
       const org = orgs[orgGuid];
+      if (!org) {
+        continue;
+      }
       if (CfRoleCheckboxComponent.hasSpaceRole(users, existingRoles, newRoles, orgGuid, org.spaces, checkedSpaces)) {
         return true;
       }

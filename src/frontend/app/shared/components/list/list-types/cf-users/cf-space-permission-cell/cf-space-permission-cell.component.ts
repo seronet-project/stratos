@@ -39,14 +39,14 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
   private getSpacePermissions(spacePerms: IUserPermissionInSpace, row: APIResource<CfUser>) {
     return getSpaceRoles(spacePerms.permissions).map(perm => {
       const updatingKey = RemoveUserPermission.generateUpdatingKey(
-        // spacePerms.orgGuid,
         perm.key,
         row.metadata.guid
       );
       return {
         ...perm,
         name: spacePerms.name,
-        spaceId: spacePerms.orgGuid,
+        guid: spacePerms.spaceGuid,
+        userGuid: row.metadata.guid,
         busy: new EntityMonitor(
           this.store,
           row.metadata.guid,
@@ -60,6 +60,12 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
   }
 
   public removePermission(cellPermission: ICellPermissionList<SpaceUserRoleNames>) {
-    console.log('NOT IMPLEMENTED');
+    this.store.dispatch(new RemoveUserPermission(
+      this.cfUserService.activeRouteCfOrgSpace.cfGuid,
+      cellPermission.userGuid,
+      cellPermission.guid,
+      cellPermission.key,
+      true
+    ));
   }
 }

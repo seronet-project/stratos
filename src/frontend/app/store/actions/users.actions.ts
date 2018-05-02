@@ -69,16 +69,16 @@ export class ChangeUserPermission extends CFStartAction implements IRequestActio
     public method: string,
     public actions: string[],
     public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    public orgGuid: string,
-    public spaceGuid?: string,
+    public entityGuid: string,
+    public isSpace = false,
   ) {
     super();
-    this.guid = spaceGuid || orgGuid;
+    this.guid = entityGuid;
     this.updatingKey = ChangeUserPermission.generateUpdatingKey(permissionTypeKey, userGuid);
     this.options = new RequestOptions();
-    this.options.url = `${spaceGuid ? 'spaces' : 'organizations'}/${this.guid}/${this.updatingKey}`;
+    this.options.url = `${isSpace ? 'spaces' : 'organizations'}/${this.guid}/${this.updatingKey}`;
     this.options.method = method;
-    this.entityKey = spaceGuid ? spaceSchemaKey : organizationSchemaKey;
+    this.entityKey = isSpace ? spaceSchemaKey : organizationSchemaKey;
     this.entity = entityFactory(this.entityKey);
   }
 
@@ -97,9 +97,9 @@ export class AddUserPermission extends ChangeUserPermission {
   constructor(
     endpointGuid: string,
     userGuid: string,
-    orgGuid: string,
+    entityGuid: string,
     permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    spaceGuid?: string
+    isSpace = false
   ) {
     super(
       endpointGuid,
@@ -107,8 +107,8 @@ export class AddUserPermission extends ChangeUserPermission {
       'put',
       [ADD_PERMISSION, ADD_PERMISSION_SUCCESS, ADD_PERMISSION_FAILED],
       permissionTypeKey,
-      orgGuid,
-      spaceGuid
+      entityGuid,
+      isSpace
     );
   }
 }
@@ -117,9 +117,9 @@ export class RemoveUserPermission extends ChangeUserPermission {
   constructor(
     endpointGuid: string,
     userGuid: string,
-    orgGuid: string,
+    entityGuid: string,
     permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    spaceGuid?: string
+    isSpace = false
   ) {
     super(
       endpointGuid,
@@ -127,8 +127,8 @@ export class RemoveUserPermission extends ChangeUserPermission {
       'delete',
       [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED],
       permissionTypeKey,
-      orgGuid,
-      spaceGuid
+      entityGuid,
+      isSpace
     );
   }
 }

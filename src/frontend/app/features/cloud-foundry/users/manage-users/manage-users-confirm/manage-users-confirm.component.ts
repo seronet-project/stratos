@@ -196,10 +196,13 @@ export class ManageUsersConfirmComponent {
     this.store.select(selectManageUsers).pipe(
       first(),
     ).subscribe(manageUsers => {
+      // TODO: RC Make org user changes first... check result... then orgs and spaces
       manageUsers.changedRoles.forEach(change => {
+        const isSpace = !!change.spaceGuid;
+        const entityGuid = isSpace ? change.spaceGuid : change.orgGuid;
         const action = change.add ?
-          new AddUserPermission(manageUsers.cfGuid, change.userGuid, change.orgGuid, change.role, change.spaceGuid) :
-          new RemoveUserPermission(manageUsers.cfGuid, change.userGuid, change.orgGuid, change.role, change.spaceGuid);
+          new AddUserPermission(manageUsers.cfGuid, change.userGuid, entityGuid, change.role, isSpace) :
+          new RemoveUserPermission(manageUsers.cfGuid, change.userGuid, entityGuid, change.role, isSpace);
         this.store.dispatch(action);
       });
     });
