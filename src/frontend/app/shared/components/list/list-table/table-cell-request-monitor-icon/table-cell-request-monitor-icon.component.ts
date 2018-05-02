@@ -7,7 +7,7 @@ export interface ITableCellRequestMonitorIconConfig<T> {
   entityKey: string;
   schema: schema.Entity;
   monitorState?: AppMonitorComponentTypes;
-  getUpdateKey?: (element: T) => string;
+  updateKey?: string;
   getId: (element: T) => string;
 }
 
@@ -17,22 +17,22 @@ export interface ITableCellRequestMonitorIconConfig<T> {
   styleUrls: ['./table-cell-request-monitor-icon.component.scss']
 })
 export class TableCellRequestMonitorIconComponent<T> implements OnInit {
+  public configObj: ITableCellRequestMonitorIconConfig<T>;
+
   @Input('config')
-  public config: ITableCellRequestMonitorIconConfig<T>;
+  public config: (element) => ITableCellRequestMonitorIconConfig<T>;
 
   @Input('row')
   public row: T;
 
   public id: string;
 
-  constructor() { }
-
-  ngOnInit() {
-    this.id = this.config.getId(this.row);
+  constructor() {
   }
 
-  getUpdateKey = () => {
-    return this.config.getUpdateKey(this.row);
+  ngOnInit() {
+    this.configObj = this.config(this.row);
+    this.id = this.configObj.getId(this.row);
   }
 
 }

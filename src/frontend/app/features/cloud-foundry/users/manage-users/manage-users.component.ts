@@ -2,11 +2,11 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { filter, first, map, startWith } from 'rxjs/operators';
+import { filter, first, map, startWith, withLatestFrom } from 'rxjs/operators';
 
 import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import { GetUser, ManageUsersClear, selectManageUsersPicked, selectManageUsersCf } from '../../../../store/actions/users.actions';
+import { GetUser, ManageUsersClear, selectManageUsersPicked, selectManageUsersCf, selectManageUsers, ManageUsersSetUsers } from '../../../../store/actions/users.actions';
 import { AppState } from '../../../../store/app-state';
 import { cfUserSchemaKey, entityFactory } from '../../../../store/helpers/entity-factory';
 import { APIResource } from '../../../../store/types/api.types';
@@ -51,7 +51,6 @@ export class ManageUsersComponent implements OnDestroy {
   constructor(
     private store: Store<AppState>,
     private activeCfUser: ActiveCfUser,
-    private entityServiceFactory: EntityServiceFactory,
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace,
     private cfUserService: CfUserService
   ) {
@@ -60,15 +59,8 @@ export class ManageUsersComponent implements OnDestroy {
 
     let selectedUsers$: Observable<CfUser[]>;
     if (activeCfUser.userId) {
-      selectedUsers$ = entityServiceFactory.create<APIResource<CfUser>>(
-        cfUserSchemaKey,
-        entityFactory(cfUserSchemaKey),
-        activeCfUser.userId,
-        new GetUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId),
-        true
-      ).entityObs$.pipe(
-        filter(entity => !!entity),
-        map(entity => [entity.entity.entity])
+      selectedUsers$ = cfUserService.getUser(activeRouteCfOrgSpace.cfGuid, activeCfUser.userId).pipe(
+        map(entity => [entity.entity])
       );
     } else {
       selectedUsers$ = this.store.select(selectManageUsersPicked);
@@ -82,6 +74,16 @@ export class ManageUsersComponent implements OnDestroy {
       filter(users => users && users.length > 0),
       map(users => users.length === 1 ? users[0] : {} as CfUser),
     );
+
+    // Ensure that when we arrive here directly the store is set up with all it needs
+    this.store.select(selectManageUsers).pipe(
+      withLatestFrom(this.initialUsers$),
+      first()
+    ).subscribe(([manageUsers, users]) => {
+      if (!manageUsers.cfGuid) {
+        this.store.dispatch(new ManageUsersSetUsers(activeRouteCfOrgSpace.cfGuid, users));
+      }
+    });
 
   }
 

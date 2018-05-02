@@ -38,8 +38,8 @@ export class AppActionMonitorIconComponent implements OnInit {
   @Input('monitorState')
   public monitorState: AppMonitorComponentTypes = AppMonitorComponentTypes.FETCHING;
 
-  @Input('getUpdateKey')
-  public getUpdateKey = (() => rootUpdatingKey);
+  @Input('updateKey')
+  public updateKey = rootUpdatingKey;
 
   @Output('currentState')
   public currentState: Observable<IApplicationMonitorComponentState>;
@@ -84,7 +84,7 @@ export class AppActionMonitorIconComponent implements OnInit {
       withLatestFrom(completed$),
       map(([requestState, completed]) => {
         const oldUpdatingState = requestState.fetching;
-        const updatingState = requestState.updating[this.getUpdateKey()];
+        const updatingState = requestState.updating[this.updateKey];
         return {
           busy: requestState.fetching,
           error: requestState.error,
@@ -95,7 +95,7 @@ export class AppActionMonitorIconComponent implements OnInit {
   }
 
   private fetchUpdatingState = (requestState: RequestInfoState): ActionState =>
-    (requestState.updating[this.getUpdateKey()] || { busy: false, error: false, message: '' })
+    (requestState.updating[this.updateKey] || { busy: false, error: false, message: '' })
   private getUpdatingState(entityMonitor: EntityMonitor): Observable<IApplicationMonitorComponentState> {
 
 

@@ -1,20 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
-import { CfRoleChange, CfRolesService, UserRoleLabels } from '../cf-roles.service';
-import { Observable } from 'rxjs/Observable';
-import { cfUserSchemaKey } from '../../../../../store/helpers/entity-factory';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../../../store/app-state';
-import { selectManageUsers, selectManageUsersChangedRoles, selectManageUsersCf, ChangeUserPermission, RemoveUserPermission, AddUserPermission } from '../../../../../store/actions/users.actions';
-import { first, switchMap, filter, withLatestFrom, map, mergeMap, distinctUntilChanged, combineLatest } from 'rxjs/operators';
-import { ManageUsersState } from '../../../../../store/reducers/manage-users.reducer';
-import { AppMonitorComponentTypes } from '../../../../../shared/components/app-action-monitor-icon/app-action-monitor-icon.component';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { distinctUntilChanged, filter, first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+
+import { IOrganization } from '../../../../../core/cf-api.types';
+import {
+  AppMonitorComponentTypes,
+} from '../../../../../shared/components/app-action-monitor-icon/app-action-monitor-icon.component';
+import {
+  ITableCellRequestMonitorIconConfig,
+} from '../../../../../shared/components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
+import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
 import { CfUserService } from '../../../../../shared/data-services/cf-user.service';
+import {
+  AddUserPermission,
+  ChangeUserPermission,
+  RemoveUserPermission,
+  selectManageUsers,
+  selectManageUsersChangedRoles,
+} from '../../../../../store/actions/users.actions';
+import { AppState } from '../../../../../store/app-state';
+import {
+  cfUserSchemaKey,
+  entityFactory,
+  organizationSchemaKey,
+  spaceSchemaKey,
+} from '../../../../../store/helpers/entity-factory';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
-import { IOrganization } from '../../../../../core/cf-api.types';
-import { SpaceUserRoleNames, OrgUserRoleNames } from '../../../cf.helpers';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../../../cf.helpers';
+import { CfRoleChange, CfRolesService, UserRoleLabels } from '../cf-roles.service';
 
 class CfRoleChangeWithNames extends CfRoleChange {
   userName: string; // Why are all these names set out flat? So we can easily sort
@@ -93,20 +109,23 @@ export class ManageUsersConfirmComponent implements OnInit {
       role: {}
     }; // TODO: RC ensure fresh every visit
 
-  public getId(row: CfRoleChangeWithNames) {
-    return row.userGuid + row.orgGuid + row.spaceGuid + row.role;
+  public getCellConfig(row: CfRoleChangeWithNames): ITableCellRequestMonitorIconConfig<CfRoleChangeWithNames> {
+    const isSpace = !!row.spaceGuid;
+    const schema = isSpace ? entityFactory(spaceSchemaKey) : entityFactory(organizationSchemaKey);
+    const guid = isSpace ? row.spaceGuid : row.orgGuid;
+    return {
+      entityKey: schema.key,
+      schema: schema,
+      monitorState: AppMonitorComponentTypes.UPDATE,
+      updateKey: ChangeUserPermission.generateUpdatingKey(guid, row.role, row.userGuid),
+      getId: () => guid
+    };
   }
 
-  public getUpdateKey(row: CfRoleChangeWithNames) {
-    return ChangeUserPermission.generateUpdatingKey(row.spaceGuid || row.orgGuid, row.role, row.userGuid);
-  }
-
-  //
   constructor(
     private store: Store<AppState>,
     private cfRolesService: CfRolesService,
     private cfUserService: CfUserService,
-    private cf: CfUserService,
   ) {
 
     const cfAndOrgGuid$ = this.store.select(selectManageUsers).pipe(
@@ -115,13 +134,22 @@ export class ManageUsersConfirmComponent implements OnInit {
       distinctUntilChanged((oldMU, newMU) => oldMU.cfGuid !== newMU.cfGuid || oldMU.orgGuid !== newMU.orgGuid)
     );
 
-    // this.cfRolesService.fetchOrg(this.activeRouteCfOrgSpace.cfGuid, this.activeRouteCfOrgSpace.orgGuid)
     this.changes$ = this.updateChanges.pipe(
       withLatestFrom(cfAndOrgGuid$),
       mergeMap(([changed, { cfGuid, orgGuid }]) => {
         console.log('gah');
+        // This is a bit round the houses, but sometimes cfUserService.getUsers(cfGuid) fails to return all users (if no roles)
+        const users: Observable<APIResource<CfUser>[]> = this.store.select(selectManageUsersChangedRoles).pipe(
+          mergeMap(changes => {
+            const usersObs: Observable<APIResource<CfUser>>[] = [];
+            changes.forEach(change => {
+              usersObs.push(cfUserService.getUser(cfGuid, change.userGuid));
+            });
+            return Observable.combineLatest(usersObs);
+          })
+        );
         return Observable.combineLatest(
-          cfUserService.getUsers(cfGuid),
+          users,
           this.cfRolesService.fetchOrg(cfGuid, orgGuid)
         );
       }),
@@ -136,7 +164,7 @@ export class ManageUsersConfirmComponent implements OnInit {
           spaceName: this.fetchSpaceName(change.spaceGuid, org),
           roleName: this.fetchRoleName(change.role, !change.spaceGuid)
         }));
-      })
+      }),
     );
   }
 
@@ -180,13 +208,13 @@ export class ManageUsersConfirmComponent implements OnInit {
       return;
     }
     this.updateStarted = true;
-    this.store.select(selectManageUsersChangedRoles).pipe(
+    this.store.select(selectManageUsers).pipe(
       first(),
-    ).subscribe(changes => {
-      changes.forEach(change => {
+    ).subscribe(manageUsers => {
+      manageUsers.changedRoles.forEach(change => {
         const action = change.add ?
-          new AddUserPermission(change.userGuid, change.orgGuid, change.role, change.spaceGuid) :
-          new RemoveUserPermission(change.userGuid, change.orgGuid, change.role, change.spaceGuid);
+          new AddUserPermission(manageUsers.cfGuid, change.userGuid, change.orgGuid, change.role, change.spaceGuid) :
+          new RemoveUserPermission(manageUsers.cfGuid, change.userGuid, change.orgGuid, change.role, change.spaceGuid);
         this.store.dispatch(action);
       });
     });

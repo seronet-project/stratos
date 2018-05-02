@@ -100,7 +100,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
     private activeRouteCfOrgSpace: ActiveRouteCfOrgSpace
   ) {
     super();
-    this.dataSource = new CfUserDataSourceService(store, cfUserService.allUsersAction, this);
+    this.dataSource = new CfUserDataSourceService(store, cfUserService.createPaginationAction(activeRouteCfOrgSpace.cfGuid), this);
   }
 
   getColumns = () => this.columns;

@@ -33,12 +33,12 @@ export function userReducer(state: IRequestEntityTypeState<APIResource<CfUser>>,
   }
   const successAction = action as APISuccessOrFailedAction;
   const addUserPermissionAction = successAction.apiAction as ChangeUserPermission;
-  const { orgGuid, spaceGuid, permissionTypeKey, guid } = addUserPermissionAction;
+  const { orgGuid, spaceGuid, permissionTypeKey, userGuid } = addUserPermissionAction;
   return {
     ...state,
-    [guid]: {
-      ...state[guid],
-      entity: updatePermission(state[guid].entity, orgGuid, spaceGuid, permissionTypeKey, action.type === ADD_PERMISSION_SUCCESS),
+    [userGuid]: {
+      ...state[userGuid],
+      entity: updatePermission(state[userGuid].entity, orgGuid, spaceGuid, permissionTypeKey, action.type === ADD_PERMISSION_SUCCESS),
     }
   };
 }

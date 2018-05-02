@@ -79,7 +79,8 @@ export class CfRolesService {
     private cfUserService: CfUserService,
     private entityServiceFactory: EntityServiceFactory) {
     this.existingRoles$ = this.store.select(selectManageUsersPicked).pipe(
-      withLatestFrom(this.store.select(selectManageUsersCf)),
+      combineLatest(this.store.select(selectManageUsersCf)),
+      filter(([users, cfGuid]) => !!cfGuid),
       switchMap(([users, cfGuid]) => {
         return this.populateRoles(cfGuid, users);
       }),
@@ -158,19 +159,20 @@ export class CfRolesService {
    */
   createRolesDiff(orgGuid: string): Observable<CfRoleChange[]> {
     return this.existingRoles$.pipe(
-      combineLatest(this.newRoles$),
+      combineLatest(this.newRoles$, this.store.select(selectManageUsersPicked)),
       first(),
-      map(([oldRoles, newRoles]) => {
+      map(([existingRoles, newRoles, pickedUsers]) => {
         const changes = [];
+
         // For each user, loop through the new roles and compare with any existing. If there's a diff, add it to a changes collection to be
         // returned
-        Object.keys(oldRoles).forEach(userGuid => {
-          const user = oldRoles[userGuid];
+        pickedUsers.forEach(user => {
+          const existingUserRoles = existingRoles[user.guid] || {};
 
           // Compare org roles
-          const existingOrgRoles = user[orgGuid] || createDefaultOrgRoles(orgGuid);
+          const existingOrgRoles = existingUserRoles[orgGuid] || createDefaultOrgRoles(orgGuid);
           changes.push(...this.comparePermissions({
-            userGuid,
+            userGuid: user.guid,
             orgGuid,
             add: false,
             role: null
@@ -181,7 +183,7 @@ export class CfRolesService {
             const newSpace = newRoles.spaces[spaceGuid];
             const oldSpace = existingOrgRoles.spaces[spaceGuid] || createDefaultSpaceRoles(orgGuid, spaceGuid);
             changes.push(...this.comparePermissions({
-              userGuid,
+              userGuid: user.guid,
               orgGuid,
               spaceGuid,
               add: false,

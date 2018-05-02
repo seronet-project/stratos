@@ -64,6 +64,7 @@ export class GetAllUsers extends CFStartAction implements PaginatedAction, Entit
 
 export class ChangeUserPermission extends CFStartAction implements IRequestAction {
   constructor(
+    public endpointGuid: string,
     public userGuid: string,
     public method: string,
     public actions: string[],
@@ -94,13 +95,15 @@ export class ChangeUserPermission extends CFStartAction implements IRequestActio
 
 export class AddUserPermission extends ChangeUserPermission {
   constructor(
-    public guid: string,
-    public orgGuid: string,
-    public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    public spaceGuid?: string
+    endpointGuid: string,
+    userGuid: string,
+    orgGuid: string,
+    permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
+    spaceGuid?: string
   ) {
     super(
-      guid,
+      endpointGuid,
+      userGuid,
       'put',
       [ADD_PERMISSION, ADD_PERMISSION_SUCCESS, ADD_PERMISSION_FAILED],
       permissionTypeKey,
@@ -112,13 +115,15 @@ export class AddUserPermission extends ChangeUserPermission {
 
 export class RemoveUserPermission extends ChangeUserPermission {
   constructor(
-    public guid: string,
-    public orgGuid: string,
-    public permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
-    public spaceGuid?: string
+    endpointGuid: string,
+    userGuid: string,
+    orgGuid: string,
+    permissionTypeKey: OrgUserRoleNames | SpaceUserRoleNames,
+    spaceGuid?: string
   ) {
     super(
-      guid,
+      endpointGuid,
+      userGuid,
       'delete',
       [REMOVE_PERMISSION, REMOVE_PERMISSION_SUCCESS, REMOVE_PERMISSION_FAILED],
       permissionTypeKey,
