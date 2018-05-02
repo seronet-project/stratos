@@ -33,7 +33,7 @@ import { OrgUserRoleNames, SpaceUserRoleNames } from '../../../cf.helpers';
 import { CfRoleChange, CfRolesService, UserRoleLabels } from '../cf-roles.service';
 
 class CfRoleChangeWithNames extends CfRoleChange {
-  userName: string; // Why are all these names set out flat? So we can easily sort
+  userName: string; // Why are all these names set out flat? So we can easily sort in future
   spaceName?: string;
   roleName: string;
 }
@@ -43,7 +43,7 @@ class CfRoleChangeWithNames extends CfRoleChange {
   templateUrl: './manage-users-confirm.component.html',
   styleUrls: ['./manage-users-confirm.component.scss']
 })
-export class ManageUsersConfirmComponent implements OnInit {
+export class ManageUsersConfirmComponent {
 
   columns: ITableColumn<CfRoleChangeWithNames>[] = [
     {
@@ -107,7 +107,7 @@ export class ManageUsersConfirmComponent implements OnInit {
       user: {},
       space: {},
       role: {}
-    }; // TODO: RC ensure fresh every visit
+    };
 
   public getCellConfig(row: CfRoleChangeWithNames): ITableCellRequestMonitorIconConfig<CfRoleChangeWithNames> {
     const isSpace = !!row.spaceGuid;
@@ -131,25 +131,16 @@ export class ManageUsersConfirmComponent implements OnInit {
     const cfAndOrgGuid$ = this.store.select(selectManageUsers).pipe(
       map(mu => ({ cfGuid: mu.cfGuid, orgGuid: mu.newRoles.orgGuid })),
       filter(mu => !!mu.cfGuid && !!mu.orgGuid),
-      distinctUntilChanged((oldMU, newMU) => oldMU.cfGuid !== newMU.cfGuid || oldMU.orgGuid !== newMU.orgGuid)
+      distinctUntilChanged((oldMU, newMU) => {
+        return oldMU.cfGuid === newMU.cfGuid && oldMU.orgGuid === newMU.orgGuid;
+      }),
     );
 
     this.changes$ = this.updateChanges.pipe(
       withLatestFrom(cfAndOrgGuid$),
       mergeMap(([changed, { cfGuid, orgGuid }]) => {
-        console.log('gah');
-        // This is a bit round the houses, but sometimes cfUserService.getUsers(cfGuid) fails to return all users (if no roles)
-        const users: Observable<APIResource<CfUser>[]> = this.store.select(selectManageUsersChangedRoles).pipe(
-          mergeMap(changes => {
-            const usersObs: Observable<APIResource<CfUser>>[] = [];
-            changes.forEach(change => {
-              usersObs.push(cfUserService.getUser(cfGuid, change.userGuid));
-            });
-            return Observable.combineLatest(usersObs);
-          })
-        );
         return Observable.combineLatest(
-          users,
+          cfUserService.getUsers(cfGuid),
           this.cfRolesService.fetchOrg(cfGuid, orgGuid)
         );
       }),
@@ -168,12 +159,7 @@ export class ManageUsersConfirmComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
-  }
-
-  onEnter = () => {
-    this.updateChanges.next(new Date().getTime());
-  }
+  onEnter = () => this.updateChanges.next(new Date().getTime());
 
   fetchUserName = (userGuid: string, users: APIResource<CfUser>[]): string => {
     let res = this.nameCache.user[userGuid];
@@ -204,7 +190,6 @@ export class ManageUsersConfirmComponent implements OnInit {
 
   startApply = () => {
     if (this.updateStarted) {
-      console.log('aloha');
       return;
     }
     this.updateStarted = true;

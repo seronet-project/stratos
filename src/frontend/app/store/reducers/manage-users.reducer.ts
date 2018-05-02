@@ -121,9 +121,16 @@ function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: st
       ...newOrgRoles.spaces[spaceGuid]
     };
     newOrgRoles = setPermission(spaceRoles, role, setRole) ? newOrgRoles : null;
+    // If the user has applied any space role they must also have the org user role applied too.
+    if (newOrgRoles && setRole) {
+      newOrgRoles.permissions = {
+        ...newOrgRoles.permissions,
+        [OrgUserRoleNames.USER]: true
+      };
+    }
   } else {
     newOrgRoles = setPermission(newOrgRoles, role, setRole) ? newOrgRoles : null;
-    // If the user as applied the org manager, auditor or billing manager role they must also have the org user role applied too.
+    // If the user has applied the org manager, auditor or billing manager role they must also have the org user role applied too.
     if (newOrgRoles && role !== 'user' && setRole) {
       newOrgRoles.permissions = {
         ...newOrgRoles.permissions,
