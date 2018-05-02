@@ -74,9 +74,9 @@ export class ChangeUserPermission extends CFStartAction implements IRequestActio
   ) {
     super();
     this.guid = spaceGuid || orgGuid;
-    this.updatingKey = ChangeUserPermission.generateUpdatingKey(this.guid, permissionTypeKey, userGuid);
+    this.updatingKey = ChangeUserPermission.generateUpdatingKey(permissionTypeKey, userGuid);
     this.options = new RequestOptions();
-    this.options.url = `${spaceGuid ? 'spaces' : 'organizations'}/${this.updatingKey}`;
+    this.options.url = `${spaceGuid ? 'spaces' : 'organizations'}/${this.guid}/${this.updatingKey}`;
     this.options.method = method;
     this.entityKey = spaceGuid ? spaceSchemaKey : organizationSchemaKey;
     this.entity = entityFactory(this.entityKey);
@@ -88,8 +88,8 @@ export class ChangeUserPermission extends CFStartAction implements IRequestActio
   options: RequestOptions;
   updatingKey: string;
 
-  static generateUpdatingKey<T>(spaceOrgGuid: string, permissionType: OrgUserRoleNames | SpaceUserRoleNames, userGuid: string) {
-    return `${spaceOrgGuid}/${permissionType}/${userGuid}`;
+  static generateUpdatingKey<T>(permissionType: OrgUserRoleNames | SpaceUserRoleNames, userGuid: string) {
+    return `${permissionType}/${userGuid}`;
   }
 }
 

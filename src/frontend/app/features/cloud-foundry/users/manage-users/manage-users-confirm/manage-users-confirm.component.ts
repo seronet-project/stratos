@@ -117,7 +117,7 @@ export class ManageUsersConfirmComponent {
       entityKey: schema.key,
       schema: schema,
       monitorState: AppMonitorComponentTypes.UPDATE,
-      updateKey: ChangeUserPermission.generateUpdatingKey(guid, row.role, row.userGuid),
+      updateKey: ChangeUserPermission.generateUpdatingKey(row.role, row.userGuid),
       getId: () => guid
     };
   }
