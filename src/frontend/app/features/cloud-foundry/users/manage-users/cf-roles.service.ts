@@ -4,40 +4,32 @@ import { Observable } from 'rxjs/Observable';
 import {
   combineLatest,
   distinctUntilChanged,
+  filter,
   first,
   map,
   publishReplay,
   refCount,
   startWith,
   switchMap,
-  withLatestFrom,
-  filter,
 } from 'rxjs/operators';
 
+import { IOrganization } from '../../../../core/cf-api.types';
+import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
+import { GetOrganization } from '../../../../store/actions/organization.actions';
+import { UsersRolesSetChanges } from '../../../../store/actions/users-roles.actions';
+import { AppState } from '../../../../store/app-state';
+import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../store/helpers/entity-factory';
+import { createEntityRelationKey } from '../../../../store/helpers/entity-relations.types';
+import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/users-roles.reducer';
 import {
   selectUsersRolesCf,
   selectUsersRolesPicked,
   selectUsersRolesRoles,
-  UsersRolesSetChanges,
-} from '../../../../store/actions/users-roles.actions';
-import { AppState } from '../../../../store/app-state';
-import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/users-roles.reducer';
-import {
-  CfUser,
-  IUserPermissionInOrg,
-  IUserPermissionInSpace,
-  UserRoleInOrg,
-  UserRoleInSpace,
-} from '../../../../store/types/user.types';
-import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../cf.helpers';
-import { IOrganization } from '../../../../core/cf-api.types';
+} from '../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../store/types/api.types';
-import { organizationSchemaKey, entityFactory, spaceSchemaKey } from '../../../../store/helpers/entity-factory';
-import { GetOrganization } from '../../../../store/actions/organization.actions';
-import { createEntityRelationKey } from '../../../../store/helpers/entity-relations.types';
-import { EntityServiceFactory } from '../../../../core/entity-service-factory.service';
+import { CfUser, IUserPermissionInOrg, UserRoleInOrg, UserRoleInSpace } from '../../../../store/types/user.types';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../../cf.helpers';
 
 export interface CfUserRolesSelected {
   [userGuid: string]: {

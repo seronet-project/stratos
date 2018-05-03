@@ -13,7 +13,6 @@ import {
 } from '../../../../../shared/components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
 import { CfUserService } from '../../../../../shared/data-services/cf-user.service';
-import { selectUsersRoles, selectUsersRolesChangedRoles } from '../../../../../store/actions/users-roles.actions';
 import { AddUserPermission, ChangeUserPermission, RemoveUserPermission } from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
 import {
@@ -22,6 +21,7 @@ import {
   organizationSchemaKey,
   spaceSchemaKey,
 } from '../../../../../store/helpers/entity-factory';
+import { selectUsersRoles, selectUsersRolesChangedRoles } from '../../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { OrgUserRoleNames, SpaceUserRoleNames } from '../../../cf.helpers';

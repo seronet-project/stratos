@@ -14,15 +14,12 @@ import { debounceTime, distinctUntilChanged, filter, first, map, switchMap } fro
 import { IOrganization } from '../../../../../core/cf-api.types';
 import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
 import { GetAllOrganizations } from '../../../../../store/actions/organization.actions';
-import {
-  selectUsersRolesPicked,
-  selectUsersRolesRoles,
-  UsersRolesSetOrg,
-} from '../../../../../store/actions/users-roles.actions';
+import { UsersRolesSetOrg } from '../../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../../store/app-state';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../../store/helpers/entity-factory';
 import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
 import { getPaginationObservables } from '../../../../../store/reducers/pagination-reducer/pagination-reducer.helper';
+import { selectUsersRolesPicked, selectUsersRolesRoles } from '../../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';

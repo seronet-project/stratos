@@ -10,23 +10,15 @@ import {
   CfUserRolesSelected,
   UserRoleLabels,
 } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
-import {
-  UsersRolesSetOrgRole,
-  UsersRolesSetSpaceRole,
-  selectUsersRolesPicked,
-} from '../../../store/actions/users-roles.actions';
+import { UsersRolesSetOrgRole, UsersRolesSetSpaceRole } from '../../../store/actions/users-roles.actions';
 import { AppState } from '../../../store/app-state';
+import { selectUsersRolesPicked } from '../../../store/selectors/users-roles.selector';
 import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../../../store/types/user.types';
-
-
 
 @Component({
   selector: 'app-cf-role-checkbox',
   templateUrl: './cf-role-checkbox.component.html',
   styleUrls: ['./cf-role-checkbox.component.scss'],
-  // providers: [
-  //   getActiveRouteCfOrgSpaceProvider,
-  // ]
 })
 export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
 
@@ -34,12 +26,10 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
   @Input() spaceGuid: string;
   @Input() role: string;
   @Output() changed = new BehaviorSubject(false);
-  // @Output() update: () => void;
 
   checked: Boolean = false;
   tooltip = '';
   sub: Subscription;
-  // users: CfUser[];
   isOrgRole = false;
   disabled = false;
   orgGuid: string;

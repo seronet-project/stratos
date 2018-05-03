@@ -48,29 +48,3 @@ export class UsersRolesSetChanges implements Action {
 export class UsersRolesExecuteChanges implements Action {
   type = UsersRolesActions.ExecuteChanges;
 }
-
-export const selectUsersRoles = (state: AppState): UsersRolesState => state.manageUsersRoles;
-
-const selectUsers = (usersRoles: UsersRolesState) => usersRoles.users;
-export const selectUsersRolesPicked = compose(
-  selectUsers,
-  selectUsersRoles
-);
-
-const selectNewRoles = (usersRoles: UsersRolesState) => usersRoles.newRoles;
-export const selectUsersRolesRoles = compose(
-  selectNewRoles,
-  selectUsersRoles
-);
-
-const selectCfGuid = (usersRoles: UsersRolesState) => usersRoles.cfGuid;
-export const selectUsersRolesCf = compose(
-  selectCfGuid,
-  selectUsersRoles
-);
-
-const selectChanged = (usersRoles: UsersRolesState) => usersRoles.changedRoles;
-export const selectUsersRolesChangedRoles = compose(
-  selectChanged,
-  selectUsersRoles
-);

@@ -4,13 +4,9 @@ import { Observable } from 'rxjs/Observable';
 import { filter, first, map, withLatestFrom } from 'rxjs/operators';
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
-import {
-  selectUsersRoles,
-  selectUsersRolesPicked,
-  UsersRolesClear,
-  UsersRolesSetUsers,
-} from '../../../../store/actions/users-roles.actions';
+import { UsersRolesClear, UsersRolesSetUsers } from '../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../store/app-state';
+import { selectUsersRoles, selectUsersRolesPicked } from '../../../../store/selectors/users-roles.selector';
 import { CfUser } from '../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../cf-page.types';
 import { getActiveRouteCfOrgSpaceProvider } from '../../cf.helpers';
