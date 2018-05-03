@@ -6,13 +6,14 @@ import { CfRoleChange } from '../types/users-roles.types';
 
 // TODO: RC tidy
 export class UsersRolesActions {
-  static SetUsers = '[Manage Users] Set users';
-  static ClearUsers = '[Manage Users] Clear users';
-  static SetOrg = '[Manage Users] Set org';
-  static SetOrgRole = '[Manage Users] Set org role';
-  static SetSpaceRole = '[Manage Users] Set space role';
-  static SetChanges = '[Manage Users] Set role changes';
-  static ExecuteChanges = '[Manage Users] Execute changes';
+  static SetUsers = '[Users Roles] Set users';
+  static Clear = '[Users Roles] Clear users';
+  static ClearUpdateState = '[Users Roles] Clear update state';
+  static SetOrg = '[Users Roles] Set org';
+  static SetOrgRole = '[Users Roles] Set org role';
+  static SetSpaceRole = '[Users Roles] Set space role';
+  static SetChanges = '[Users Roles] Set role changes';
+  static ExecuteChanges = '[Users Roles] Execute changes';
 }
 export class UsersRolesSetUsers implements Action {
   type = UsersRolesActions.SetUsers;
@@ -30,7 +31,13 @@ export class UsersRolesSetSpaceRole implements Action {
 }
 
 export class UsersRolesClear implements Action {
-  type = UsersRolesActions.ClearUsers;
+  type = UsersRolesActions.Clear;
+  constructor() { }
+}
+
+export class UsersRolesClearUpdateState implements Action {
+  type = UsersRolesActions.ClearUpdateState;
+  constructor(public changedRoles: CfRoleChange[]) { }
 }
 
 export class UsersRolesSetOrg implements Action {

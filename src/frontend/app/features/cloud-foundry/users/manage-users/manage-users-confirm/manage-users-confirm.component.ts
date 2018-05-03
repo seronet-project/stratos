@@ -1,8 +1,8 @@
-import { AfterContentInit, Component, OnInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, mergeMap, withLatestFrom, first } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../../../../shared/components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
 import { CfUserService } from '../../../../../shared/data-services/cf-user.service';
-import { UsersRolesExecuteChanges } from '../../../../../store/actions/users-roles.actions';
+import { UsersRolesExecuteChanges, UsersRolesClear, UsersRolesClearUpdateState } from '../../../../../store/actions/users-roles.actions';
 import { ChangeUserPermission } from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
 import {
@@ -159,7 +159,14 @@ export class UsersRolesConfirmComponent implements OnInit, AfterContentInit {
     ).subscribe(org => this.orgName$.next(org.entity.name));
   }
 
-  onEnter = () => this.updateChanges.next(new Date().getTime());
+  onEnter = () => {
+    // Kick off an update
+    this.updateChanges.next(new Date().getTime());
+    // Ensure that any entity we're going to show the state for is clear of any previous or unrelated errors
+    this.store.select(selectUsersRoles).pipe(
+      first(),
+    ).subscribe(usersRoles => this.store.dispatch(new UsersRolesClearUpdateState(usersRoles.changedRoles)));
+  }
 
   fetchUserName = (userGuid: string, users: APIResource<CfUser>[]): string => {
     let res = this.nameCache.user[userGuid];

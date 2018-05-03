@@ -8,6 +8,7 @@ import {
   UsersRolesSetOrgRole,
   UsersRolesSetSpaceRole,
   UsersRolesSetUsers,
+  UsersRolesClear,
 } from '../actions/users-roles.actions';
 import {
   createUserRoleInOrg,
@@ -16,6 +17,7 @@ import {
   IUserPermissionInSpace,
 } from '../types/user.types';
 import { UsersRolesState } from '../types/users-roles.types';
+import { APIResource } from '../types/api.types';
 
 export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {
@@ -61,7 +63,7 @@ export function UsersRolesReducer(state: UsersRolesState = defaultState, action:
         // Clear all roles but retain the selected org
         newRoles: createDefaultOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
       };
-    case UsersRolesActions.ClearUsers:
+    case UsersRolesActions.Clear:
       return defaultState;
     case UsersRolesActions.SetOrg:
       const setOrgAction = action as UsersRolesSetOrg;
@@ -142,4 +144,14 @@ function setRole(existingState: UsersRolesState, orgGuid: string, spaceGuid: str
   }
 
   return existingState;
+}
+
+export function usersRolesClearSpaceStateReducer() {
+  return function (state: APIResource, action: Action) {
+    switch (action.type) {
+      case UsersRolesActions.Clear:// TODO: CHANGE to add/remove space user state
+        return state;
+    }
+    return state;
+  };
 }

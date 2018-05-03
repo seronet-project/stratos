@@ -6,12 +6,13 @@ import { filter, first, map, mergeMap, pairwise, withLatestFrom } from 'rxjs/ope
 
 import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { EntityMonitor } from '../../shared/monitors/entity-monitor';
-import { UsersRolesActions, UsersRolesExecuteChanges } from '../actions/users-roles.actions';
+import { UsersRolesActions, UsersRolesExecuteChanges, UsersRolesClear, UsersRolesClearUpdateState } from '../actions/users-roles.actions';
 import { AddUserPermission, ChangeUserPermission, RemoveUserPermission } from '../actions/users.actions';
 import { AppState } from '../app-state';
-import { entityFactory } from '../helpers/entity-factory';
+import { entityFactory, spaceSchemaKey, organizationSchemaKey } from '../helpers/entity-factory';
 import { selectUsersRoles } from '../selectors/users-roles.selector';
 import { CfRoleChange } from '../types/users-roles.types';
+import { UpdateCfAction, ICFAction } from '../types/request.types';
 
 @Injectable()
 export class UsersRolesEffects {
@@ -20,6 +21,24 @@ export class UsersRolesEffects {
     private actions$: Actions,
     private store: Store<AppState>,
   ) { }
+
+  @Effect() clearEntityUpdates$ = this.actions$.ofType<UsersRolesClearUpdateState>(UsersRolesActions.ClearUpdateState).pipe(
+    mergeMap(action => {
+      const actions = [];
+      action.changedRoles.forEach(change => {
+        const apiAction = {
+          guid: change.spaceGuid ? change.spaceGuid : change.orgGuid,
+          entityKey: change.spaceGuid ? spaceSchemaKey : organizationSchemaKey,
+          updatingKey: ChangeUserPermission.generateUpdatingKey(change.role, change.userGuid),
+          options: null,
+          actions: []
+        } as ICFAction;
+
+        actions.push(new UpdateCfAction(apiAction, false, ''));
+      });
+      return actions;
+    })
+  );
 
   @Effect() executeUsersRolesChange$ = this.actions$.ofType<UsersRolesExecuteChanges>(UsersRolesActions.ExecuteChanges).pipe(
     withLatestFrom(this.store.select(selectUsersRoles)),
