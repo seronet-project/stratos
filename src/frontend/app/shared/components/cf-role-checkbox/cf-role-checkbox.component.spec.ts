@@ -8,6 +8,7 @@ import { createBasicStoreModule } from '../../../test-framework/store-test-helpe
 import { CfUserService } from '../../data-services/cf-user.service';
 import { PaginationMonitorFactory } from '../../monitors/pagination-monitor.factory';
 import { CfRoleCheckboxComponent } from './cf-role-checkbox.component';
+import { EntityMonitorFactory } from '../../monitors/entity-monitor.factory.service';
 
 
 describe('CfRoleCheckboxComponent', () => {
@@ -26,7 +27,8 @@ describe('CfRoleCheckboxComponent', () => {
         CfUserService,
         CfRolesService,
         PaginationMonitorFactory,
-        ActiveRouteCfOrgSpace
+        ActiveRouteCfOrgSpace,
+        EntityMonitorFactory
       ],
       declarations: [CfRoleCheckboxComponent]
     })

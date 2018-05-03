@@ -15,6 +15,7 @@ import {
 } from './manage-users-modify/space-roles-list-wrapper/space-roles-list-wrapper.component';
 import { UsersRolesSelectComponent } from './manage-users-select/manage-users-select.component';
 import { UsersRolesComponent } from './manage-users.component';
+import { UsersRolesConfirmComponent } from './manage-users-confirm/manage-users-confirm.component';
 
 describe('UsersRolesComponent', () => {
   let component: UsersRolesComponent;
@@ -47,6 +48,7 @@ describe('UsersRolesComponent', () => {
         UsersRolesComponent,
         UsersRolesSelectComponent,
         UsersRolesModifyComponent,
+        UsersRolesConfirmComponent,
         SpaceRolesListWrapperComponent
       ]
     })

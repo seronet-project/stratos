@@ -11,6 +11,7 @@ import { CfUserService } from '../../../../../data-services/cf-user.service';
 import { PaginationMonitorFactory } from '../../../../../monitors/pagination-monitor.factory';
 import { CfRoleCheckboxComponent } from '../../../../cf-role-checkbox/cf-role-checkbox.component';
 import { TableCellSpaceRoleComponent } from './table-cell-space-role.component';
+import { EntityMonitorFactory } from '../../../../../monitors/entity-monitor.factory.service';
 
 describe('TableCellSpaceRoleComponent', () => {
   let component: TableCellSpaceRoleComponent;
@@ -27,7 +28,8 @@ describe('TableCellSpaceRoleComponent', () => {
         CfUserService,
         CfRolesService,
         PaginationMonitorFactory,
-        ActiveRouteCfOrgSpace
+        ActiveRouteCfOrgSpace,
+        EntityMonitorFactory
       ],
       declarations: [
         TableCellSpaceRoleComponent,

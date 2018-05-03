@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 import { filter, first, map, pairwise, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
@@ -30,6 +31,9 @@ import {
 import {
   TableCellAppInstancesComponent,
 } from '../../../shared/components/list/list-types/app/table-cell-app-instances/table-cell-app-instances.component';
+import {
+  TableCellAppStatusComponent,
+} from '../../../shared/components/list/list-types/app/table-cell-app-status/table-cell-app-status.component';
 import { EntityMonitor } from '../../../shared/monitors/entity-monitor';
 import { EntityMonitorFactory } from '../../../shared/monitors/entity-monitor.factory.service';
 import { PaginationMonitor } from '../../../shared/monitors/pagination-monitor';
@@ -49,8 +53,6 @@ import {
 import { createEntityRelationKey } from '../../../store/helpers/entity-relations.types';
 import { APIResource } from '../../../store/types/api.types';
 import { ApplicationService } from '../application.service';
-import { TableCellAppStatusComponent } from '../../../shared/components/list/list-types/app/table-cell-app-status/table-cell-app-status.component';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 
 
 @Component({

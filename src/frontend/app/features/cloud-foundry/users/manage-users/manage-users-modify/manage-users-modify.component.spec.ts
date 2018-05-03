@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CoreModule } from '../../../../../core/core.module';
+import { EntityMonitorFactory } from '../../../../../shared/monitors/entity-monitor.factory.service';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { createBasicStoreModule } from '../../../../../test-framework/store-test-helper';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
@@ -24,7 +25,8 @@ describe('UsersRolesModifyComponent', () => {
       ],
       providers: [
         ActiveRouteCfOrgSpace,
-        CfRolesService
+        CfRolesService,
+        EntityMonitorFactory
       ],
       declarations: [
         UsersRolesModifyComponent,
