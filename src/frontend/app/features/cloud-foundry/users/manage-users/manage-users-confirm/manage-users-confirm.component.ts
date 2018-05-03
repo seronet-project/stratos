@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -40,7 +40,7 @@ class CfRoleChangeWithNames extends CfRoleChange {
   templateUrl: './manage-users-confirm.component.html',
   styleUrls: ['./manage-users-confirm.component.scss']
 })
-export class UsersRolesConfirmComponent {
+export class UsersRolesConfirmComponent implements OnInit, AfterContentInit {
 
   columns: ITableColumn<CfRoleChangeWithNames>[] = [
     {
@@ -93,6 +93,7 @@ export class UsersRolesConfirmComponent {
   userSchemaKey = cfUserSchemaKey;
   monitorState = AppMonitorComponentTypes.UPDATE;
   updateStarted = false;
+  private cfAndOrgGuid$: Observable<{ cfGuid: string, orgGuid: string }>;
   private orgName$ = new BehaviorSubject('');
 
   private updateChanges = new BehaviorSubject(0);
@@ -124,8 +125,10 @@ export class UsersRolesConfirmComponent {
     private cfRolesService: CfRolesService,
     private cfUserService: CfUserService,
   ) {
+  }
 
-    const cfAndOrgGuid$ = this.store.select(selectUsersRoles).pipe(
+  ngOnInit() {
+    this.cfAndOrgGuid$ = this.store.select(selectUsersRoles).pipe(
       map(mu => ({ cfGuid: mu.cfGuid, orgGuid: mu.newRoles.orgGuid })),
       filter(mu => !!mu.cfGuid && !!mu.orgGuid),
       distinctUntilChanged((oldMU, newMU) => {
@@ -134,10 +137,10 @@ export class UsersRolesConfirmComponent {
     );
 
     this.changes$ = this.updateChanges.pipe(
-      withLatestFrom(cfAndOrgGuid$),
+      withLatestFrom(this.cfAndOrgGuid$),
       mergeMap(([changed, { cfGuid, orgGuid }]) => {
         return Observable.combineLatest(
-          cfUserService.getUsers(cfGuid),
+          this.cfUserService.getUsers(cfGuid),
           this.cfRolesService.fetchOrg(cfGuid, orgGuid)
         );
       }),
@@ -145,7 +148,6 @@ export class UsersRolesConfirmComponent {
         this.store.select(selectUsersRolesChangedRoles),
       ),
       map(([[users, org], changes]) => {
-        this.orgName$.next(org.entity.name);
         return changes.map(change => ({
           ...change,
           userName: this.fetchUserName(change.userGuid, users),
@@ -154,6 +156,12 @@ export class UsersRolesConfirmComponent {
         }));
       }),
     );
+  }
+
+  ngAfterContentInit() {
+    this.cfAndOrgGuid$.pipe(
+      mergeMap(({ cfGuid, orgGuid }) => this.cfRolesService.fetchOrg(cfGuid, orgGuid)),
+    ).subscribe(org => this.orgName$.next(org.entity.name));
   }
 
   onEnter = () => this.updateChanges.next(new Date().getTime());
