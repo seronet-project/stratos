@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterContentInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -120,12 +120,7 @@ export class UsersRolesConfirmComponent implements OnInit, AfterContentInit {
     };
   }
 
-  constructor(
-    private store: Store<AppState>,
-    private cfRolesService: CfRolesService,
-    private cfUserService: CfUserService,
-  ) {
-  }
+  constructor(private store: Store<AppState>, private cfRolesService: CfRolesService, private cfUserService: CfUserService) { }
 
   ngOnInit() {
     this.cfAndOrgGuid$ = this.store.select(selectUsersRoles).pipe(

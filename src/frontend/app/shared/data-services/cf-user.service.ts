@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { filter, first, map, publishReplay, refCount } from 'rxjs/operators';
 
 import { IOrganization, ISpace } from '../../core/cf-api.types';
+import { EntityServiceFactory } from '../../core/entity-service-factory.service';
 import {
   isOrgAuditor,
   isOrgBillingManager,
@@ -33,7 +34,6 @@ import {
 } from '../../store/types/user.types';
 import { PaginationMonitorFactory } from '../monitors/pagination-monitor.factory';
 import { ActiveRouteCfOrgSpace } from './../../features/cloud-foundry/cf-page.types';
-import { EntityServiceFactory } from '../../core/entity-service-factory.service';
 
 @Injectable()
 export class CfUserService {
@@ -56,7 +56,6 @@ export class CfUserService {
         return !!p;
       }),
       map(users => {
-        console.log(users);
         return users.filter(p => p.entity.cfGuid === endpointGuid);
       }),
       filter(p => {
