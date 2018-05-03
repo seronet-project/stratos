@@ -17,7 +17,7 @@ import { GetAllOrganizations } from '../../../../../store/actions/organization.a
 import { UsersRolesSetOrg } from '../../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../../store/app-state';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../../store/helpers/entity-factory';
-import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
+import { createEntityRelationKey, createEntityRelationPaginationKey } from '../../../../../store/helpers/entity-relations.types';
 import { getPaginationObservables } from '../../../../../store/reducers/pagination-reducer/pagination-reducer.helper';
 import { selectUsersRolesPicked, selectUsersRolesRoles } from '../../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../../store/types/api.types';
@@ -70,7 +70,7 @@ export class UsersRolesModifyComponent implements OnInit {
       });
     } else {
       this.singleOrg$ = Observable.of(null);
-      const paginationKey = 'todo'; // TODO: RC
+      const paginationKey = createEntityRelationPaginationKey(organizationSchemaKey, this.activeRouteCfOrgSpace.cfGuid);
       this.organizations$ = getPaginationObservables<APIResource<IOrganization>>({
         store: this.store,
         action: new GetAllOrganizations(paginationKey, this.activeRouteCfOrgSpace.cfGuid, [

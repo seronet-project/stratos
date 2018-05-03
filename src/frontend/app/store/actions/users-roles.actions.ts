@@ -3,18 +3,17 @@ import { Action } from '@ngrx/store';
 import { CfUser } from '../types/user.types';
 import { CfRoleChange } from '../types/users-roles.types';
 
+export const UsersRolesActions = {
+  SetUsers: '[Users Roles] Set users',
+  Clear: '[Users Roles] Clear users',
+  ClearUpdateState: '[Users Roles] Clear update state',
+  SetOrg: '[Users Roles] Set org',
+  SetOrgRole: '[Users Roles] Set org role',
+  SetSpaceRole: '[Users Roles] Set space role',
+  SetChanges: '[Users Roles] Set role changes',
+  ExecuteChanges: '[Users Roles] Execute changes',
+};
 
-// TODO: RC tidy
-export class UsersRolesActions {
-  static SetUsers = '[Users Roles] Set users';
-  static Clear = '[Users Roles] Clear users';
-  static ClearUpdateState = '[Users Roles] Clear update state';
-  static SetOrg = '[Users Roles] Set org';
-  static SetOrgRole = '[Users Roles] Set org role';
-  static SetSpaceRole = '[Users Roles] Set space role';
-  static SetChanges = '[Users Roles] Set role changes';
-  static ExecuteChanges = '[Users Roles] Execute changes';
-}
 export class UsersRolesSetUsers implements Action {
   type = UsersRolesActions.SetUsers;
   constructor(public cfGuid: string, public users: CfUser[]) { }

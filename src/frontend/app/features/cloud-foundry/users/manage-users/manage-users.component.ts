@@ -20,15 +20,9 @@ import { getActiveRouteCfOrgSpaceProvider } from '../../cf.helpers';
   ]
 })
 export class UsersRolesComponent implements OnDestroy {
-  // selectedUsers$: Observable<CfUser[]>;
   initialUsers$: Observable<CfUser[]>;
   singleUser$: Observable<CfUser>;
-  // loading$: Observable<boolean>;
   defaultCancelUrl: string;
-
-  // TODO: RC show manage user's button always
-  // TODO: RC space refresh (also refresh users.. specific to those on screen?)
-  // TODO: RC (?) always show users stepper, but skip when appropriate. if back pressed ensure selection is shown
 
   constructor(
     private store: Store<AppState>,

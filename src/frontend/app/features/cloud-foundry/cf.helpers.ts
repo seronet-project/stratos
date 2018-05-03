@@ -31,7 +31,6 @@ export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
     roles = assignRole(roles, UserRoleLabels.org.short[OrgUserRoleNames.AUDITOR]);
 
   }
-  // TODO: RC CI - Hide cross on org user pill if they have any space roles
   if (userRolesInOrg[OrgUserRoleNames.USER] && !userRolesInOrg[OrgUserRoleNames.MANAGER]) {
     roles = assignRole(roles, UserRoleLabels.org.short[OrgUserRoleNames.USER]);
   }
@@ -41,7 +40,7 @@ export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
 export function getSpaceRolesString(userRolesInSpace: UserRoleInSpace): string {
   let roles = null;
   if (userRolesInSpace[SpaceUserRoleNames.MANAGER]) {
-    roles = UserRoleLabels.space.short[SpaceUserRoleNames.MANAGER]; // TODO: RC use common labels
+    roles = UserRoleLabels.space.short[SpaceUserRoleNames.MANAGER];
   }
   if (userRolesInSpace[SpaceUserRoleNames.AUDITOR]) {
     roles = assignRole(roles, UserRoleLabels.space.short[SpaceUserRoleNames.AUDITOR]);
