@@ -18,6 +18,10 @@ import {
 } from '../types/user.types';
 import { UsersRolesState } from '../types/users-roles.types';
 import { APIResource } from '../types/api.types';
+import { ADD_PERMISSION_SUCCESS, REMOVE_PERMISSION_SUCCESS, ChangeUserPermission } from '../actions/users.actions';
+import { ISpace } from '../../core/cf-api.types';
+import { AppState } from '../app-state';
+import { APISuccessOrFailedAction } from '../types/request.types';
 
 export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {
@@ -146,12 +150,54 @@ function setRole(existingState: UsersRolesState, orgGuid: string, spaceGuid: str
   return existingState;
 }
 
-export function usersRolesClearSpaceStateReducer() {
-  return function (state: APIResource, action: Action) {
+interface StateEntities<T> { [guid: string]: APIResource<T>; }
+
+export function changeOrgSpacePermissions<T extends object>(isSpace: boolean) {
+  return function (state: StateEntities<T>, action: APISuccessOrFailedAction) {
+    const permAction = action.apiAction as ChangeUserPermission;
     switch (action.type) {
-      case UsersRolesActions.Clear:// TODO: CHANGE to add/remove space user state
-        return state;
+      case ADD_PERMISSION_SUCCESS:
+      case REMOVE_PERMISSION_SUCCESS:
+        const isAdd = action.type === ADD_PERMISSION_SUCCESS ? true : false;
+        return (isSpace && !!permAction.isSpace) || (!isSpace && !permAction.isSpace) ? newEntityState<T>(state, permAction, isAdd) : state;
     }
     return state;
+  };
+}
+
+function newEntityState<T extends object>(state: StateEntities<T>, action: ChangeUserPermission, add: boolean): StateEntities<T> {
+  const apiResource: APIResource<T> = state[action.guid];
+  if (!apiResource) {
+    return state;
+  }
+  let roles: string[] = apiResource.entity[action.permissionTypeKey];
+  if (!roles) {
+    return state;
+  }
+  const index = roles.findIndex(guid => guid === action.userGuid);
+  if (add) {
+    // Add the user t othe role... but only if it doesn't exist already
+    if (index >= 0) {
+      return state;
+    }
+    roles = [
+      ...roles,
+      action.userGuid
+    ];
+  } else {
+    // Remove the user from the role... but only if it exists already
+    if (index >= 0) {
+      roles = [...roles];
+      roles.splice(index, 1);
+    }
+  }
+  return {
+    ...state,
+    [action.guid]: {
+      ...apiResource,
+      entity: Object.assign({}, apiResource.entity, {
+        [action.permissionTypeKey]: roles
+      })
+    }
   };
 }

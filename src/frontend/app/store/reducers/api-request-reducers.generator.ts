@@ -36,7 +36,7 @@ import { updateOrganizationSpaceReducer } from './organization-space.reducer';
 import { routeReducer } from './routes.reducer';
 import { systemEndpointsReducer } from './system-endpoints.reducer';
 import { userReducer } from './users.reducer';
-import { usersRolesClearSpaceStateReducer } from './users-roles.reducer';
+import { changeOrgSpacePermissions } from './users-roles.reducer';
 
 /**
  * This module uses the request data reducer and request reducer factories to create
@@ -129,11 +129,12 @@ export function requestDataReducer(state, action) {
     ],
     [spaceSchemaKey]: [
       endpointDisconnectApplicationReducer('space'),
-      usersRolesClearSpaceStateReducer()
+      changeOrgSpacePermissions(true)
     ],
     [organizationSchemaKey]: [
       updateOrganizationSpaceReducer(),
-      endpointDisconnectApplicationReducer('organization')
+      endpointDisconnectApplicationReducer('organization'),
+      changeOrgSpacePermissions(false)
     ]
   };
 
