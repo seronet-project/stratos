@@ -1,20 +1,17 @@
-import { CFStartAction, IRequestAction } from '../types/request.types';
-import { getAPIResourceGuid } from '../selectors/api.selectors';
-import { RequestOptions, URLSearchParams } from '@angular/http';
-import { schema } from 'normalizr';
+import { RequestOptions } from '@angular/http';
 
-import { ApiActionTypes } from './request.actions';
-import { PaginatedAction } from '../types/pagination.types';
-import { entityFactory, organizationSchemaKey, spaceSchemaKey, EntitySchema } from '../helpers/entity-factory';
-import { cfUserSchemaKey } from '../helpers/entity-factory';
 import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
-import { EntityInlineParentAction, createEntityRelationKey } from '../helpers/entity-relations.types';
+import {
+  cfUserSchemaKey,
+  entityFactory,
+  EntitySchema,
+  organizationSchemaKey,
+  spaceSchemaKey,
+} from '../helpers/entity-factory';
+import { createEntityRelationKey, EntityInlineParentAction } from '../helpers/entity-relations.types';
+import { PaginatedAction } from '../types/pagination.types';
+import { CFStartAction, IRequestAction } from '../types/request.types';
 import { getActions } from './action.helper';
-import { Action, compose } from '@ngrx/store';
-import { CfUser, UserRoleInOrg, UserRoleInSpace } from '../types/user.types';
-import { AppState } from '../app-state';
-import { UsersRolesState } from '../reducers/users-roles.reducer';
-import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
 
 export const GET_ALL = '[Users] Get all';
 export const GET_ALL_SUCCESS = '[Users] Get all success';

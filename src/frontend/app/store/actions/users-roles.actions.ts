@@ -1,9 +1,7 @@
-import { Action, compose } from '@ngrx/store';
+import { Action } from '@ngrx/store';
 
-import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
-import { AppState } from '../app-state';
-import { UsersRolesState } from '../reducers/users-roles.reducer';
 import { CfUser } from '../types/user.types';
+import { CfRoleChange } from '../types/users-roles.types';
 
 
 // TODO: RC tidy

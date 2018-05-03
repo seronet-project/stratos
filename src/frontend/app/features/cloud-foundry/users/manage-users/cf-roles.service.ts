@@ -29,35 +29,7 @@ import {
 } from '../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../store/types/api.types';
 import { CfUser, IUserPermissionInOrg, UserRoleInOrg, UserRoleInSpace } from '../../../../store/types/user.types';
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../cf.helpers';
-
-export interface CfUserRolesSelected {
-  [userGuid: string]: {
-    [orgGuid: string]: IUserPermissionInOrg
-  };
-}
-
-export class CfRoleChange {
-  userGuid: string;
-  orgGuid: string;
-  spaceGuid?: string;
-  add: boolean;
-  role: OrgUserRoleNames | SpaceUserRoleNames;
-}
-
-export const UserRoleLabels = {
-  org: {
-    [OrgUserRoleNames.MANAGER]: 'Org Manager',
-    [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
-    [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
-    [OrgUserRoleNames.USER]: 'Org User'
-  },
-  space: {
-    [SpaceUserRoleNames.MANAGER]: 'Space Manager',
-    [SpaceUserRoleNames.DEVELOPER]: 'Space Developer',
-    [SpaceUserRoleNames.AUDITOR]: 'Space Auditor',
-  }
-};
+import { CfRoleChange, CfUserRolesSelected } from '../../../../store/types/users-roles.types';
 
 @Injectable()
 export class CfRolesService {

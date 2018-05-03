@@ -1,7 +1,7 @@
 import { compose } from '@ngrx/store';
 
 import { AppState } from '../app-state';
-import { UsersRolesState } from '../reducers/users-roles.reducer';
+import { UsersRolesState } from '../types/users-roles.types';
 
 export const selectUsersRoles = (state: AppState): UsersRolesState => state.manageUsersRoles;
 

@@ -1,29 +1,21 @@
 import { Action } from '@ngrx/store';
 
+import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import {
+  UsersRolesActions,
+  UsersRolesSetChanges,
   UsersRolesSetOrg,
   UsersRolesSetOrgRole,
   UsersRolesSetSpaceRole,
   UsersRolesSetUsers,
-  UsersRolesActions,
-  UsersRolesSetChanges,
 } from '../actions/users-roles.actions';
 import {
-  CfUser,
   createUserRoleInOrg,
   createUserRoleInSpace,
   IUserPermissionInOrg,
   IUserPermissionInSpace,
 } from '../types/user.types';
-import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
-import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
-
-export interface UsersRolesState {
-  cfGuid: string;
-  users: CfUser[];
-  newRoles: IUserPermissionInOrg;
-  changedRoles: CfRoleChange[];
-}
+import { UsersRolesState } from '../types/users-roles.types';
 
 export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {
