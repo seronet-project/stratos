@@ -3,12 +3,12 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 
 import { arrayHelper } from '../../../../../../core/helper-classes/array.helper';
-import { getOrgRoles, OrgUserRoleNames } from '../../../../../../features/cloud-foundry/cf.helpers';
+import { getOrgRoles } from '../../../../../../features/cloud-foundry/cf.helpers';
 import { RemoveUserPermission } from '../../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../../store/app-state';
-import { cfUserSchemaKey, entityFactory, organizationSchemaKey } from '../../../../../../store/helpers/entity-factory';
+import { entityFactory, organizationSchemaKey } from '../../../../../../store/helpers/entity-factory';
 import { APIResource } from '../../../../../../store/types/api.types';
-import { CfUser, IUserPermissionInOrg } from '../../../../../../store/types/user.types';
+import { CfUser, IUserPermissionInOrg, OrgUserRoleNames } from '../../../../../../store/types/user.types';
 import { CfUserService } from '../../../../../data-services/cf-user.service';
 import { EntityMonitor } from '../../../../../monitors/entity-monitor';
 import { CfPermissionCell, ICellPermissionList } from '../cf-permission-cell';

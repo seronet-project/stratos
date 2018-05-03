@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { filter, first, map, mergeMap, pairwise, withLatestFrom } from 'rxjs/operators';
 
-import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { EntityMonitor } from '../../shared/monitors/entity-monitor';
 import { UsersRolesActions, UsersRolesExecuteChanges, UsersRolesClear, UsersRolesClearUpdateState } from '../actions/users-roles.actions';
 import { AddUserPermission, ChangeUserPermission, RemoveUserPermission } from '../actions/users.actions';
@@ -13,6 +12,7 @@ import { entityFactory, spaceSchemaKey, organizationSchemaKey } from '../helpers
 import { selectUsersRoles } from '../selectors/users-roles.selector';
 import { CfRoleChange } from '../types/users-roles.types';
 import { UpdateCfAction, ICFAction } from '../types/request.types';
+import { OrgUserRoleNames } from '../types/user.types';
 
 @Injectable()
 export class UsersRolesEffects {

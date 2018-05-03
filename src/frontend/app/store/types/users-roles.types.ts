@@ -1,5 +1,4 @@
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
-import { CfUser, IUserPermissionInOrg } from './user.types';
+import { CfUser, IUserPermissionInOrg, OrgUserRoleNames, SpaceUserRoleNames } from './user.types';
 
 export interface UsersRolesState {
   cfGuid: string;

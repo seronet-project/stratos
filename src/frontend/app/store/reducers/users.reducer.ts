@@ -1,16 +1,9 @@
-import { Action } from '@ngrx/store';
-
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
+import { IOrganization, ISpace } from '../../core/cf-api.types';
 import { ADD_PERMISSION_SUCCESS, ChangeUserPermission, REMOVE_PERMISSION_SUCCESS } from '../actions/users.actions';
 import { IRequestEntityTypeState } from '../app-state';
 import { APIResource } from '../types/api.types';
 import { APISuccessOrFailedAction } from '../types/request.types';
-import { CfUser } from '../types/user.types';
-import { IOrganization, ISpace } from '../../core/cf-api.types';
-
-// export interface CfUserState {
-//   [userGuid: string]: APIResource<CfUser>;
-// }
+import { CfUser, OrgUserRoleNames, SpaceUserRoleNames } from '../types/user.types';
 
 const properties = {
   org: {
@@ -26,12 +19,12 @@ const properties = {
   }
 };
 
-
 export function userReducer(state: IRequestEntityTypeState<APIResource<CfUser>>, action: APISuccessOrFailedAction) {
-  const permAction = action.apiAction as ChangeUserPermission;
   switch (action.type) {
     case ADD_PERMISSION_SUCCESS:
     case REMOVE_PERMISSION_SUCCESS:
+      // Ensure that a user's roles collections are updated when we call add/remove
+      const permAction = action.apiAction as ChangeUserPermission;
       const { entityGuid, isSpace, permissionTypeKey, userGuid } = permAction;
       return {
         ...state,
@@ -41,21 +34,7 @@ export function userReducer(state: IRequestEntityTypeState<APIResource<CfUser>>,
         }
       };
   }
-
-
-  // if (action.type !== ADD_PERMISSION_SUCCESS && action.type !== REMOVE_PERMISSION_SUCCESS) {
-  //   return state;
-  // }
-  // const successAction = action as APISuccessOrFailedAction;
-  // const changeUserPermissionAction = successAction.apiAction as ChangeUserPermission;
-  // const { entityGuid, isSpace, permissionTypeKey, userGuid } = changeUserPermissionAction;
-  // return {
-  //   ...state,
-  //   [userGuid]: {
-  //     ...state[userGuid],
-  //     entity: updatePermission(state[userGuid].entity, entityGuid, isSpace, permissionTypeKey, action.type === ADD_PERMISSION_SUCCESS),
-  //   }
-  // };
+  return state;
 }
 
 function updatePermission(
@@ -80,10 +59,11 @@ interface StateEntities<T> { [guid: string]: APIResource<StateEntity>; }
 
 export function userSpaceOrgReducer<T extends StateEntity>(isSpace: boolean) {
   return function (state: StateEntities<T>, action: APISuccessOrFailedAction) {
-    const permAction = action.apiAction as ChangeUserPermission;
     switch (action.type) {
       case ADD_PERMISSION_SUCCESS:
       case REMOVE_PERMISSION_SUCCESS:
+        // Ensure that an org or space's roles lists are updated when we call add/remove
+        const permAction = action.apiAction as ChangeUserPermission;
         const isAdd = action.type === ADD_PERMISSION_SUCCESS ? true : false;
         return (isSpace && !!permAction.isSpace) || (!isSpace && !permAction.isSpace) ? newEntityState<T>(state, permAction, isAdd) : state;
     }

@@ -4,12 +4,17 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest, filter, first } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../../features/cloud-foundry/cf.helpers';
 import { CfRolesService } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import { UsersRolesSetOrgRole, UsersRolesSetSpaceRole } from '../../../store/actions/users-roles.actions';
 import { AppState } from '../../../store/app-state';
 import { selectUsersRolesPicked } from '../../../store/selectors/users-roles.selector';
-import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../../../store/types/user.types';
+import {
+  CfUser,
+  IUserPermissionInOrg,
+  IUserPermissionInSpace,
+  OrgUserRoleNames,
+  SpaceUserRoleNames,
+} from '../../../store/types/user.types';
 import { CfUserRolesSelected, UserRoleLabels } from '../../../store/types/users-roles.types';
 
 @Component({

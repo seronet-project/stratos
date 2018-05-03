@@ -21,9 +21,8 @@ import { createEntityRelationKey } from '../../../../../store/helpers/entity-rel
 import { getPaginationObservables } from '../../../../../store/reducers/pagination-reducer/pagination-reducer.helper';
 import { selectUsersRolesPicked, selectUsersRolesRoles } from '../../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../../store/types/api.types';
-import { CfUser } from '../../../../../store/types/user.types';
+import { CfUser, OrgUserRoleNames } from '../../../../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
-import { OrgUserRoleNames } from '../../../cf.helpers';
 import { CfRolesService } from '../cf-roles.service';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
 

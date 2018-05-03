@@ -1,5 +1,4 @@
 import { IOrganization, ISpace } from '../../core/cf-api.types';
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import { APIResource } from './api.types';
 
 export interface CfUser {
@@ -23,6 +22,24 @@ export interface CfUser {
   managed_spaces_url: string;
   audited_spaces_url: string;
   default_space_guid: string;
+}
+
+/**
+ * Org user roles, string values as per CF API
+ */
+export enum OrgUserRoleNames {
+  MANAGER = 'managers',
+  BILLING_MANAGERS = 'billing_managers',
+  AUDITOR = 'auditors',
+  USER = 'users'
+}
+/**
+ * Space user roles, string values as per CF API
+ */
+export enum SpaceUserRoleNames {
+  MANAGER = 'managers',
+  AUDITOR = 'auditors',
+  DEVELOPER = 'developers'
 }
 
 export class UserRoleInOrg {

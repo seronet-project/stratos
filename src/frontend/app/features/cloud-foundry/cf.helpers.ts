@@ -1,37 +1,17 @@
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { filter, first, tap } from 'rxjs/operators';
 
+import { pathGet } from '../../core/utils.service';
 import { SetClientFilter } from '../../store/actions/pagination.actions';
 import { RouterNav } from '../../store/actions/router.actions';
 import { AppState } from '../../store/app-state';
 import { applicationSchemaKey } from '../../store/helpers/entity-factory';
-import { APIResource } from '../../store/types/api.types';
-import { CfUser, UserRoleInOrg, UserRoleInSpace } from '../../store/types/user.types';
-import { ActiveRouteCfOrgSpace } from './cf-page.types';
 import { selectPaginationState } from '../../store/selectors/pagination.selectors';
-import { takeWhile, takeUntil, filter, first, tap, skipUntil } from 'rxjs/operators';
-import { PaginationState, PaginationEntityState } from '../../store/types/pagination.types';
-import { getPath } from '../../helper';
-import { pathGet } from '../../core/utils.service';
-
-// TODO: RC move to user types
-/**
- * Org user roles, string values as per CF API
- */
-export enum OrgUserRoleNames {
-  MANAGER = 'managers',
-  BILLING_MANAGERS = 'billing_managers',
-  AUDITOR = 'auditors',
-  USER = 'users'
-}
-/**
- * Space user roles, string values as per CF API
- */
-export enum SpaceUserRoleNames {
-  MANAGER = 'managers',
-  AUDITOR = 'auditors',
-  DEVELOPER = 'developers'
-}
+import { APIResource } from '../../store/types/api.types';
+import { PaginationEntityState } from '../../store/types/pagination.types';
+import { CfUser, OrgUserRoleNames, SpaceUserRoleNames, UserRoleInOrg, UserRoleInSpace } from '../../store/types/user.types';
+import { ActiveRouteCfOrgSpace } from './cf-page.types';
 
 export interface IUserRole<T> {
   string: string;

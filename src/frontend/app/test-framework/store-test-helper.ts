@@ -3,7 +3,6 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppState } from '../store/app-state';
 import { appReducers } from '../store/reducers.module';
-import { OrgUserRoleNames } from '../features/cloud-foundry/cf.helpers';
 import { createUserRoleInOrg } from '../store/types/user.types';
 
 /* tslint:disable */

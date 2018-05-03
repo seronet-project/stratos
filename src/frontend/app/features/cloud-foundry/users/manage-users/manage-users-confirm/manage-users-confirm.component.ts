@@ -1,8 +1,8 @@
-import { AfterContentInit, Component, OnInit, OnDestroy } from '@angular/core';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilChanged, filter, map, mergeMap, withLatestFrom, first } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 
 import { IOrganization } from '../../../../../core/cf-api.types';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../../../../shared/components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
 import { CfUserService } from '../../../../../shared/data-services/cf-user.service';
-import { UsersRolesExecuteChanges, UsersRolesClear, UsersRolesClearUpdateState } from '../../../../../store/actions/users-roles.actions';
+import { UsersRolesClearUpdateState, UsersRolesExecuteChanges } from '../../../../../store/actions/users-roles.actions';
 import { ChangeUserPermission } from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
 import {
@@ -24,9 +24,8 @@ import {
 } from '../../../../../store/helpers/entity-factory';
 import { selectUsersRoles, selectUsersRolesChangedRoles } from '../../../../../store/selectors/users-roles.selector';
 import { APIResource } from '../../../../../store/types/api.types';
-import { CfUser } from '../../../../../store/types/user.types';
+import { CfUser, OrgUserRoleNames, SpaceUserRoleNames } from '../../../../../store/types/user.types';
 import { CfRoleChange, UserRoleLabels } from '../../../../../store/types/users-roles.types';
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../../cf.helpers';
 import { CfRolesService } from '../cf-roles.service';
 
 class CfRoleChangeWithNames extends CfRoleChange {

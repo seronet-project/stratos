@@ -1,6 +1,5 @@
 import { RequestOptions } from '@angular/http';
 
-import { OrgUserRoleNames, SpaceUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import {
   cfUserSchemaKey,
   entityFactory,
@@ -12,6 +11,7 @@ import { createEntityRelationKey, EntityInlineParentAction } from '../helpers/en
 import { PaginatedAction } from '../types/pagination.types';
 import { CFStartAction, IRequestAction } from '../types/request.types';
 import { getActions } from './action.helper';
+import { OrgUserRoleNames, SpaceUserRoleNames } from '../types/user.types';
 
 export const GET_ALL = '[Users] Get all';
 export const GET_ALL_SUCCESS = '[Users] Get all success';

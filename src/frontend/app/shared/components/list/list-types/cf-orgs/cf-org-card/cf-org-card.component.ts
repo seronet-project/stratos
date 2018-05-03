@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { IApp, IOrganization } from '../../../../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../../../../core/entity-service-factory.service';
-import { getOrgRolesString, OrgUserRoleNames } from '../../../../../../features/cloud-foundry/cf.helpers';
+import { getOrgRolesString } from '../../../../../../features/cloud-foundry/cf.helpers';
 import {
   CloudFoundryEndpointService,
 } from '../../../../../../features/cloud-foundry/services/cloud-foundry-endpoint.service';
@@ -14,7 +14,7 @@ import { RouterNav } from '../../../../../../store/actions/router.actions';
 import { AppState } from '../../../../../../store/app-state';
 import { APIResource } from '../../../../../../store/types/api.types';
 import { EndpointUser } from '../../../../../../store/types/endpoint.types';
-import { UserRoleInOrg, createUserRoleInOrg } from '../../../../../../store/types/user.types';
+import { createUserRoleInOrg } from '../../../../../../store/types/user.types';
 import { CfUserService } from '../../../../../data-services/cf-user.service';
 import { MetaCardMenuItem } from '../../../list-cards/meta-card/meta-card-base/meta-card.component';
 import { CardCell } from '../../../list.types';

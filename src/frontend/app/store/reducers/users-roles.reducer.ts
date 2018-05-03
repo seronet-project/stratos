@@ -1,6 +1,5 @@
 import { Action } from '@ngrx/store';
 
-import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 import {
   UsersRolesActions,
   UsersRolesSetChanges,
@@ -8,20 +7,15 @@ import {
   UsersRolesSetOrgRole,
   UsersRolesSetSpaceRole,
   UsersRolesSetUsers,
-  UsersRolesClear,
 } from '../actions/users-roles.actions';
 import {
   createUserRoleInOrg,
   createUserRoleInSpace,
   IUserPermissionInOrg,
   IUserPermissionInSpace,
+  OrgUserRoleNames,
 } from '../types/user.types';
 import { UsersRolesState } from '../types/users-roles.types';
-import { APIResource } from '../types/api.types';
-import { ADD_PERMISSION_SUCCESS, REMOVE_PERMISSION_SUCCESS, ChangeUserPermission } from '../actions/users.actions';
-import { ISpace } from '../../core/cf-api.types';
-import { AppState } from '../app-state';
-import { APISuccessOrFailedAction } from '../types/request.types';
 
 export function createDefaultOrgRoles(orgGuid: string): IUserPermissionInOrg {
   return {

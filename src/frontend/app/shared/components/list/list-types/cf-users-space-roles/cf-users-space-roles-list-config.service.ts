@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { first } from 'rxjs/operators';
 
 import { ISpace } from '../../../../../core/cf-api.types';
-import { SpaceUserRoleNames } from '../../../../../features/cloud-foundry/cf.helpers';
 import { ListView } from '../../../../../store/actions/list.actions';
 import { AppState } from '../../../../../store/app-state';
 import { selectUsersRolesRoles } from '../../../../../store/selectors/users-roles.selector';
@@ -13,6 +12,7 @@ import { ITableColumn } from '../../list-table/table.types';
 import { IListConfig, ListViewTypes } from '../../list.component.types';
 import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
 import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
+import { SpaceUserRoleNames } from '../../../../../store/types/user.types';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
