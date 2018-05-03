@@ -4,6 +4,7 @@ import { CoreModule } from '../../../../../core/core.module';
 import { UtilsService } from '../../../../../core/utils.service';
 import { PercentagePipe } from '../../../../pipes/percentage.pipe';
 import { ValuesPipe } from '../../../../pipes/values.pipe';
+import { AppActionMonitorIconComponent } from '../../../app-action-monitor-icon/app-action-monitor-icon.component';
 import {
   ApplicationStateIconComponent,
 } from '../../../application-state/application-state-icon/application-state-icon.component';
@@ -25,6 +26,7 @@ describe('TableCellComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
+        AppActionMonitorIconComponent,
         TableCellComponent,
         ...listTableCells,
         EventTabActorIconPipe,

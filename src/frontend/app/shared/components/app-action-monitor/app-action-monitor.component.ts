@@ -20,7 +20,7 @@ import {
 export class AppActionMonitorComponent<T> implements OnInit {
 
   @Input('data$')
-  private data$: Observable<Array<T>>;
+  private data$: Observable<Array<T>> = Observable.never();
 
   @Input('entityKey')
   public entityKey: string;
@@ -41,7 +41,7 @@ export class AppActionMonitorComponent<T> implements OnInit {
   public trackBy = ((index: number, item: T) => index.toString());
 
   @Input('getCellConfig')
-  public getCellConfig = ((element): ITableCellRequestMonitorIconConfig<T> => {
+  public getCellConfig = ((element): ITableCellRequestMonitorIconConfig => {
     return {
       entityKey: this.entityKey,
       schema: this.schema,
@@ -64,7 +64,14 @@ export class AppActionMonitorComponent<T> implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    const monitorColumn: ITableColumn<T> = {
+    const cellConfig: ITableCellRequestMonitorIconConfig = {
+      entityKey: this.entityKey,
+      schema: this.schema,
+      monitorState: this.monitorState,
+      updateKey: this.updateKey,
+      getId: this.getId
+    };
+    const monitorColumn = {
       columnId: 'monitorState',
       cellComponent: TableCellRequestMonitorIconComponent,
       cellConfig: this.getCellConfig,

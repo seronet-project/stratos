@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 import { filter, first, map, pairwise, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
@@ -11,6 +10,7 @@ import { IApp, IRoute } from '../../../core/cf-api.types';
 import {
   AppMonitorComponentTypes,
 } from '../../../shared/components/app-action-monitor-icon/app-action-monitor-icon.component';
+import { DataFunctionDefinition } from '../../../shared/components/list/data-sources-controllers/list-data-source';
 import { ITableColumn } from '../../../shared/components/list/list-table/table.types';
 import {
   CfAppRoutesListConfigService,
@@ -30,9 +30,6 @@ import {
 import {
   TableCellAppInstancesComponent,
 } from '../../../shared/components/list/list-types/app/table-cell-app-instances/table-cell-app-instances.component';
-import {
-  TableCellAppStatusComponent,
-} from '../../../shared/components/list/list-types/app/table-cell-app-status/table-cell-app-status.component';
 import { EntityMonitor } from '../../../shared/monitors/entity-monitor';
 import { EntityMonitorFactory } from '../../../shared/monitors/entity-monitor.factory.service';
 import { PaginationMonitor } from '../../../shared/monitors/pagination-monitor';
@@ -52,6 +49,9 @@ import {
 import { createEntityRelationKey } from '../../../store/helpers/entity-relations.types';
 import { APIResource } from '../../../store/types/api.types';
 import { ApplicationService } from '../application.service';
+import { TableCellAppStatusComponent } from '../../../shared/components/list/list-types/app/table-cell-app-status/table-cell-app-status.component';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+
 
 @Component({
   selector: 'app-application-delete',
@@ -73,6 +73,27 @@ export class ApplicationDeleteComponent<T> {
         getValue: row => row.entity.service_instance.entity.name
       },
       cellFlex: '0 0 200px'
+    },
+    {
+      columnId: 'service',
+      headerCell: () => 'Service',
+      cellDefinition: {
+        getValue: (row) => row.entity.service_instance.entity.service.entity.label
+      },
+      cellFlex: '2'
+    },
+    {
+      columnId: 'creation',
+      headerCell: () => 'Creation Date',
+      cellDefinition: {
+        getValue: (row: APIResource) => `${this.datePipe.transform(row.metadata.created_at, 'medium')}`
+      },
+      sort: {
+        type: 'sort',
+        orderKey: 'creation',
+        field: 'metadata.created_at'
+      } as DataFunctionDefinition,
+      cellFlex: '1'
     }
   ];
   public routeDeleteColumns: ITableColumn<APIResource<IRoute>>[] = [
@@ -145,15 +166,8 @@ export class ApplicationDeleteComponent<T> {
     private entityMonitorFactory: EntityMonitorFactory,
     private datePipe: DatePipe
   ) {
-
-    this.appMonitor = this.getApplicationMonitor();
-    this.selectedApplication$ = this.appMonitor.entity$.pipe(
-      filter(app => !!app),
-      map(app => [app])
-    );
-
+    this.setupAppMonitor();
     this.cancelUrl = `/application/${applicationService.cfGuid}/${applicationService.appGuid}`;
-
     const { fetch, monitors } = this.buildRelatedEntitiesActionMonitors();
     const { instanceMonitor, routeMonitor } = monitors;
     this.instanceMonitor = instanceMonitor;
@@ -175,10 +189,20 @@ export class ApplicationDeleteComponent<T> {
       first(),
       tap(fetch),
       switchMap(() => this.fetchingRelated$),
+      filter(fetching => !fetching),
+      first(),
       shareReplay(1),
       startWith(true)
     );
     this.store.dispatch(new GetApplication(applicationService.appGuid, applicationService.cfGuid));
+  }
+
+  private setupAppMonitor() {
+    this.appMonitor = this.getApplicationMonitor();
+    this.selectedApplication$ = this.appMonitor.entity$.pipe(
+      filter(app => !!app),
+      map(app => [app])
+    );
   }
 
   public redirectToAppWall() {
@@ -239,6 +263,7 @@ export class ApplicationDeleteComponent<T> {
 
   private setSelectedServiceInstances(selected: APIResource<IServiceBinding>[]) {
     this.selectedServiceInstances = selected;
+    console.log(selected);
     this.selectedServiceInstances$.next(selected);
   }
 
@@ -249,6 +274,10 @@ export class ApplicationDeleteComponent<T> {
 
   public getId(element: APIResource) {
     return element.metadata.guid;
+  }
+
+  public getInstanceId(service: APIResource<IServiceBinding>) {
+    return service.entity.service_instance_guid;
   }
 
   /**
@@ -273,7 +302,7 @@ export class ApplicationDeleteComponent<T> {
           }
           if (this.selectedServiceInstances && this.selectedServiceInstances.length) {
             this.selectedServiceInstances.forEach(instance => {
-              this.store.dispatch(new DeleteServiceInstance(this.applicationService.cfGuid, instance.metadata.guid));
+              this.store.dispatch(new DeleteServiceInstance(this.applicationService.cfGuid, instance.entity.service_instance_guid));
             });
           }
         }

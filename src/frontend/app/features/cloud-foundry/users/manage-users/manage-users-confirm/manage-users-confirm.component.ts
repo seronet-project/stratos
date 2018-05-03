@@ -106,7 +106,7 @@ export class UsersRolesConfirmComponent implements OnInit, AfterContentInit {
       role: {}
     };
 
-  public getCellConfig(row: CfRoleChangeWithNames): ITableCellRequestMonitorIconConfig<CfRoleChangeWithNames> {
+  public getCellConfig(row: CfRoleChangeWithNames): ITableCellRequestMonitorIconConfig {
     const isSpace = !!row.spaceGuid;
     const schema = isSpace ? entityFactory(spaceSchemaKey) : entityFactory(organizationSchemaKey);
     const guid = isSpace ? row.spaceGuid : row.orgGuid;
