@@ -78,6 +78,7 @@ export class CfUserService {
   }
 
   getOrgRolesFromUser(user: CfUser): IUserPermissionInOrg[] {
+    // User must be an 'org user' aka in the organizations collection, so loop through to get all orgs user might be in
     const role = user['organizations'] as APIResource<IOrganization>[];
     return role.map(org => {
       const orgGuid = org.metadata.guid;
@@ -94,21 +95,37 @@ export class CfUserService {
     });
   }
 
-  getSpaceRolesFromUser(user: CfUser): IUserPermissionInSpace[] {
-    const role = user['spaces'] as APIResource<ISpace>[];
-    return role.map(space => {
-      const spaceGuid = space.metadata.guid;
-      return {
+  private parseSpaceRole(user: CfUser,
+    processedSpaces: Set<string>,
+    spacesToProcess: APIResource<ISpace>[],
+    result: IUserPermissionInSpace[]) {
+    spacesToProcess.forEach(space => {
+      const spaceGuid = space.entity.guid;
+      if (processedSpaces.has(spaceGuid)) {
+        return;
+      }
+      result.push({
         name: space.entity.name as string,
         orgGuid: space.entity.organization_guid,
-        spaceGuid: spaceGuid,
+        spaceGuid,
         permissions: createUserRoleInSpace(
           isSpaceManager(user, spaceGuid),
           isSpaceAuditor(user, spaceGuid),
           isSpaceDeveloper(user, spaceGuid)
         )
-      };
+      });
+      processedSpaces.add(spaceGuid);
     });
+  }
+
+  getSpaceRolesFromUser(user: CfUser): IUserPermissionInSpace[] {
+    const res: IUserPermissionInSpace[] = [];
+    const spaceGuids = new Set<string>();
+    // User might have unique spaces in any of the space role collections, so loop through each
+    this.parseSpaceRole(user, spaceGuids, user.spaces, res);
+    this.parseSpaceRole(user, spaceGuids, user.audited_spaces, res);
+    this.parseSpaceRole(user, spaceGuids, user.managed_spaces, res);
+    return res;
   }
 
   getUserRoleInOrg = (

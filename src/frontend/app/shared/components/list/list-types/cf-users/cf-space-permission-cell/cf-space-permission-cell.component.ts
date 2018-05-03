@@ -6,7 +6,7 @@ import { arrayHelper } from '../../../../../../core/helper-classes/array.helper'
 import { getSpaceRoles, SpaceUserRoleNames } from '../../../../../../features/cloud-foundry/cf.helpers';
 import { RemoveUserPermission } from '../../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../../store/app-state';
-import { cfUserSchemaKey, entityFactory } from '../../../../../../store/helpers/entity-factory';
+import { cfUserSchemaKey, entityFactory, spaceSchemaKey } from '../../../../../../store/helpers/entity-factory';
 import { APIResource } from '../../../../../../store/types/api.types';
 import { CfUser, IUserPermissionInSpace } from '../../../../../../store/types/user.types';
 import { CfUserService } from '../../../../../data-services/cf-user.service';
@@ -49,9 +49,9 @@ export class CfSpacePermissionCellComponent extends CfPermissionCell<SpaceUserRo
         userGuid: row.metadata.guid,
         busy: new EntityMonitor(
           this.store,
-          row.metadata.guid,
-          cfUserSchemaKey,
-          entityFactory(cfUserSchemaKey)
+          spacePerms.spaceGuid,
+          spaceSchemaKey,
+          entityFactory(spaceSchemaKey)
         ).getUpdatingSection(updatingKey).pipe(
           map(update => update.busy)
         )

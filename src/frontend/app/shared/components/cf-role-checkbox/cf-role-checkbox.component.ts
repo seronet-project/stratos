@@ -120,9 +120,12 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
       if (checkedSpaces.has(spaceGuid)) {
         continue;
       }
-      const manager = CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.MANAGER, users, existingRoles, newRoles, orgGuid, spaceGuid);
-      const developer = CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.DEVELOPER, users, existingRoles, newRoles, orgGuid, spaceGuid);
-      const auditor = CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.AUDITOR, users, existingRoles, newRoles, orgGuid, spaceGuid);
+      const manager =
+        CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.MANAGER, users, existingRoles, newRoles, orgGuid, spaceGuid);
+      const developer =
+        CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.DEVELOPER, users, existingRoles, newRoles, orgGuid, spaceGuid);
+      const auditor =
+        CfRoleCheckboxComponent.getCheckedState(SpaceUserRoleNames.AUDITOR, users, existingRoles, newRoles, orgGuid, spaceGuid);
       const hasSpaceRole = manager.checked !== false || developer.checked !== false || auditor.checked !== false;
       if (hasSpaceRole) {
         return true;
@@ -184,7 +187,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
    * @param {IUserPermissionInOrg} newRoles
    * @param {string} orgGuid
    * @param {Boolean} checked
-   * @returns {boolean} True if thie checkbox should be disabled
+   * @returns {boolean} True if the checkbox should be disabled
    * @memberof CfRoleCheckboxComponent
    */
   private static isDisabled(
