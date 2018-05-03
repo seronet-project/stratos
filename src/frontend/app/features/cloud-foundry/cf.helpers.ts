@@ -12,6 +12,7 @@ import { APIResource } from '../../store/types/api.types';
 import { PaginationEntityState } from '../../store/types/pagination.types';
 import { CfUser, OrgUserRoleNames, SpaceUserRoleNames, UserRoleInOrg, UserRoleInSpace } from '../../store/types/user.types';
 import { ActiveRouteCfOrgSpace } from './cf-page.types';
+import { UserRoleLabels } from '../../store/types/users-roles.types';
 
 export interface IUserRole<T> {
   string: string;
@@ -21,17 +22,18 @@ export interface IUserRole<T> {
 export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
   let roles = null;
   if (userRolesInOrg[OrgUserRoleNames.MANAGER]) {
-    roles = 'Manager'; // TODO: RC use common labels
+    roles = UserRoleLabels.org.short[OrgUserRoleNames.MANAGER];
   }
   if (userRolesInOrg[OrgUserRoleNames.BILLING_MANAGERS]) {
-    roles = assignRole(roles, 'Billing Manager');
+    roles = assignRole(roles, UserRoleLabels.org.short[OrgUserRoleNames.BILLING_MANAGERS]);
   }
   if (userRolesInOrg[OrgUserRoleNames.AUDITOR]) {
-    roles = assignRole(roles, 'Auditor');
+    roles = assignRole(roles, UserRoleLabels.org.short[OrgUserRoleNames.AUDITOR]);
 
   }
+  // TODO: RC CI - Hide cross on org user pill if they have any space roles
   if (userRolesInOrg[OrgUserRoleNames.USER] && !userRolesInOrg[OrgUserRoleNames.MANAGER]) {
-    roles = assignRole(roles, 'User');
+    roles = assignRole(roles, UserRoleLabels.org.short[OrgUserRoleNames.USER]);
   }
 
   return roles ? roles : 'None';
@@ -39,14 +41,14 @@ export function getOrgRolesString(userRolesInOrg: UserRoleInOrg): string {
 export function getSpaceRolesString(userRolesInSpace: UserRoleInSpace): string {
   let roles = null;
   if (userRolesInSpace[SpaceUserRoleNames.MANAGER]) {
-    roles = 'Manager'; // TODO: RC use common labels
+    roles = UserRoleLabels.space.short[SpaceUserRoleNames.MANAGER]; // TODO: RC use common labels
   }
   if (userRolesInSpace[SpaceUserRoleNames.AUDITOR]) {
-    roles = assignRole(roles, 'Auditor');
+    roles = assignRole(roles, UserRoleLabels.space.short[SpaceUserRoleNames.AUDITOR]);
 
   }
   if (userRolesInSpace[SpaceUserRoleNames.DEVELOPER]) {
-    roles = assignRole(roles, 'Developer');
+    roles = assignRole(roles, UserRoleLabels.space.short[SpaceUserRoleNames.DEVELOPER]);
   }
 
   return roles ? roles : 'None';
@@ -56,25 +58,25 @@ export function getOrgRoles(userRolesInOrg: UserRoleInOrg): IUserRole<OrgUserRol
   const roles = [];
   if (userRolesInOrg[OrgUserRoleNames.MANAGER]) {
     roles.push({
-      string: 'Manager', // TODO: RC use central conversion
+      string: UserRoleLabels.org.short[OrgUserRoleNames.MANAGER],
       key: OrgUserRoleNames.MANAGER
     });
   }
   if (userRolesInOrg[OrgUserRoleNames.BILLING_MANAGERS]) {
     roles.push({
-      string: 'Billing Manager',
+      string: UserRoleLabels.org.short[OrgUserRoleNames.BILLING_MANAGERS],
       key: OrgUserRoleNames.BILLING_MANAGERS
     });
   }
   if (userRolesInOrg[OrgUserRoleNames.AUDITOR]) {
     roles.push({
-      string: 'Auditor',
+      string: UserRoleLabels.org.short[OrgUserRoleNames.AUDITOR],
       key: OrgUserRoleNames.AUDITOR
     });
   }
   if (userRolesInOrg[OrgUserRoleNames.USER]) {
     roles.push({
-      string: 'User',
+      string: UserRoleLabels.org.short[OrgUserRoleNames.USER],
       key: OrgUserRoleNames.USER
     });
   }
@@ -85,19 +87,19 @@ export function getSpaceRoles(userRolesInSpace: UserRoleInSpace): IUserRole<Spac
   const roles = [];
   if (userRolesInSpace[SpaceUserRoleNames.MANAGER]) {
     roles.push({
-      string: 'Manager',
+      string: UserRoleLabels.space.short[SpaceUserRoleNames.MANAGER],
       key: SpaceUserRoleNames.MANAGER
     });
   }
   if (userRolesInSpace[SpaceUserRoleNames.AUDITOR]) {
     roles.push({
-      string: 'Auditor',
+      string: UserRoleLabels.space.short[SpaceUserRoleNames.AUDITOR],
       key: SpaceUserRoleNames.AUDITOR
     });
   }
   if (userRolesInSpace[SpaceUserRoleNames.DEVELOPER]) {
     roles.push({
-      string: 'Developer',
+      string: UserRoleLabels.space.short[SpaceUserRoleNames.DEVELOPER],
       key: SpaceUserRoleNames.DEVELOPER
     });
   }

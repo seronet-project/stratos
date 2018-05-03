@@ -23,14 +23,29 @@ export class CfRoleChange {
 
 export const UserRoleLabels = {
   org: {
-    [OrgUserRoleNames.MANAGER]: 'Org Manager',
-    [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
-    [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
-    [OrgUserRoleNames.USER]: 'Org User'
+    short: {
+      [OrgUserRoleNames.MANAGER]: 'Manager',
+      [OrgUserRoleNames.BILLING_MANAGERS]: 'Billing Manager',
+      [OrgUserRoleNames.AUDITOR]: 'Auditor',
+      [OrgUserRoleNames.USER]: 'User'
+    },
+    long: {
+      [OrgUserRoleNames.MANAGER]: 'Org Manager',
+      [OrgUserRoleNames.BILLING_MANAGERS]: 'Org Billing Manager',
+      [OrgUserRoleNames.AUDITOR]: 'Org Auditor',
+      [OrgUserRoleNames.USER]: 'Org User'
+    }
   },
   space: {
-    [SpaceUserRoleNames.MANAGER]: 'Space Manager',
-    [SpaceUserRoleNames.DEVELOPER]: 'Space Developer',
-    [SpaceUserRoleNames.AUDITOR]: 'Space Auditor',
+    short: {
+      [SpaceUserRoleNames.MANAGER]: 'Manager',
+      [SpaceUserRoleNames.DEVELOPER]: 'Developer',
+      [SpaceUserRoleNames.AUDITOR]: 'Auditor',
+    },
+    long: {
+      [SpaceUserRoleNames.MANAGER]: 'Space Manager',
+      [SpaceUserRoleNames.DEVELOPER]: 'Space Developer',
+      [SpaceUserRoleNames.AUDITOR]: 'Space Auditor',
+    }
   }
 };

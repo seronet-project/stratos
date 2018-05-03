@@ -191,7 +191,7 @@ export class UsersRolesConfirmComponent implements OnInit, AfterContentInit {
   }
 
   fetchRoleName = (roleName: OrgUserRoleNames | SpaceUserRoleNames, isOrg: boolean): string => {
-    return isOrg ? UserRoleLabels.org[roleName] : UserRoleLabels.space[roleName];
+    return isOrg ? UserRoleLabels.org.long[roleName] : UserRoleLabels.space.long[roleName];
   }
 
   startApply = () => {
