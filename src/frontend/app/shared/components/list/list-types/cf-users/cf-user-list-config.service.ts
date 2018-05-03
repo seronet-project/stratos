@@ -1,18 +1,18 @@
-import { APIResource } from './../../../../../store/types/api.types';
-import { ITableColumn } from './../../list-table/table.types';
-import { CfUserService } from './../../../../data-services/cf-user.service';
-import { AppState } from './../../../../../store/app-state';
-import { Store } from '@ngrx/store';
-import { CfUserDataSourceService } from './cf-user-data-source.service';
-import { ListViewTypes, ListConfig } from './../../list.component.types';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+
+import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
+import { UsersRolesSetUsers } from '../../../../../store/actions/users-roles.actions';
 import { CfUser } from '../../../../../store/types/user.types';
-import { getOrgRolesString } from '../../../../../features/cloud-foundry/cf.helpers';
+import { AppState } from './../../../../../store/app-state';
+import { APIResource } from './../../../../../store/types/api.types';
+import { CfUserService } from './../../../../data-services/cf-user.service';
+import { ITableColumn } from './../../list-table/table.types';
+import { ListConfig, ListViewTypes } from './../../list.component.types';
 import { CfOrgPermissionCellComponent } from './cf-org-permission-cell/cf-org-permission-cell.component';
 import { CfSpacePermissionCellComponent } from './cf-space-permission-cell/cf-space-permission-cell.component';
-import { Router } from '@angular/router';
-import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
-import { ManageUsersSetUsers } from '../../../../../store/actions/users.actions';
+import { CfUserDataSourceService } from './cf-user-data-source.service';
 
 @Injectable()
 export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
@@ -56,7 +56,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageUserAction = {
     action: (user: APIResource<CfUser>) => {
-      this.store.dispatch(new ManageUsersSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, [user.entity]));
+      this.store.dispatch(new UsersRolesSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, [user.entity]));
       this.router.navigate([this.createManagerUsersUrl()]);
     },
     label: 'Manage',
@@ -67,7 +67,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
 
   manageMultiUserAction = {
     action: (users: APIResource<CfUser>[]) => {
-      this.store.dispatch(new ManageUsersSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, users.map(user => user.entity)));
+      this.store.dispatch(new UsersRolesSetUsers(this.cfUserService.activeRouteCfOrgSpace.cfGuid, users.map(user => user.entity)));
       this.router.navigate([this.createManagerUsersUrl()]);
       return false;
     },

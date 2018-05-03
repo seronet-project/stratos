@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ManageUsersConfirmComponent } from './manage-users-confirm.component';
+import { UsersRolesConfirmComponent } from './manage-users-confirm.component';
 
-describe('ManageUsersConfirmComponent', () => {
-  let component: ManageUsersConfirmComponent;
-  let fixture: ComponentFixture<ManageUsersConfirmComponent>;
+describe('UsersRolesConfirmComponent', () => {
+  let component: UsersRolesConfirmComponent;
+  let fixture: ComponentFixture<UsersRolesConfirmComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ManageUsersConfirmComponent ]
+      declarations: [ UsersRolesConfirmComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ManageUsersConfirmComponent);
+    fixture = TestBed.createComponent(UsersRolesConfirmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

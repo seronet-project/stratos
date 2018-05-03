@@ -6,12 +6,12 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { createBasicStoreModule } from '../../../../../test-framework/store-test-helper';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 import { CfRolesService } from '../cf-roles.service';
-import { ManageUsersSelectComponent } from './manage-users-select.component';
+import { UsersRolesSelectComponent } from './manage-users-select.component';
 
 
-describe('ManageUsersSelectComponent', () => {
-  let component: ManageUsersSelectComponent;
-  let fixture: ComponentFixture<ManageUsersSelectComponent>;
+describe('UsersRolesSelectComponent', () => {
+  let component: UsersRolesSelectComponent;
+  let fixture: ComponentFixture<UsersRolesSelectComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,13 +25,13 @@ describe('ManageUsersSelectComponent', () => {
         ActiveRouteCfOrgSpace,
         CfRolesService
       ],
-      declarations: [ManageUsersSelectComponent]
+      declarations: [UsersRolesSelectComponent]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ManageUsersSelectComponent);
+    fixture = TestBed.createComponent(UsersRolesSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -2,7 +2,7 @@ import { ActionHistoryState } from './reducers/action-history-reducer';
 import { AuthState } from './reducers/auth.reducer';
 import { DashboardState } from './reducers/dashboard-reducer';
 import { ListsState } from './reducers/list.reducer';
-import { ManageUsersState } from './reducers/manage-users.reducer';
+import { UsersRolesState } from './reducers/users-roles.reducer';
 import { CreateNewApplicationState } from './types/create-application.types';
 import { DeployApplicationState } from './types/deploy-application.types';
 import { EndpointState } from './types/endpoint.types';
@@ -31,6 +31,6 @@ export interface AppState {
   deployApplication: DeployApplicationState;
   lists: ListsState;
   routing: RoutingHistory;
-  manageUsers: ManageUsersState;
+  manageUsersRoles: UsersRolesState;
   internalEvents: InternalEventsState;
 }

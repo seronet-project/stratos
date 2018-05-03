@@ -15,7 +15,7 @@ import { deployAppReducer } from './reducers/deploy-app.reducer';
 import { endpointsReducer } from './reducers/endpoints.reducer';
 import { internalEventReducer } from './reducers/internal-events.reducer';
 import { listReducer } from './reducers/list.reducer';
-import { manageUsersReducer } from './reducers/manage-users.reducer';
+import { UsersRolesReducer } from './reducers/users-roles.reducer';
 import { requestPaginationReducer } from './reducers/pagination-reducer.generator';
 import { routingReducer } from './reducers/routing.reducer';
 import { uaaSetupReducer } from './reducers/uaa-setup.reducers';
@@ -39,7 +39,7 @@ export const appReducers = {
   actionHistory: actionHistoryReducer,
   lists: listReducer,
   routing: routingReducer,
-  manageUsers: manageUsersReducer,
+  manageUsersRoles: UsersRolesReducer,
   internalEvents: internalEventReducer
 } as ActionReducerMap<{}>;
 

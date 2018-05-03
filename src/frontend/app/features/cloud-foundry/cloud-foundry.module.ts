@@ -69,14 +69,14 @@ import {
 import { CloudFoundryStacksComponent } from './tabs/cloud-foundry-stacks/cloud-foundry-stacks.component';
 import { CloudFoundrySummaryTabComponent } from './tabs/cloud-foundry-summary-tab/cloud-foundry-summary-tab.component';
 import { CloudFoundryUsersComponent } from './tabs/cloud-foundry-users/cloud-foundry-users.component';
-import { ManageUsersModifyComponent } from './users/manage-users/manage-users-modify/manage-users-modify.component';
+import { UsersRolesModifyComponent } from './users/manage-users/manage-users-modify/manage-users-modify.component';
 import {
   SpaceRolesListWrapperComponent,
 } from './users/manage-users/manage-users-modify/space-roles-list-wrapper/space-roles-list-wrapper.component';
-import { ManageUsersComponent } from './users/manage-users/manage-users.component';
+import { UsersRolesComponent } from './users/manage-users/manage-users.component';
 import { CfRolesService } from './users/manage-users/cf-roles.service';
-import { ManageUsersSelectComponent } from './users/manage-users/manage-users-select/manage-users-select.component';
-import { ManageUsersConfirmComponent } from './users/manage-users/manage-users-confirm/manage-users-confirm.component';
+import { UsersRolesSelectComponent } from './users/manage-users/manage-users-select/manage-users-select.component';
+import { UsersRolesConfirmComponent } from './users/manage-users/manage-users-confirm/manage-users-confirm.component';
 
 
 @NgModule({
@@ -94,7 +94,7 @@ import { ManageUsersConfirmComponent } from './users/manage-users/manage-users-c
     CloudFoundryStacksComponent,
     CloudFoundrySecurityGroupsComponent,
     AddOrganizationComponent,
-    ManageUsersComponent,
+    UsersRolesComponent,
     CloudFoundryOrganizationSummaryComponent,
     CloudFoundryOrganizationSpacesComponent,
     CloudFoundryOrganizationUsersComponent,
@@ -113,10 +113,10 @@ import { ManageUsersConfirmComponent } from './users/manage-users/manage-users-c
     EditOrganizationComponent,
     EditOrganizationStepComponent,
     CliInfoCloudFoundryComponent,
-    ManageUsersModifyComponent,
+    UsersRolesModifyComponent,
     SpaceRolesListWrapperComponent,
-    ManageUsersSelectComponent,
-    ManageUsersConfirmComponent,
+    UsersRolesSelectComponent,
+    UsersRolesConfirmComponent,
   ],
   providers: [
     CFEndpointsListConfigService,

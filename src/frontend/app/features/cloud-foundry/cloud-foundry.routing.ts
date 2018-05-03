@@ -7,7 +7,7 @@ import { CloudFoundryBaseComponent } from './cloud-foundry-base/cloud-foundry-ba
 import { CloudFoundryTabsBaseComponent } from './cloud-foundry-tabs-base/cloud-foundry-tabs-base.component';
 import { CloudFoundryComponent } from './cloud-foundry/cloud-foundry.component';
 import { EditSpaceComponent } from './edit-space/edit-space.component';
-import { ManageUsersComponent } from './users/manage-users/manage-users.component';
+import { UsersRolesComponent } from './users/manage-users/manage-users.component';
 import { CloudFoundryBuildPacksComponent } from './tabs/cloud-foundry-build-packs/cloud-foundry-build-packs.component';
 import { CloudFoundryFeatureFlagsComponent } from './tabs/cloud-foundry-feature-flags/cloud-foundry-feature-flags.component';
 import { CloudFoundryFirehoseComponent } from './tabs/cloud-foundry-firehose/cloud-foundry-firehose.component';
@@ -55,20 +55,20 @@ import { CloudFoundryUsersComponent } from './tabs/cloud-foundry-users/cloud-fou
 import { EditOrganizationComponent } from './edit-organization/edit-organization.component';
 import { CliInfoCloudFoundryComponent } from './cli-info-cloud-foundry/cli-info-cloud-foundry.component';
 
-const manageUser = [
+const usersRoles = [
   {
     path: 'users/manage',
-    component: ManageUsersComponent,
+    component: UsersRolesComponent,
     pathMatch: 'full'
   },
   {
     path: 'organizations/:orgId/users/manage',
-    component: ManageUsersComponent,
+    component: UsersRolesComponent,
     pathMatch: 'full'
   },
   {
     path: 'organizations/:orgId/spaces/:spaceId/users/manage',
-    component: ManageUsersComponent,
+    component: UsersRolesComponent,
     pathMatch: 'full'
   },
 ];
@@ -216,7 +216,7 @@ const cloudFoundry: Routes = [{
           ]
         }]
     },
-    ...manageUser
+    ...usersRoles
   ]
 }];
 

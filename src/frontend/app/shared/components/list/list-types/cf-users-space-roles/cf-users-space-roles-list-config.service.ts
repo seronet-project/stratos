@@ -4,15 +4,15 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { first } from 'rxjs/operators';
 
 import { ISpace } from '../../../../../core/cf-api.types';
+import { SpaceUserRoleNames } from '../../../../../features/cloud-foundry/cf.helpers';
 import { ListView } from '../../../../../store/actions/list.actions';
-import { selectManageUsersRoles } from '../../../../../store/actions/users.actions';
+import { selectUsersRolesRoles } from '../../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../../store/app-state';
 import { APIResource } from '../../../../../store/types/api.types';
 import { ITableColumn } from '../../list-table/table.types';
 import { IListConfig, ListViewTypes } from '../../list.component.types';
 import { CfUsersSpaceRolesDataSourceService } from './cf-users-space-roles-data-source.service';
 import { TableCellSpaceRoleComponent } from './table-cell-space-role/table-cell-space-role.component';
-import { SpaceUserRoleNames } from '../../../../../features/cloud-foundry/cf.helpers';
 
 @Injectable()
 export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResource<ISpace>> {
@@ -61,7 +61,7 @@ export class CfUsersSpaceRolesListConfigService implements IListConfig<APIResour
   initialised = new BehaviorSubject<boolean>(false);
 
   constructor(private store: Store<AppState>, private cfGuid: string, private spaceGuid: string) {
-    this.store.select(selectManageUsersRoles).pipe(
+    this.store.select(selectUsersRolesRoles).pipe(
       first()
     ).subscribe(newRoles => {
       this.dataSource = new CfUsersSpaceRolesDataSourceService(cfGuid, newRoles.orgGuid, spaceGuid, this.store, this);

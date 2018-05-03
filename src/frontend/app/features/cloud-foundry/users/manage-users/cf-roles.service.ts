@@ -16,13 +16,13 @@ import {
 
 import { CfUserService } from '../../../../shared/data-services/cf-user.service';
 import {
-  selectManageUsersCf,
-  selectManageUsersPicked,
-  selectManageUsersRoles,
-  ManageUsersSetChanges,
-} from '../../../../store/actions/users.actions';
+  selectUsersRolesCf,
+  selectUsersRolesPicked,
+  selectUsersRolesRoles,
+  UsersRolesSetChanges,
+} from '../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../store/app-state';
-import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/manage-users.reducer';
+import { createDefaultOrgRoles, createDefaultSpaceRoles } from '../../../../store/reducers/users-roles.reducer';
 import {
   CfUser,
   IUserPermissionInOrg,
@@ -78,8 +78,8 @@ export class CfRolesService {
     private store: Store<AppState>,
     private cfUserService: CfUserService,
     private entityServiceFactory: EntityServiceFactory) {
-    this.existingRoles$ = this.store.select(selectManageUsersPicked).pipe(
-      combineLatest(this.store.select(selectManageUsersCf)),
+    this.existingRoles$ = this.store.select(selectUsersRolesPicked).pipe(
+      combineLatest(this.store.select(selectUsersRolesCf)),
       filter(([users, cfGuid]) => !!cfGuid),
       switchMap(([users, cfGuid]) => {
         return this.populateRoles(cfGuid, users);
@@ -88,7 +88,7 @@ export class CfRolesService {
       publishReplay(1),
       refCount()
     );
-    this.newRoles$ = this.store.select(selectManageUsersRoles).pipe(
+    this.newRoles$ = this.store.select(selectUsersRolesRoles).pipe(
       distinctUntilChanged(),
       publishReplay(1),
       refCount()
@@ -115,9 +115,8 @@ export class CfRolesService {
       return Observable.of({});
     }
 
-    const userGuids: string[] = selectedUsers.map(user => user.guid);
+    const userGuids = selectedUsers.map(user => user.guid);
 
-    // Fetch the cf formated users collection
     return this.cfUserService.getUsers(cfGuid).pipe(
       map(users => {
         const roles = {};
@@ -129,14 +128,14 @@ export class CfRolesService {
           const mappedUser = {};
           const orgRoles = this.cfUserService.getOrgRolesFromUser(user.entity);
           const spaceRoles = this.cfUserService.getSpaceRolesFromUser(user.entity);
-          // ... populate org roles
+          // ... populate org roles ...
           orgRoles.forEach(org => {
             mappedUser[org.orgGuid] = {
               ...org,
               spaces: {}
             };
           });
-          // For each space, populate space roles
+          // ... and for each space, populate space roles
           spaceRoles.forEach(space => {
             mappedUser[space.orgGuid].spaces[space.spaceGuid] = {
               ...space
@@ -150,8 +149,7 @@ export class CfRolesService {
   }
 
   /**
-   * Create a collection of role `change` actions that's the diff between the store's new roles that have been selected by the user and any
-   * existing.
+   * Create a collection of role `change` items representing the diff between existing roles and newly selected roles.
    *
    * @param {string} orgGuid
    * @returns {Observable<CfRoleChange[]>}
@@ -159,7 +157,7 @@ export class CfRolesService {
    */
   createRolesDiff(orgGuid: string): Observable<CfRoleChange[]> {
     return this.existingRoles$.pipe(
-      combineLatest(this.newRoles$, this.store.select(selectManageUsersPicked)),
+      combineLatest(this.newRoles$, this.store.select(selectUsersRolesPicked)),
       first(),
       map(([existingRoles, newRoles, pickedUsers]) => {
         const changes = [];
@@ -191,7 +189,7 @@ export class CfRolesService {
             }, oldSpace.permissions, newSpace.permissions));
           });
         });
-        this.store.dispatch(new ManageUsersSetChanges(changes));
+        this.store.dispatch(new UsersRolesSetChanges(changes));
         return changes;
       })
     );

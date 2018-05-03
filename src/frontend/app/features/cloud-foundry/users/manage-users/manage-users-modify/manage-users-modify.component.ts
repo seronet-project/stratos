@@ -15,10 +15,10 @@ import { IOrganization } from '../../../../../core/cf-api.types';
 import { PaginationMonitorFactory } from '../../../../../shared/monitors/pagination-monitor.factory';
 import { GetAllOrganizations } from '../../../../../store/actions/organization.actions';
 import {
-  ManageUsersSetOrg,
-  selectManageUsersPicked,
-  selectManageUsersRoles,
-} from '../../../../../store/actions/users.actions';
+  selectUsersRolesPicked,
+  selectUsersRolesRoles,
+  UsersRolesSetOrg,
+} from '../../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../../store/app-state';
 import { entityFactory, organizationSchemaKey, spaceSchemaKey } from '../../../../../store/helpers/entity-factory';
 import { createEntityRelationKey } from '../../../../../store/helpers/entity-relations.types';
@@ -37,7 +37,7 @@ import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space
   styleUrls: ['./manage-users-modify.component.scss'],
   entryComponents: [SpaceRolesListWrapperComponent]
 })
-export class ManageUsersModifyComponent implements OnInit {
+export class UsersRolesModifyComponent implements OnInit {
 
   // @Input() initialUsers$: Observable<CfUser[]>;
 
@@ -96,11 +96,11 @@ export class ManageUsersModifyComponent implements OnInit {
         this.updateOrg(orgs[0].metadata.guid);
       });
     }
-    this.users$ = this.store.select(selectManageUsersPicked).pipe(
+    this.users$ = this.store.select(selectUsersRolesPicked).pipe(
       distinctUntilChanged(),
     );
 
-    this.valid$ = this.store.select(selectManageUsersRoles).pipe(
+    this.valid$ = this.store.select(selectUsersRolesRoles).pipe(
       debounceTime(150),
       switchMap(orgRoles => this.cfRolesService.createRolesDiff(orgRoles.orgGuid)),
       map(changes => !!changes.length)
@@ -113,8 +113,8 @@ export class ManageUsersModifyComponent implements OnInit {
       return;
     }
 
-    this.store.dispatch(new ManageUsersSetOrg(orgGuid));
-    this.store.select(selectManageUsersRoles).pipe(
+    this.store.dispatch(new UsersRolesSetOrg(orgGuid));
+    this.store.select(selectUsersRolesRoles).pipe(
       filter(newRoles => newRoles && newRoles.orgGuid === orgGuid),
       first()
     ).subscribe(null, null, () => {

@@ -13,7 +13,7 @@ import { getActions } from './action.helper';
 import { Action, compose } from '@ngrx/store';
 import { CfUser, UserRoleInOrg, UserRoleInSpace } from '../types/user.types';
 import { AppState } from '../app-state';
-import { ManageUsersState } from '../reducers/manage-users.reducer';
+import { UsersRolesState } from '../reducers/users-roles.reducer';
 import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
 
 export const GET_ALL = '[Users] Get all';
@@ -149,62 +149,3 @@ export class GetUser extends CFStartAction {
   entityKey = cfUserSchemaKey;
   options: RequestOptions;
 }
-
-// TODO: RC tidy
-export class ManageUsersActions {
-  static SetUsers = '[Manage Users] Set users';
-  static ClearUsers = '[Manage Users] Clear users';
-  static SetOrg = '[Manage Users] Set org';
-  static SetOrgRole = '[Manage Users] Set org role';
-  static SetSpaceRole = '[Manage Users] Set space role';
-  static SetChanges = '[Manage Users] Set role changes';
-}
-export class ManageUsersSetUsers implements Action {
-  type = ManageUsersActions.SetUsers;
-  constructor(public cfGuid: string, public users: CfUser[]) { }
-}
-export class ManageUsersSetOrgRole implements Action {
-  type = ManageUsersActions.SetOrgRole;
-  constructor(public orgGuid: string, public role: string, public setRole: boolean) { }
-}
-export class ManageUsersSetSpaceRole implements Action {
-  type = ManageUsersActions.SetSpaceRole;
-  constructor(public orgGuid: string, public spaceGuid: string, public role: string, public setRole: boolean) { }
-}
-export class ManageUsersClear implements Action {
-  type = ManageUsersActions.ClearUsers;
-}
-export class ManageUsersSetOrg implements Action {
-  type = ManageUsersActions.SetOrg;
-  constructor(public selectedOrg: string) { }
-}
-export class ManageUsersSetChanges implements Action {
-  type = ManageUsersActions.SetChanges;
-  constructor(public changes: CfRoleChange[]) { }
-}
-
-export const selectManageUsers = (state: AppState): ManageUsersState => state.manageUsers;
-
-const selectUsers = (manageUsers: ManageUsersState) => manageUsers.users;
-export const selectManageUsersPicked = compose(
-  selectUsers,
-  selectManageUsers
-);
-
-const selectNewRoles = (manageUsers: ManageUsersState) => manageUsers.newRoles;
-export const selectManageUsersRoles = compose(
-  selectNewRoles,
-  selectManageUsers
-);
-
-const selectCfGuid = (manageUsers: ManageUsersState) => manageUsers.cfGuid;
-export const selectManageUsersCf = compose(
-  selectCfGuid,
-  selectManageUsers
-);
-
-const selectChanged = (manageUsers: ManageUsersState) => manageUsers.changedRoles;
-export const selectManageUsersChangedRoles = compose(
-  selectChanged,
-  selectManageUsers
-);

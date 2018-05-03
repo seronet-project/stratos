@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -13,13 +13,8 @@ import {
 } from '../../../../../shared/components/list/list-table/table-cell-request-monitor-icon/table-cell-request-monitor-icon.component';
 import { ITableColumn } from '../../../../../shared/components/list/list-table/table.types';
 import { CfUserService } from '../../../../../shared/data-services/cf-user.service';
-import {
-  AddUserPermission,
-  ChangeUserPermission,
-  RemoveUserPermission,
-  selectManageUsers,
-  selectManageUsersChangedRoles,
-} from '../../../../../store/actions/users.actions';
+import { selectUsersRoles, selectUsersRolesChangedRoles } from '../../../../../store/actions/users-roles.actions';
+import { AddUserPermission, ChangeUserPermission, RemoveUserPermission } from '../../../../../store/actions/users.actions';
 import { AppState } from '../../../../../store/app-state';
 import {
   cfUserSchemaKey,
@@ -43,7 +38,7 @@ class CfRoleChangeWithNames extends CfRoleChange {
   templateUrl: './manage-users-confirm.component.html',
   styleUrls: ['./manage-users-confirm.component.scss']
 })
-export class ManageUsersConfirmComponent {
+export class UsersRolesConfirmComponent {
 
   columns: ITableColumn<CfRoleChangeWithNames>[] = [
     {
@@ -96,7 +91,7 @@ export class ManageUsersConfirmComponent {
   userSchemaKey = cfUserSchemaKey;
   monitorState = AppMonitorComponentTypes.UPDATE;
   updateStarted = false;
-  private orgName = '';
+  private orgName$ = new BehaviorSubject('');
 
   private updateChanges = new BehaviorSubject(0);
   private nameCache: {
@@ -128,7 +123,7 @@ export class ManageUsersConfirmComponent {
     private cfUserService: CfUserService,
   ) {
 
-    const cfAndOrgGuid$ = this.store.select(selectManageUsers).pipe(
+    const cfAndOrgGuid$ = this.store.select(selectUsersRoles).pipe(
       map(mu => ({ cfGuid: mu.cfGuid, orgGuid: mu.newRoles.orgGuid })),
       filter(mu => !!mu.cfGuid && !!mu.orgGuid),
       distinctUntilChanged((oldMU, newMU) => {
@@ -145,10 +140,10 @@ export class ManageUsersConfirmComponent {
         );
       }),
       withLatestFrom(
-        this.store.select(selectManageUsersChangedRoles),
+        this.store.select(selectUsersRolesChangedRoles),
       ),
       map(([[users, org], changes]) => {
-        this.orgName = org.entity.name;
+        this.orgName$.next(org.entity.name);
         return changes.map(change => ({
           ...change,
           userName: this.fetchUserName(change.userGuid, users),
@@ -193,16 +188,16 @@ export class ManageUsersConfirmComponent {
       return;
     }
     this.updateStarted = true;
-    this.store.select(selectManageUsers).pipe(
+    this.store.select(selectUsersRoles).pipe(
       first(),
-    ).subscribe(manageUsers => {
+    ).subscribe(usersRoles => {
       // TODO: RC Make org user changes first... check result... then orgs and spaces
-      manageUsers.changedRoles.forEach(change => {
+      usersRoles.changedRoles.forEach(change => {
         const isSpace = !!change.spaceGuid;
         const entityGuid = isSpace ? change.spaceGuid : change.orgGuid;
         const action = change.add ?
-          new AddUserPermission(manageUsers.cfGuid, change.userGuid, entityGuid, change.role, isSpace) :
-          new RemoveUserPermission(manageUsers.cfGuid, change.userGuid, entityGuid, change.role, isSpace);
+          new AddUserPermission(usersRoles.cfGuid, change.userGuid, entityGuid, change.role, isSpace) :
+          new RemoveUserPermission(usersRoles.cfGuid, change.userGuid, entityGuid, change.role, isSpace);
         this.store.dispatch(action);
       });
     });

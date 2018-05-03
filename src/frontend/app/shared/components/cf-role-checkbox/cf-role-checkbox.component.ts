@@ -11,10 +11,10 @@ import {
   UserRoleLabels,
 } from '../../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import {
-  ManageUsersSetOrgRole,
-  ManageUsersSetSpaceRole,
-  selectManageUsersPicked,
-} from '../../../store/actions/users.actions';
+  UsersRolesSetOrgRole,
+  UsersRolesSetSpaceRole,
+  selectUsersRolesPicked,
+} from '../../../store/actions/users-roles.actions';
 import { AppState } from '../../../store/app-state';
 import { CfUser, IUserPermissionInOrg, IUserPermissionInSpace } from '../../../store/types/user.types';
 
@@ -224,7 +224,7 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isOrgRole = !this.spaceGuid;
-    const users$ = this.store.select(selectManageUsersPicked);
+    const users$ = this.store.select(selectUsersRolesPicked);
     this.sub = this.cfRolesService.existingRoles$.pipe(
       combineLatest(this.cfRolesService.newRoles$, users$),
       filter(([existingRoles, newRoles, users]) => !!users.length && !!newRoles.orgGuid)
@@ -258,9 +258,9 @@ export class CfRoleCheckboxComponent implements OnInit, OnDestroy {
         this.tooltip = '';
       }
       if (this.isOrgRole) {
-        this.store.dispatch(new ManageUsersSetOrgRole(this.orgGuid, this.role, checked));
+        this.store.dispatch(new UsersRolesSetOrgRole(this.orgGuid, this.role, checked));
       } else {
-        this.store.dispatch(new ManageUsersSetSpaceRole(this.orgGuid, this.spaceGuid, this.role, checked));
+        this.store.dispatch(new UsersRolesSetSpaceRole(this.orgGuid, this.spaceGuid, this.role, checked));
       }
     });
   }

@@ -21636,7 +21636,7 @@ const testInitialStoreState: AppState = {
       }
     }
   },
-  manageUsers: {
+  manageUsersRoles: {
     users: [],
     cfGuid: '',
     newRoles: {

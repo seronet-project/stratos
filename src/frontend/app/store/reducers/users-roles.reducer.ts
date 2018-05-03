@@ -1,13 +1,13 @@
 import { Action } from '@ngrx/store';
 
 import {
-  ManageUsersSetOrg,
-  ManageUsersSetOrgRole,
-  ManageUsersSetSpaceRole,
-  ManageUsersSetUsers,
-  ManageUsersActions,
-  ManageUsersSetChanges,
-} from '../actions/users.actions';
+  UsersRolesSetOrg,
+  UsersRolesSetOrgRole,
+  UsersRolesSetSpaceRole,
+  UsersRolesSetUsers,
+  UsersRolesActions,
+  UsersRolesSetChanges,
+} from '../actions/users-roles.actions';
 import {
   CfUser,
   createUserRoleInOrg,
@@ -18,7 +18,7 @@ import {
 import { CfRoleChange } from '../../features/cloud-foundry/users/manage-users/cf-roles.service';
 import { OrgUserRoleNames } from '../../features/cloud-foundry/cf.helpers';
 
-export interface ManageUsersState {
+export interface UsersRolesState {
   cfGuid: string;
   users: CfUser[];
   newRoles: IUserPermissionInOrg;
@@ -51,17 +51,17 @@ export function createDefaultSpaceRoles(orgGuid: string, spaceGuid: string): IUs
   };
 }
 
-const defaultState: ManageUsersState = {
+const defaultState: UsersRolesState = {
   cfGuid: '',
   users: [],
   newRoles: createDefaultOrgRoles(''),
   changedRoles: []
 };
 
-export function manageUsersReducer(state: ManageUsersState = defaultState, action: Action): ManageUsersState {
+export function UsersRolesReducer(state: UsersRolesState = defaultState, action: Action): UsersRolesState {
   switch (action.type) {
-    case ManageUsersActions.SetUsers:
-      const setUsersAction = action as ManageUsersSetUsers;
+    case UsersRolesActions.SetUsers:
+      const setUsersAction = action as UsersRolesSetUsers;
       return {
         ...state,
         cfGuid: setUsersAction.cfGuid,
@@ -69,22 +69,22 @@ export function manageUsersReducer(state: ManageUsersState = defaultState, actio
         // Clear all roles but retain the selected org
         newRoles: createDefaultOrgRoles(state.newRoles ? state.newRoles.orgGuid : '')
       };
-    case ManageUsersActions.ClearUsers:
+    case UsersRolesActions.ClearUsers:
       return defaultState;
-    case ManageUsersActions.SetOrg:
-      const setOrgAction = action as ManageUsersSetOrg;
+    case UsersRolesActions.SetOrg:
+      const setOrgAction = action as UsersRolesSetOrg;
       return {
         ...state,
         newRoles: createDefaultOrgRoles(setOrgAction.selectedOrg)
       };
-    case ManageUsersActions.SetOrgRole:
-      const setOrgRoleAction = action as ManageUsersSetOrgRole;
+    case UsersRolesActions.SetOrgRole:
+      const setOrgRoleAction = action as UsersRolesSetOrgRole;
       return setRole(state, setOrgRoleAction.orgGuid, null, setOrgRoleAction.role, setOrgRoleAction.setRole);
-    case ManageUsersActions.SetSpaceRole:
-      const setSpaceRoleAction = action as ManageUsersSetSpaceRole;
+    case UsersRolesActions.SetSpaceRole:
+      const setSpaceRoleAction = action as UsersRolesSetSpaceRole;
       return setRole(state, setSpaceRoleAction.orgGuid, setSpaceRoleAction.spaceGuid, setSpaceRoleAction.role, setSpaceRoleAction.setRole);
-    case ManageUsersActions.SetChanges:
-      const setChangesAction = action as ManageUsersSetChanges;
+    case UsersRolesActions.SetChanges:
+      const setChangesAction = action as UsersRolesSetChanges;
       return {
         ...state,
         changedRoles: setChangesAction.changes
@@ -104,7 +104,7 @@ function setPermission(roles: IUserPermissionInOrg | IUserPermissionInSpace, rol
   return true;
 }
 
-function setRole(existingState: ManageUsersState, orgGuid: string, spaceGuid: string, role: string, setRole: boolean): ManageUsersState {
+function setRole(existingState: UsersRolesState, orgGuid: string, spaceGuid: string, role: string, setRole: boolean): UsersRolesState {
   const existingOrgRoles = existingState.newRoles;
   let newOrgRoles = existingOrgRoles ? {
     ...existingOrgRoles,

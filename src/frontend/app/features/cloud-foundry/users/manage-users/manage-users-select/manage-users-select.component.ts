@@ -8,7 +8,7 @@ import {
   CfSelectUsersListConfigService,
 } from '../../../../../shared/components/list/list-types/cf-select-users/cf-select-users-list-config.service';
 import { ListConfig } from '../../../../../shared/components/list/list.component.types';
-import { ManageUsersSetUsers } from '../../../../../store/actions/users.actions';
+import { UsersRolesSetUsers } from '../../../../../store/actions/users-roles.actions';
 import { AppState } from '../../../../../store/app-state';
 import { APIResource } from '../../../../../store/types/api.types';
 import { CfUser } from '../../../../../store/types/user.types';
@@ -31,7 +31,7 @@ import { CfRolesService } from '../cf-roles.service';
     }
   ],
 })
-export class ManageUsersSelectComponent implements OnInit {
+export class UsersRolesSelectComponent implements OnInit {
 
   selectedUsers$: Observable<CfUser[]>;
   valid$ = new BehaviorSubject<boolean>(false);
@@ -59,7 +59,7 @@ export class ManageUsersSelectComponent implements OnInit {
     return this.selectedUsers$.pipe(
       first(),
       tap(users => {
-        this.store.dispatch(new ManageUsersSetUsers(this.activeRouteCfOrgSpace.cfGuid, users));
+        this.store.dispatch(new UsersRolesSetUsers(this.activeRouteCfOrgSpace.cfGuid, users));
       }),
       map(() => ({ success: true }))
     );

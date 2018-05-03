@@ -6,13 +6,13 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { createBasicStoreModule } from '../../../../../test-framework/store-test-helper';
 import { ActiveRouteCfOrgSpace } from '../../../cf-page.types';
 import { CfRolesService } from '../cf-roles.service';
-import { ManageUsersModifyComponent } from './manage-users-modify.component';
+import { UsersRolesModifyComponent } from './manage-users-modify.component';
 import { SpaceRolesListWrapperComponent } from './space-roles-list-wrapper/space-roles-list-wrapper.component';
 
 
-describe('ManageUsersModifyComponent', () => {
-  let component: ManageUsersModifyComponent;
-  let fixture: ComponentFixture<ManageUsersModifyComponent>;
+describe('UsersRolesModifyComponent', () => {
+  let component: UsersRolesModifyComponent;
+  let fixture: ComponentFixture<UsersRolesModifyComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -27,7 +27,7 @@ describe('ManageUsersModifyComponent', () => {
         CfRolesService
       ],
       declarations: [
-        ManageUsersModifyComponent,
+        UsersRolesModifyComponent,
         SpaceRolesListWrapperComponent,
       ]
     })
@@ -35,7 +35,7 @@ describe('ManageUsersModifyComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ManageUsersModifyComponent);
+    fixture = TestBed.createComponent(UsersRolesModifyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
