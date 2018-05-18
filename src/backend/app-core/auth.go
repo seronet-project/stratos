@@ -13,8 +13,8 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
-	uuid "github.com/satori/go.uuid"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
@@ -104,9 +104,6 @@ func (p *portalProxy) loginToUAA(c echo.Context) error {
 	sessionValues["user_id"] = u.UserGUID
 	sessionValues["exp"] = u.TokenExpiry
 
-	xsrfToken := uuid.NewV4().String()
-	sessionValues[XSRFTokenSessionName] = xsrfToken
-
 	// Ensure that login disregards cookies from the request
 	req := c.Request().(*standard.Request).Request
 	req.Header.Set("Cookie", "")
@@ -143,14 +140,6 @@ func (p *portalProxy) loginToUAA(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	// XSRF Token - needs to not be an HTTP-Only cookie, so that Angular can read it
-	session, _ := p.GetSession(c)
-	xsrfGUID := fmt.Sprintf("%s", xsrfToken)
-	w := c.Response().(*standard.Response).ResponseWriter
-	cookie := sessions.NewCookie(XSRFTokenCookie, xsrfGUID, session.Options)
-	cookie.HttpOnly = false
-	http.SetCookie(w, cookie)
 
 	c.Response().Header().Set("Content-Type", "application/json")
 	c.Response().Write(jsonString)
@@ -589,7 +578,7 @@ func (p *portalProxy) setUAATokenRecord(key string, t interfaces.TokenRecord) er
 }
 
 func (p *portalProxy) verifySession(c echo.Context) error {
-	log.Debug("verifySession")
+	log.Info("verifySession =================================")
 
 	sessionExpireTime, err := p.GetSessionInt64Value(c, "exp")
 	if err != nil {
@@ -654,6 +643,20 @@ func (p *portalProxy) verifySession(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
+	fmt.Println("Verify -------------")
+	r := c.Request().(*standard.Request).Request
+	fmt.Printf("HTTP Request: %p\n", r)
+	fmt.Printf("HTTP Request: %p\n", c.Request())
+
+	// XSRF Token - needs to not be an HTTP-Only cookie, so that Angular can read it
+	xsrfToken := csrf.Token(c.Request().(*standard.Request).Request)
+	log.Info("XSRF TOKEN")
+	log.Info(xsrfToken)
+	w := c.Response().(*standard.Response).ResponseWriter
+	cookie := sessions.NewCookie(XSRFTokenCookie, xsrfToken, p.SessionStoreOptions)
+	cookie.HttpOnly = false
+	http.SetCookie(w, cookie)
 
 	err = c.JSON(http.StatusOK, info)
 	if err != nil {
