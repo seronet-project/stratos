@@ -89,6 +89,8 @@ imports:
   - godrv
   - mysql
   - native
+- name: github.com/gorilla/csrf
+  version: 69581736821c33d85bbf378f42f6ad864dbd85de
 testImports:
 - name: github.com/gopherjs/gopherjs
   version: 9659c814f1d54d63f9c623449a7111d3864c1361
