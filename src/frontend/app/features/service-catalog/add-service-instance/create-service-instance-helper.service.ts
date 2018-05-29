@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { combineLatest, filter, first, map, publishReplay, refCount, share, switchMap, tap, take } from 'rxjs/operators';
 
-import { IService, IServiceBroker, IServicePlan, IServicePlanVisibility } from '../../../core/cf-api-svc.types';
+import { IService, IServiceBroker, IServicePlan, IServicePlanVisibility, IServiceInstance } from '../../../core/cf-api-svc.types';
 import { IOrganization, ISpace } from '../../../core/cf-api.types';
 import { EntityServiceFactory } from '../../../core/entity-service-factory.service';
 import { pathGet } from '../../../core/utils.service';
@@ -13,7 +13,7 @@ import { PaginationMonitorFactory } from '../../../shared/monitors/pagination-mo
 import { GetServiceBroker } from '../../../store/actions/service-broker.actions';
 import { GetServicePlanVisibilities } from '../../../store/actions/service-plan-visibility.actions';
 import { GetService } from '../../../store/actions/service.actions';
-import { GetSpace } from '../../../store/actions/space.actions';
+import { GetSpace, GetAllServicesForSpace, GetServiceInstancesForSpace } from '../../../store/actions/space.actions';
 import { AppState } from '../../../store/app-state';
 import {
   entityFactory,
@@ -23,6 +23,8 @@ import {
   serviceSchemaKey,
   spaceSchemaKey,
   spaceWithOrgKey,
+  serviceInstancesSchemaKey,
+  serviceInstancesWithSpaceSchemaKey,
 } from '../../../store/helpers/entity-factory';
 import { createEntityRelationKey, createEntityRelationPaginationKey } from '../../../store/helpers/entity-relations.types';
 import { getPaginationObservables } from '../../../store/reducers/pagination-reducer/pagination-reducer.helper';
@@ -36,6 +38,9 @@ import { CloudFoundryEndpointService } from '../../cloud-foundry/services/cloud-
 import { fetchVisiblePlans, getSvcAvailability } from '../services-helper';
 import { ServicePlanAccessibility } from '../services.service';
 import { EntityService } from '../../../core/entity-service';
+import { GetServiceInstances, DELETE_SERVICE_BINDING } from '../../../store/actions/service-instances.actions';
+import { GetServicePlanServiceInstances } from '../../../store/actions/service-plan.actions';
+import { QParam } from '../../../store/types/pagination.types';
 
 export enum CreateServiceInstanceMode {
   MARKETPLACE_MODE = 'marketPlaceMode',
@@ -113,22 +118,23 @@ export class CreateServiceInstanceHelperService {
   }
 
   isMarketplace = () => this.mode === CreateServiceInstanceMode.MARKETPLACE_MODE;
+  isAppServices = () => this.mode === CreateServiceInstanceMode.APP_SERVICES_MODE;
 
   getVisibleServicePlans = () => {
     return this.getServicePlans().pipe(
       filter(p => !!p && p.length > 0),
       map(o => o.filter(s => s.entity.bindable)),
-      combineLatest(this.getServicePlanVisibilities(), this.serviceBroker$, this.service$),
-      map(([svcPlans, svcPlanVis, svcBrokers, svc]) => fetchVisiblePlans(svcPlans, svcPlanVis, svcBrokers, svc)),
+      combineLatest(this.getServicePlanVisibilities(), this.serviceBroker$),
+      map(([svcPlans, svcPlanVis, svcBrokers]) => fetchVisiblePlans(svcPlans, svcPlanVis, svcBrokers)),
     );
   }
 
   getVisibleServicePlansForSpaceAndOrg = (orgGuid: string, spaceGuid: string): Observable<APIResource<IServicePlan>[]> => {
     return this.getServicePlans().pipe(
-      filter(p => !!p && p.length > 0),
+      filter(p => !!p),
       map(o => o.filter(s => s.entity.bindable)),
       combineLatest(this.getServicePlanVisibilitiesForOrg(orgGuid), this.serviceBroker$, this.service$),
-      map(([svcPlans, svcPlanVis, svcBrokers, svc]) => fetchVisiblePlans(svcPlans, svcPlanVis, svcBrokers, svc, spaceGuid)),
+      map(([svcPlans, svcPlanVis, svcBrokers, svc]) => fetchVisiblePlans(svcPlans, svcPlanVis, svcBrokers, spaceGuid)),
     );
   }
 
@@ -144,9 +150,9 @@ export class CreateServiceInstanceHelperService {
   getServicePlans(): Observable<APIResource<IServicePlan>[]> {
     return this.service$.pipe(
       filter(p => !!p),
-      map(o => o.entity.service_plans));
+      map(o => o.entity.service_plans)
+    );
   }
-
 
   getServiceName = () => {
     return this.service$
@@ -248,6 +254,53 @@ export class CreateServiceInstanceHelperService {
       filter(p => !!p),
       map(vis => vis.filter(s => s.entity.service_plan_guid === servicePlanGuid)),
       first()
+    );
+  }
+
+  getServiceInstancesForService = (servicePlanGuid: string = null, spaceGuid: string = null, cfGuid: string = null) => {
+
+    let action, paginationKey;
+    if (spaceGuid) {
+      paginationKey = createEntityRelationPaginationKey(serviceInstancesSchemaKey, `${spaceGuid}-${servicePlanGuid}`);
+      const q = [new QParam('service_plan_guid', servicePlanGuid, ':')];
+      action = new GetServiceInstancesForSpace(spaceGuid, cfGuid, paginationKey, q);
+    } else if (servicePlanGuid) {
+      paginationKey = createEntityRelationPaginationKey(serviceInstancesSchemaKey, servicePlanGuid);
+      action = new GetServicePlanServiceInstances(servicePlanGuid, cfGuid, paginationKey);
+    } else {
+      paginationKey = createEntityRelationPaginationKey(serviceInstancesSchemaKey, cfGuid);
+      action = new GetServiceInstances(cfGuid, paginationKey);
+    }
+    return getPaginationObservables<APIResource<IServiceInstance>>({
+      store: this.store,
+      action: action,
+      paginationMonitor: this.paginationMonitorFactory.create(
+        paginationKey,
+        entityFactory(serviceInstancesSchemaKey)
+      )
+    }, true)
+      .entities$.pipe(
+        share(),
+        first(),
+    );
+  }
+
+  getServicesForSpace = (spaceGuid: string, cfGuid: string) => {
+    const paginationKey = createEntityRelationPaginationKey(serviceSchemaKey, spaceGuid);
+    return getPaginationObservables<APIResource<IService>>(
+      {
+        store: this.store,
+        action: new GetAllServicesForSpace(paginationKey, cfGuid, spaceGuid),
+        paginationMonitor: this.paginationMonitorFactory.create(
+          paginationKey,
+          entityFactory(serviceSchemaKey)
+        )
+      },
+      true
+    ).entities$.pipe(
+      filter(p => !!p),
+      publishReplay(1),
+      refCount()
     );
   }
 

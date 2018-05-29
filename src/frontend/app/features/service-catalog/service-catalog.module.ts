@@ -40,7 +40,6 @@ import { NoServicePlansComponent } from './add-service-instance/no-service-plans
   ],
   exports: [
     AddServiceInstanceComponent,
-    // NoServicePlansComponent,
     ServiceTabsBaseComponent,
   ],
   entryComponents: [
