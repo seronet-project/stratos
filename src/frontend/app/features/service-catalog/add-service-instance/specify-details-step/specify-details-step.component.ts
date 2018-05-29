@@ -82,7 +82,7 @@ export class SpecifyDetailsStepComponent implements OnDestroy, AfterContentInit 
   serviceInstances$: Observable<APIResource<IServiceInstance>[]>;
   marketPlaceMode: boolean;
   cSIHelperService: CreateServiceInstanceHelperService;
-  stepperForm: FormGroup;
+  // stepperForm: FormGroup;
   allServiceInstances$: Observable<APIResource<IServiceInstance>[]>;
   validate: BehaviorSubject<boolean> = new BehaviorSubject(false);
   allServiceInstanceNames: string[];
@@ -136,11 +136,11 @@ export class SpecifyDetailsStepComponent implements OnDestroy, AfterContentInit 
       share(),
     );
 
-    this.stepperForm = new FormGroup({
-      name: new FormControl('', [Validators.required, this.nameTakenValidator()]),
-      params: new FormControl('', SpecifyDetailsStepComponent.isValidJsonValidatorFn()),
-      tags: new FormControl(''),
-    });
+    // this.stepperForm = new FormGroup({
+    //   name: new FormControl('', [Validators.required, this.nameTakenValidator()]),
+    //   params: new FormControl('', SpecifyDetailsStepComponent.isValidJsonValidatorFn()),
+    //   tags: new FormControl(''),
+    // });
   }
 
   onEnter = () => {
@@ -333,7 +333,7 @@ export class SpecifyDetailsStepComponent implements OnDestroy, AfterContentInit 
 
   createServiceInstance(createServiceInstance: CreateServiceInstanceState): Observable<RequestInfoState> {
 
-    const name = this.stepperForm.controls.name.value;
+    const name = this.createNewInstanceForm.controls.name.value;
     const { spaceGuid, cfGuid } = createServiceInstance;
     const servicePlanGuid = createServiceInstance.servicePlanGuid;
     const params = getServiceJsonParams(this.createNewInstanceForm.controls.params.value);
