@@ -36,6 +36,14 @@ import { CardCfUsageComponent } from './components/cards/card-cf-usage/card-cf-u
 import { CardCfUserInfoComponent } from './components/cards/card-cf-user-info/card-cf-user-info.component';
 import { CardNumberMetricComponent } from './components/cards/card-number-metric/card-number-metric.component';
 import { CardStatusComponent } from './components/cards/card-status/card-status.component';
+import {
+  CompactServiceInstanceCardComponent,
+} from './components/cards/compact-service-instance-card/compact-service-instance-card.component';
+import { ServiceBrokerCardComponent } from './components/cards/service-broker-card/service-broker-card.component';
+import {
+  ServiceRecentInstancesCardComponent,
+} from './components/cards/service-recent-instances-card/service-recent-instances-card.component';
+import { ServiceSummaryCardComponent } from './components/cards/service-summary-card/service-summary-card.component';
 import { CfAuthModule } from './components/cf-auth/cf-auth.module';
 import { CfRoleCheckboxComponent } from './components/cf-role-checkbox/cf-role-checkbox.component';
 import { AppChipsComponent } from './components/chips/chips.component';
@@ -100,6 +108,7 @@ import { UserProfileBannerComponent } from './components/user-profile-banner/use
 import { CfOrgSpaceDataService } from './data-services/cf-org-space-service.service';
 import { CfUserService } from './data-services/cf-user.service';
 import { CloudFoundryService } from './data-services/cloud-foundry.service';
+import { ServiceActionHelperService } from './data-services/service-action-helper.service';
 import { EntityMonitorFactory } from './monitors/entity-monitor.factory.service';
 import { InternalEventMonitorFactory } from './monitors/internal-event-monitor.factory';
 import { PaginationMonitorFactory } from './monitors/pagination-monitor.factory';
@@ -109,7 +118,6 @@ import { UptimePipe } from './pipes/uptime.pipe';
 import { UsageBytesPipe } from './pipes/usage-bytes.pipe';
 import { ValuesPipe } from './pipes/values.pipe';
 import { UserPermissionDirective } from './user-permission.directive';
-import { ServiceActionHelperService } from './data-services/service-action-helper.service';
 
 @NgModule({
   imports: [
@@ -199,7 +207,11 @@ import { ServiceActionHelperService } from './data-services/service-action-helpe
     AppActionMonitorIconComponent,
     UserProfileBannerComponent,
     TableCellRequestMonitorIconComponent,
-    UserPermissionDirective
+    UserPermissionDirective,
+    ServiceSummaryCardComponent,
+    ServiceBrokerCardComponent,
+    ServiceRecentInstancesCardComponent,
+    CompactServiceInstanceCardComponent,
   ],
   exports: [
     FormsModule,
@@ -272,6 +284,12 @@ import { ServiceActionHelperService } from './data-services/service-action-helpe
     AppActionMonitorComponent,
     CliCommandComponent,
     AppActionMonitorIconComponent,
+    UserPermissionDirective,
+    BooleanIndicatorComponent,
+    ServiceSummaryCardComponent,
+    ServiceBrokerCardComponent,
+    ServiceRecentInstancesCardComponent,
+    CompactServiceInstanceCardComponent,
     TableComponent,
     UserPermissionDirective
   ],

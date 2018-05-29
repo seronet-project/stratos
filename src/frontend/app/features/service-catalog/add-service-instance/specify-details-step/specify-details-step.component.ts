@@ -51,6 +51,9 @@ const enum FormMode {
   CreateServiceInstance = 'create-service-instance',
   BindServiceInstance = 'bind-service-instance',
 }
+import { ServicesService } from '../../services.service';
+import { getServiceInstancesInCf } from '../../services-helper';
+
 @Component({
   selector: 'app-specify-details-step',
   templateUrl: './specify-details-step.component.html',
@@ -197,10 +200,27 @@ export class SpecifyDetailsStepComponent implements OnDestroy, AfterContentInit 
       serviceInstances: new FormControl('', [Validators.required]),
     });
     this.formMode = FormMode.CreateServiceInstance;
+    // this.spaceScopeSub = this.servicesService.getSelectedServicePlanAccessibility()
+    //   .pipe(
+    //     map(o => o.spaceScoped),
+    //     tap(spaceScope => {
+    //       if (spaceScope) {
+    //         this.stepperForm.get('org').disable();
+    //         this.stepperForm.get('space').disable();
+    //       } else {
+    //         this.stepperForm.get('org').enable();
+    //         this.stepperForm.get('space').enable();
+    //       }
+    //     })).subscribe();
   }
 
   setOrg = (guid) => this.store.dispatch(new SetCreateServiceInstanceOrg(guid));
 
+  // initServiceInstances = (paginationKey: string) =>
+  //   getServiceInstancesInCf(this.servicesService.cfGuid, this.store, this.paginationMonitorFactory).pipe(
+  //     share(),
+  //     first()
+  //   )
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }

@@ -1,12 +1,20 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { IService, IServiceBroker, IServicePlan, IServicePlanVisibility } from '../../core/cf-api-svc.types';
+import { IService, IServiceBroker, IServicePlan, IServicePlanVisibility, IServiceInstance } from '../../core/cf-api-svc.types';
 import { APIResource } from '../../store/types/api.types';
 import { CreateServiceInstanceState } from '../../store/types/create-service-instance.types';
 import { Observable } from 'rxjs/Observable';
 import { RequestInfoState } from '../../store/reducers/api-request-reducer/types';
 import { ActivatedRoute } from '@angular/router';
 import { getIdFromRoute } from '../cloud-foundry/cf.helpers';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app-state';
+import { PaginationMonitorFactory } from '../../shared/monitors/pagination-monitor.factory';
+import { createEntityRelationPaginationKey } from '../../store/helpers/entity-relations.types';
+import { serviceInstancesSchemaKey, entityFactory } from '../../store/helpers/entity-factory';
+import { getPaginationObservables } from '../../store/reducers/pagination-reducer/pagination-reducer.helper';
+import { GetServiceInstances } from '../../store/actions/service-instances.actions';
 
 export const fetchVisiblePlans =
   (svcPlans: APIResource<IServicePlan>[],
@@ -81,3 +89,11 @@ export const isServicesWallMode = (activatedRoute: ActivatedRoute) => {
   return !isAppServicesMode(activatedRoute) && !isMarketplaceMode(activatedRoute);
 };
 
+export const getServiceInstancesInCf = (cfGuid: string, store: Store<AppState>, paginationMonitorFactory: PaginationMonitorFactory) => {
+  const paginationKey = createEntityRelationPaginationKey(serviceInstancesSchemaKey, cfGuid);
+  return getPaginationObservables<APIResource<IServiceInstance>>({
+    store: store,
+    action: new GetServiceInstances(cfGuid, paginationKey),
+    paginationMonitor: paginationMonitorFactory.create(paginationKey, entityFactory(serviceInstancesSchemaKey))
+  }, true).entities$;
+};
