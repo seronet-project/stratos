@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf } from 'rxjs';
-import { filter, first, map, publishReplay, refCount, share, switchMap } from 'rxjs/operators';
+import { filter, first, map, publishReplay, refCount, share, switchMap, tap } from 'rxjs/operators';
 
 import { IService, IServiceInstance, IServicePlan, IServicePlanVisibility } from '../../../core/cf-api-svc.types';
 import { IOrganization, ISpace } from '../../../core/cf-api.types';
@@ -61,12 +61,21 @@ export class CreateServiceInstanceHelperService {
     );
 
     this.service$ = serviceEntityService.waitForEntity$.pipe(
-      filter(o => !!o && !!o.entity && !!o.entity.entity && !!o.entity.entity.service_plans),
-      // filter(o => !!o && !!o.entity),
+      // filter(o => !!o && !!o.entity && !!o.entity.entity && !!o.entity.entity.service_plans),
+      filter(o => !!o && !!o.entity),
       map(o => o.entity),
+      tap(a => {
+        console.log('a', a);
+      }),
       publishReplay(1),
-      refCount()
+      refCount(),
+      tap(a => {
+        console.log('b', a);
+      }),
     );
+
+    this.service$.subscribe(() => console.log('c'));
+    this.service$.subscribe(() => console.log('d'));
 
     const paginationKey = createEntityRelationPaginationKey(servicePlanVisibilitySchemaKey, this.cfGuid);
     this.servicePlanVisibilities$ = getPaginationObservables<APIResource<IServicePlanVisibility>>(

@@ -1,5 +1,5 @@
 
-import {catchError,  first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { RequestMethod } from '@angular/http';
 import { Actions, Effect } from '@ngrx/effects';
@@ -95,6 +95,7 @@ export class RequestEffect {
         mergeMap(validation => {
           const independentUpdates = !validateAction.apiRequestStarted && validation.started;
           if (independentUpdates) {
+            console.log('Validating dispatching');
             this.update(apiAction, true, null);
           }
           return validation.completed.then(() => ({
@@ -103,6 +104,7 @@ export class RequestEffect {
           }));
         }),
         mergeMap(({ independentUpdates, validation }) => {
+          console.log('Validating completed');
           return [new EntitiesPipelineCompleted(
             apiAction,
             apiResponse,
@@ -136,7 +138,8 @@ export class RequestEffect {
       const actions = [];
       if (!completeAction.validateAction.apiRequestStarted && completeAction.validationResult.started) {
         if (completeAction.independentUpdates) {
-          this.update(completeAction.apiAction, false, null);
+          console.log('SETTING AS UPDATED');
+          setTimeout(() => this.update(completeAction.apiAction, false, null), 5000);
         }
       } else if (completeAction.validateAction.apiRequestStarted) {
 

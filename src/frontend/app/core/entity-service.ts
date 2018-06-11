@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Store, compose } from '@ngrx/store';
 import { tag } from 'rxjs-spy/operators/tag';
-import { interval ,  Observable } from 'rxjs';
-import { filter, map, publishReplay, refCount, share, tap, withLatestFrom } from 'rxjs/operators';
+import { interval, Observable, combineLatest } from 'rxjs';
+import { filter, map, publishReplay, refCount, share, tap, withLatestFrom, switchMap } from 'rxjs/operators';
 
 import { EntityMonitor } from '../shared/monitors/entity-monitor';
 import { ValidateEntitiesStart } from '../store/actions/request.actions';
@@ -87,11 +87,26 @@ export class EntityService<T = any> {
     );
 
     this.waitForEntity$ = this.entityObs$.pipe(
+      withLatestFrom(
+        entityMonitor.entity$,
+        entityMonitor.entityRequest$
+      ),
+      map(([entityInfo, entity, entityRequestInfo]) => ({ entity, entityInfo, entityRequestInfo })),
       filter((ent) => {
-        const { entityRequestInfo, entity } = ent;
-        return this.isEntityAvailable(entity, entityRequestInfo);
+        const { entityRequestInfo, entity, entityInfo } = ent;
+        console.log(`From Pipeline     (stale): (is available - ${this.isEntityAvailable(entityInfo.entity, entityInfo.entityRequestInfo)})`, entityInfo.entityRequestInfo);
+        console.log(`From store direct (fresh): (is available - ${this.isEntityAvailable(entity, entityRequestInfo)})`, entityRequestInfo);
+        // console.log('before pub');
+        // console.group(new Date().getTime().toString());
+        // console.log(ent);
+        // console.log(this.isEntityAvailable(entity, entityRequestInfo));
+        // console.groupEnd();
+        // return this.isEntityAvailable(entity, entityRequestInfo);
+        return this.isEntityAvailable(entityInfo.entity, entityInfo.entityRequestInfo);
       }),
-      publishReplay(1), refCount()
+      publishReplay(1), refCount(),
+
+      // , tap(a => { console.log('after pub'); })
     );
   }
 
