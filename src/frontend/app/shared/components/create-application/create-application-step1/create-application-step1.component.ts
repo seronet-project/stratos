@@ -13,6 +13,8 @@ import {
   getSpacesFromOrgWithRole,
 } from '../../../../store/selectors/current-user-roles-permissions-selectors/role.selectors';
 import { CfOrgSpaceDataService } from '../../../data-services/cf-org-space-service.service';
+import { CFOrgSpaceSelectionBuilder } from '../../../data-services/cf-org-space-selection.builder';
+import { PaginationMonitorFactory } from '../../../monitors/pagination-monitor.factory';
 
 @Component({
   selector: 'app-create-application-step1',
@@ -23,10 +25,13 @@ export class CreateApplicationStep1Component implements OnInit, AfterContentInit
 
   @Input('isMarketplaceMode')
   isMarketplaceMode: boolean;
+  public cfOrgSpaceService: CFOrgSpaceSelectionBuilder;
   constructor(
     private store: Store<AppState>,
-    public cfOrgSpaceService: CfOrgSpaceDataService
-  ) { }
+    public paginationMonitorFactory: PaginationMonitorFactory
+  ) {
+    this.cfOrgSpaceService = new CFOrgSpaceSelectionBuilder(store, paginationMonitorFactory);
+  }
 
   public spaces$: Observable<ISpace[]>;
   public hasSpaces$: Observable<boolean>;
