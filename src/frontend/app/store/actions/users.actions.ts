@@ -22,6 +22,10 @@ export const GET_ALL = '[Users] Get all';
 export const GET_ALL_SUCCESS = '[Users] Get all success';
 export const GET_ALL_FAILED = '[Users] Get all failed';
 
+export const GET_ALL_NON_ADMIN = '[Users] Get all as non-admin';
+export const GET_ALL_NON_ADMIN_SUCCESS = '[Users] Get all as non-admin success';
+export const GET_ALL_NON_ADMIN_FAILED = '[Users] Get all as non-admin failed';
+
 export const REMOVE_ROLE = '[Users] Remove role';
 export const REMOVE_ROLE_SUCCESS = '[Users]  Remove role success';
 export const REMOVE_ROLE_FAILED = '[Users]  Remove role failed';
@@ -30,7 +34,7 @@ export const ADD_ROLE = '[Users] Add role';
 export const ADD_ROLE_SUCCESS = '[Users]  Add role success';
 export const ADD_ROLE_FAILED = '[Users]  Add role failed';
 
-const defaultUserRelations = [
+export const defaultUserRelations = [
   createEntityRelationKey(cfUserSchemaKey, organizationSchemaKey),
   createEntityRelationKey(cfUserSchemaKey, 'audited_organizations'),
   createEntityRelationKey(cfUserSchemaKey, 'managed_organizations'),
@@ -53,10 +57,11 @@ const createGetAllUsersInitialParams = () => ({
   'order-direction-field': 'username',
 });
 
-export class GetAllUsersAsNonAdmin implements PaginatedAction {
+export class GetAllUsersAsNonAdmin implements PaginatedAction, EntityInlineParentAction {
   type = GET_CF_USERS_BY_ORG;
   paginationKey: string;
-  actions: string[] = [];
+  actions = ['', GET_ALL_NON_ADMIN_SUCCESS, GET_ALL_NON_ADMIN_FAILED];
+  entity = [entityFactory(cfUserSchemaKey)];
   entityKey = cfUserSchemaKey;
   constructor(
     public cfGuid: string,
@@ -66,6 +71,9 @@ export class GetAllUsersAsNonAdmin implements PaginatedAction {
     this.paginationKey = createGetAllUsersPaginationKey(cfGuid);
   }
   initialParams = createGetAllUsersInitialParams();
+  options = {
+    method: 'get'
+  };
 }
 
 export class GetAllUsersAsAdmin extends CFStartAction implements PaginatedAction, EntityInlineParentAction {

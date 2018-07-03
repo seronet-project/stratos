@@ -1,9 +1,9 @@
-
-import { catchError, first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { RequestMethod } from '@angular/http';
 import { Actions, Effect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { of as observableOf } from 'rxjs';
+import { catchError, first, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 
 import { LoggerService } from '../../core/logger.service';
 import { UtilsService } from '../../core/utils.service';
@@ -26,6 +26,8 @@ import {
   WrapperRequestActionFailed,
   WrapperRequestActionSuccess,
 } from '../types/request.types';
+
+
 
 @Injectable()
 export class RequestEffect {
@@ -81,7 +83,10 @@ export class RequestEffect {
         withLatestFrom(this.store.select(getPaginationState)),
         first(),
         map(([allEntities, allPagination]) => {
-          return validateEntityRelations({
+          return apiAction.skipValidation ? {
+            started: false,
+            completed: Promise.resolve([])
+          } : validateEntityRelations({
             cfGuid: validateAction.action.endpointGuid,
             store: this.store,
             allEntities,

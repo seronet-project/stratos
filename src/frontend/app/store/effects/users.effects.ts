@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of as observableOf } from 'rxjs';
-import { catchError, filter, first, map, switchMap } from 'rxjs/operators';
+import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 
 import { IOrganization } from '../../core/cf-api.types';
 import { EntityServiceFactory } from '../../core/entity-service-factory.service';
 import { PaginationMonitorFactory } from '../../shared/monitors/pagination-monitor.factory';
 import { GetAllOrganizations, GetAllOrgUsers } from '../actions/organization.actions';
+import { APIResponse, ValidateEntitiesStart } from '../actions/request.actions';
 import { GET_CF_USERS_BY_ORG, GetAllUsersAsNonAdmin } from '../actions/users.actions';
 import { AppState } from '../app-state';
 import { cfUserSchemaKey, endpointSchemaKey, entityFactory, organizationSchemaKey } from '../helpers/entity-factory';
@@ -19,6 +20,19 @@ import { endpointsEntityRequestDataSelector } from '../selectors/endpoint.select
 import { APIResource, NormalizedResponse } from '../types/api.types';
 import { PaginatedAction, PaginationEntityState } from '../types/pagination.types';
 import { StartRequestAction, WrapperRequestActionFailed, WrapperRequestActionSuccess } from '../types/request.types';
+import { selectPaginationState } from '../selectors/pagination.selectors';
+import { SET_PAGE_BUSY } from '../actions/pagination.actions';
+
+// class UsersByOrgAction implements PaginatedAction, EntityInlineParentAction {
+//   includeRelations: string[];
+//   populateMissing: boolean;
+//   actions: string[];
+//   entityKey: string;
+//   paginationKey: string;
+//   type: string;
+//   entity: EntitySchema | [EntitySchema];
+//   options: object;
+// }
 
 
 @Injectable()
@@ -36,38 +50,71 @@ export class UsersEffects {
    */
   @Effect() fetchUsersByOrg$ = this.actions$.ofType<GetAllUsersAsNonAdmin>(GET_CF_USERS_BY_ORG).pipe(
     switchMap(action => {
-      const mockRequestType: ApiRequestTypes = 'fetch';
-      const mockPaginationAction: PaginatedAction = {
-        entityKey: cfUserSchemaKey,
-        type: action.type,
-        paginationKey: action.paginationKey,
-        actions: null,
-      };
+      console.log('STARTING1');
+      console.log('STARTING2');
+      console.log('STARTING3');
+      console.log('STARTING4');
 
-      // START the 'list' fetch
-      this.store.dispatch(new StartRequestAction(mockPaginationAction, mockRequestType));
 
-      // Discover all the orgs. In most cases we will already have this
-      const getAllOrgsPaginationKey = createEntityRelationPaginationKey(endpointSchemaKey, organizationSchemaKey);
-      const allOrganisations$ = getPaginationObservables<APIResource<IOrganization>>({
-        store: this.store,
-        action: new GetAllOrganizations(getAllOrgsPaginationKey, action.cfGuid),
-        paginationMonitor: this.paginationMonitorFactory.create(
-          getAllOrgsPaginationKey,
-          entityFactory(organizationSchemaKey)
-        )
-      }).entities$.pipe(
-        filter(entities => !!entities),
+      this.store.select(selectPaginationState(action.entityKey, action.paginationKey)).pipe(
+        map(state => state),
+        tap(pageState => console.log(pageState))
+      ).subscribe();
+
+      return this.store.select(selectPaginationState(action.entityKey, action.paginationKey)).pipe(
+        map(state => state),
+        // tap(pageState => console.log(pageState)),
         first(),
+        switchMap(() => {
+          const mockRequestType: ApiRequestTypes = 'fetch';
+          const mockPaginationAction = {
+            entity: [entityFactory(cfUserSchemaKey)],
+            entityKey: cfUserSchemaKey,
+            type: mockRequestType,
+            paginationKey: action.paginationKey,
+            actions: action.actions,
+            includeRelations: action.includeRelations,
+            populateMissing: true,
+            options: {
+              method: 'GET'
+            }
+          };
+
+          // START the 'list' fetch
+
+          this.store.dispatch(new StartRequestAction(mockPaginationAction, mockRequestType));
+          // this.store.dispatch({
+          //   type: SET_PAGE_BUSY,
+          //   busy: true,
+          //   // error: error,
+          //   apiAction: mockPaginationAction
+          // });
+
+
+          // Discover all the orgs. In most cases we will already have this
+          const getAllOrgsPaginationKey = createEntityRelationPaginationKey(endpointSchemaKey, organizationSchemaKey);
+          const allOrganisations$ = getPaginationObservables<APIResource<IOrganization>>({
+            store: this.store,
+            action: new GetAllOrganizations(getAllOrgsPaginationKey, action.cfGuid),
+            paginationMonitor: this.paginationMonitorFactory.create(
+              getAllOrgsPaginationKey,
+              entityFactory(organizationSchemaKey)
+            )
+          }).entities$.pipe(
+            filter(entities => !!entities),
+            first(),
+          );
+
+          // Loop through orgs fetching users associated with each
+          return allOrganisations$.pipe(
+            switchMap(organisations =>
+              organisations && organisations.length > 0 ?
+                this.fetchRolesPerOrg(organisations, action, mockPaginationAction, mockRequestType) :
+                this.handleNoOrgs(action, mockPaginationAction, mockRequestType))
+          );
+        })
       );
 
-      // Loop through orgs fetching users associated with each
-      return allOrganisations$.pipe(
-        switchMap(organisations =>
-          organisations && organisations.length > 0 ?
-            this.fetchRolesPerOrg(organisations, action, mockPaginationAction, mockRequestType) :
-            this.handleNoOrgs(action, mockPaginationAction, mockRequestType))
-      );
 
     }),
 
@@ -91,7 +138,9 @@ export class UsersEffects {
         createEntityRelationPaginationKey(organizationSchemaKey, organisation.metadata.guid),
         action.cfGuid,
         action.includeRelations,
-        action.populateMissing
+        // [], // Don't validate here where we could re-validate duplicated users, only validate at end
+        action.populateMissing,
+        true
       );
       // Create a way to monitor fetch users success
       const monitor = createPaginationCompleteWatcher(this.store, getUsersAction);
@@ -143,7 +192,13 @@ export class UsersEffects {
               userData[userGuid] = {};
             });
             mappedData.result = [...userGuids];
+            const mockApiResponse: APIResponse = {
+              response: mappedData,
+              totalPages: 1,
+              totalResults: mappedData.result.length
+            };
             // Dispatch the mock action with the info for the store
+            // return new ValidateEntitiesStart(mockPaginationAction, mappedData.result, false);
             return new WrapperRequestActionSuccess(mappedData, mockPaginationAction, mockRequestType);
           })
         );

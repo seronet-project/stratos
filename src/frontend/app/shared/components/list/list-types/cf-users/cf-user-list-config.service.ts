@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of as observableOf } from 'rxjs';
+import { Observable, of as observableOf } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 
 import { IOrganization, ISpace } from '../../../../../core/cf-api.types';
@@ -10,6 +10,7 @@ import { CurrentUserPermissionsService } from '../../../../../core/current-user-
 import { ActiveRouteCfOrgSpace } from '../../../../../features/cloud-foundry/cf-page.types';
 import { canUpdateOrgSpaceRoles, waitForCFPermissions } from '../../../../../features/cloud-foundry/cf.helpers';
 import { UsersRolesSetUsers } from '../../../../../store/actions/users-roles.actions';
+import { defaultUserRelations } from '../../../../../store/actions/users.actions';
 import { CfUser } from '../../../../../store/types/user.types';
 import { AppState } from './../../../../../store/app-state';
 import { APIResource, EntityInfo } from './../../../../../store/types/api.types';
@@ -116,6 +117,7 @@ export class CfUserListConfigService extends ListConfig<APIResource<CfUser>> {
     this.initialised = waitForCFPermissions(store, activeRouteCfOrgSpace.cfGuid).pipe(
       tap(cf => {
         const action = CfUserService.createPaginationAction(activeRouteCfOrgSpace.cfGuid, cf.global.isAdmin);
+        action.includeRelations = defaultUserRelations;
         this.dataSource = new CfUserDataSourceService(store, action, this);
       }),
       map(cf => cf && cf.state.initialised),

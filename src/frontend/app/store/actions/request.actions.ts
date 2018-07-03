@@ -44,7 +44,7 @@ export class ValidateEntitiesStart implements Action {
     public action: EntitiesPipelineAction,
     public validateEntities: string[],
     public apiRequestStarted: boolean,
-    public apiResponse?: APIResponse, // For http check we have a new set of entities, otherwise null look at current set of entities
+    public apiResponse?: APIResponse // For http check we have a new set of entities, otherwise null look at current set of entities,
   ) {
   }
 }

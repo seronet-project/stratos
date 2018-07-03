@@ -207,27 +207,12 @@ export class GetAllSpaceUsers extends GetAllOrgUsers {
     public guid: string,
     public paginationKey: string,
     public endpointGuid: string,
-    public includeRelations: string[] = [
-      createEntityRelationKey(cfUserSchemaKey, organizationSchemaKey),
-      createEntityRelationKey(cfUserSchemaKey, 'audited_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, 'managed_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, 'billing_managed_organizations'),
-      createEntityRelationKey(cfUserSchemaKey, spaceSchemaKey),
-      createEntityRelationKey(cfUserSchemaKey, 'managed_spaces'),
-      createEntityRelationKey(cfUserSchemaKey, 'audited_spaces')
-    ],
+    public includeRelations: string[] = [],
     public populateMissing = true) {
     super(guid, paginationKey, endpointGuid, includeRelations, populateMissing);
     this.options.url = `spaces/${guid}/user_roles`;
   }
   actions = getActions('Spaces', 'List all user roles');
-  initialParams = {
-    page: 1,
-    'results-per-page': 100,
-    'order-direction': 'desc',
-    'order-direction-field': 'username',
-  };
-  flattenPagination = true;
 }
 
 

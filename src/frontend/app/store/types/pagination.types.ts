@@ -50,6 +50,7 @@ export class PaginationEntityState {
 export interface PaginationAction extends Action {
   entityKey: string;
   paginationKey: string;
+  skipValidation?: boolean;
 }
 
 export interface PaginatedAction extends PaginationAction, IRequestAction {
@@ -63,6 +64,7 @@ export interface PaginatedAction extends PaginationAction, IRequestAction {
     },
     method?: RequestMethod | string | null
   };
+  skipValidation?: boolean;
 }
 
 export interface PaginationEntityTypeState {
