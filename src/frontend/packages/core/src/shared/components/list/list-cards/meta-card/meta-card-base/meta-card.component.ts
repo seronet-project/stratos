@@ -11,6 +11,7 @@ import { EntityMonitorFactory } from '../../../../../monitors/entity-monitor.fac
 import { CardStatus, ComponentEntityMonitorConfig } from '../../../../../shared.types';
 import { MetaCardItemComponent } from '../meta-card-item/meta-card-item.component';
 import { MetaCardTitleComponent } from '../meta-card-title/meta-card-title.component';
+import { LoggerService } from '../../../../../../core/logger.service';
 
 
 export interface MetaCardMenuItem {
@@ -99,7 +100,8 @@ export class MetaCardComponent {
 
   constructor(
     private entityMonitorFactory: EntityMonitorFactory,
-    store: Store<AppState>
+    store: Store<AppState>,
+    private logger: LoggerService
   ) {
     if (this.actionMenu) {
       this.actionMenu = this.actionMenu.map(element => {
@@ -109,7 +111,7 @@ export class MetaCardComponent {
         return element;
       });
     }
-    this.userFavoriteManager = new UserFavoriteManager(store);
+    this.userFavoriteManager = new UserFavoriteManager(store, logger);
   }
 
   cancelPropagation = (event) => {
