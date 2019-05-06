@@ -1,0 +1,67 @@
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+resources:
+- name: stratos-seronet-staging
+  type: cf
+  source:
+    api: {{cf-api}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-org}}
+    space: {{cf-space}}
+    skip_cert_check: false
+
+- name: stratos-seronet-release
+  type: git
+  source:
+    uri: git@github.com:seronet-project/stratos.git
+    branch: v2-master
+    depth: 5
+    disable_ci_skip: false
+    private_key: {{github-private-key}}
+
+- name: notify
+  type: slack-notification
+  source:
+    url: {{slack-webhook}}
+
+jobs:
+- name : deploy-stratos
+  plan:
+    - get: stratos-seronet-release
+      trigger: true
+    - task: stratos-seronet-prebuild
+      config:
+        platform: linux
+        inputs:
+          - name: stratos-seronet-release
+        outputs:
+          - name: stratos-out
+        image_resource:
+          type: docker-image
+          source:
+            repository: node
+            tag: 8.9.4
+        run:
+          user: root
+          path: sh
+          args:
+          - -exc
+          - |
+            cp -R stratos-seronet-release/* stratos-out
+            cd stratos-out
+            npm install
+            npm run prebuild-ui
+            rm -rf dist
+            rm -rf node_modules
+    - put: stratos-seronet-staging
+      params:
+        manifest: stratos-out/manifest.yml
+      on_success:
+        put: notify
+        params:
+          text: "SeRoNet Stratos deployed."
