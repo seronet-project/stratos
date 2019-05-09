@@ -49,6 +49,9 @@ Thumbs.db
 proxy.conf.js
 environment.dev.ts
 
+# ci
+ci/concourse/credentials.yml
+
 #v1
 *.iml
 docs/src
