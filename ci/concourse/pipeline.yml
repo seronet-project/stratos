@@ -56,6 +56,8 @@ jobs:
             cd stratos-out
             npm install
             npm run prebuild-ui
+            rm -rf dist
+            rm -rf node_modules
     - put: stratos-seronet-staging
       params:
         manifest: stratos-out/manifest.yml
