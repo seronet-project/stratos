@@ -7,6 +7,7 @@ resource_types:
 resources:
 - name: stratos-seronet-staging
   type: cf
+  icon: cloud-upload
   source:
     api: {{cf-api}}
     username: {{cf-username}}
@@ -17,6 +18,7 @@ resources:
 
 - name: stratos-seronet-release
   type: git
+  icon: github-face
   source:
     uri: git@github.com:seronet-project/stratos.git
     branch: v2-master
@@ -26,6 +28,7 @@ resources:
 
 - name: notify
   type: slack-notification
+  icon: chat-alert
   source:
     url: {{slack-webhook}}
 
