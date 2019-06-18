@@ -12,6 +12,7 @@ applications:
     env:
         FORCE_ENDPOINT_DASHBOARD: true
         SSO_LOGIN: true
+	CF_API_FORCE_SECURE: true
 # Override CF API endpoint URL inferred from VCAP_APPLICATION env 
 #       CF_API_URL: https://CLOUD_FOUNDRY_API_ENDPOINT
 # Force the console to use secured communication with the Cloud Foundry API endpoint
