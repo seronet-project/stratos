@@ -27,14 +27,66 @@ resources:
     disable_ci_skip: false
     private_key: ((github-private-key))
 
+- name: stratos-cf-v2-master
+  type: git
+  icon: github-face
+  source:
+    uri: https://github.com/cloudfoundry-incubator/stratos
+    branch: v2-master
+    depth: 30
+
 - name: notify
   type: slack-notification
   icon: chat-alert
   source:
     url: ((slack-webhook))
 
+- name: merge-timer
+  type: time
+  source:
+    start: 1:30 AM
+    stop: 2:30 AM
+    location: Europe/Berlin
+
 jobs:
+- name: merge-stratos
+  public: false
+  serial_groups: ["stratos"]
+  plan:
+  - get: merge-timer
+    trigger: true
+  - get: stratos-cf-v2-master
+#    trigger: true
+  - get: stratos-seronet-release
+  - task: merge-stratos
+    config:
+      platform: linux
+      inputs:
+      - name: stratos-seronet-release
+      outputs:
+      - name: stratos-seronet-release
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cflinuxfs3
+      run:
+        path: bash
+        args:
+        - -exc
+        - |
+          cd stratos-seronet-release
+          git config user.email "concourse@sero.network"
+          git config user.name "SeRoNet Concourse"
+          git remote add stratos https://github.com/cloudfoundry-incubator/stratos.git
+          git fetch stratos v2-master
+          git merge --no-edit stratos/v2-master
+  - put: stratos-seronet-release
+    params:
+      repository: stratos-seronet-release
+
 - name : deploy-stratos
+  public: false
+  serial_groups: ["stratos"]
   plan:
     - get: stratos-seronet-release
       trigger: true
