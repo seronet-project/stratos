@@ -15,11 +15,11 @@ func init() {
 		}
 
 		//Add auth_endpoint_type to console_config table - allows ability to enable local users.
-		//addColumn := "ALTER TABLE console_config ADD auth_endpoint_type VARCHAR(255);"
-		//_, err := txn.Exec(addColumn)
-		//if err != nil {
-		//	return err
-		//}
+		addColumn := "ALTER TABLE console_config ADD auth_endpoint_type VARCHAR(255);"
+		_, err := txn.Exec(addColumn)
+		if err != nil {
+			return err
+		}
 
 		createLocalUsers := "CREATE TABLE IF NOT EXISTS local_users ("
 		createLocalUsers += "user_guid     VARCHAR(36) UNIQUE NOT NULL, "
